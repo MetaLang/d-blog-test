@@ -1,5 +1,5 @@
 ---
-author: asdfasdfasdfasdfadf
+author: Jared Hanson
 comments: true
 date: 2026-02-10 00:37:57+00:00
 layout: post
