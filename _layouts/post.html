@@ -45,8 +45,25 @@ layout: default
     gap: 40px;
     padding: 0 20px;
   }
-  .article-col { width: 100%; }
+  .article-col { width: 100%; min-width: 0; } /* min-width: 0 is crucial for flex child overflow */
   .sidebar-col { width: 100%; border-top: 1px solid #eee; padding-top: 30px; }
+
+  /* Code Block Responsiveness */
+  .post-content pre {
+    display: block;
+    width: 100%;
+    overflow-x: auto; /* Forces horizontal scroll bar on code only */
+    white-space: pre;
+    word-wrap: normal;
+    background: #f8f8f8;
+    padding: 15px;
+    border-radius: 4px;
+    border: 1px solid #eee;
+  }
+  .post-content code {
+    font-family: 'Consolas', 'Monaco', 'Andale Mono', monospace;
+    font-size: 0.95em;
+  }
 
   /* Desktop Styles: Side-by-side */
   @media (min-width: 900px) {
@@ -59,7 +76,6 @@ layout: default
       padding-top: 0; 
       padding-left: 40px; 
     }
-    /* Ensures red bar and sidebar are perfectly flush */
     .dlf-header, .main-grid { padding-left: 0; padding-right: 0; }
   }
 </style>
@@ -86,7 +102,7 @@ layout: default
           {{ page.date | date: "%b %-d, %Y" }}{% if page.author %} • {{ page.author }}{% endif %}
         </p>
       </header>
-      <div class="post-content" style="line-height: 1.6; font-size: 1.1em; color: #222;">
+      <div class="post-content">
         {{ content }}
       </div>
     </article>
