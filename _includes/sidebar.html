@@ -1,8 +1,8 @@
 <div class="sidebar-section">
   <h3>SEARCH</h3>
   <form action="{{ '/search' | relative_url }}" method="get" style="display: flex; gap: 5px;">
-    <input type="text" name="q" placeholder="Search..." style="flex: 1; padding: 5px; border: 1px solid #ccc;">
-    <button type="submit" style="padding: 5px 10px; cursor: pointer;">Search</button>
+    <input type="text" name="q" placeholder="Search..." style="flex: 1; padding: 5px; border: 1px solid #ccc; border-radius: 2px;">
+    <button type="submit" style="padding: 5px 10px; cursor: pointer; background: #f4f4f4; border: 1px solid #ccc; border-radius: 2px;">Search</button>
   </form>
 </div>
 
@@ -20,8 +20,11 @@
 </div>
 
 <div class="sidebar-section" style="margin-top: 40px; text-align: center;">
-  <div style="border: 1px solid #eee; padding: 10px; display: inline-block; background: #fff;">
-    <img src="{{ '/assets/images/do-it-in-d-banner.png' | relative_url }}" alt="Do it in D" style="max-width: 100%; height: auto; display: block;">
+  
+  <div style="box-shadow: 0 4px 8px rgba(0,0,0,0.1); padding: 10px; display: inline-block; background: #fff; border-radius: 2px;">
+    <img src="{{ '/assets/images/do-it-in-d-banner.png' | relative_url }}" 
+         alt="Do it in D" 
+         style="max-width: 100%; height: auto; display: block;">
   </div>
   
   <p style="font-size: 0.9em; color: #555; margin-top: 15px;">
