@@ -1,25 +1,38 @@
-<aside style="flex: 1; min-width: 250px; padding-left: 40px; border-left: 1px solid #eee;">
+<aside style="flex: 1; min-width: 250px; padding-left: 30px; border-left: 1px solid #eee; font-family: sans-serif;">
+  
   <div style="margin-bottom: 30px;">
-    <h3 style="font-size: 0.9em; letter-spacing: 0.05em; color: #333; margin-bottom: 10px;">SEARCH</h3>
-    <input type="text" placeholder="Search the blog..." style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 3px;">
-  </div>
-
-  <div style="margin-bottom: 30px; text-align: center;">
-    <a href="https://dlang.org/download.html">
-      <img src="https://dlang.org/images/do-it-in-d.png" alt="Do It In D" style="width: 100%; max-width: 200px;">
-    </a>
+    <h3 style="font-size: 0.9em; font-weight: bold; color: #333; margin-bottom: 10px;">Search</h3>
+    <div style="display: flex; gap: 5px;">
+      <input type="text" style="flex: 1; padding: 5px; border: 1px solid #ccc; border-radius: 3px;">
+      <button style="padding: 5px 10px; border: 1px solid #ccc; background: #f9f9f9; cursor: pointer;">Search</button>
+    </div>
   </div>
 
   <div style="margin-bottom: 30px;">
-    <a href="https://dlang.org/donate.html" style="display: block; background-color: #b03931; color: white; text-align: center; padding: 12px; text-decoration: none; font-weight: bold; border-radius: 3px;">
-      DONATE TO DLF
-    </a>
-  </div>
-
-  <div>
-    <h3 style="font-size: 0.9em; letter-spacing: 0.05em; color: #333; margin-bottom: 10px;">ARCHIVE</h3>
+    <h3 style="font-size: 0.9em; font-weight: bold; color: #333; margin-bottom: 10px;">PAGES</h3>
     <ul style="list-style: none; padding: 0; font-size: 0.9em; line-height: 1.8;">
       <li><a href="{{ '/' | relative_url }}" style="color: #b03931; text-decoration: none;">All Posts ({{ site.posts.size }})</a></li>
     </ul>
   </div>
+
+  <div style="margin-bottom: 25px; text-align: center;">
+    <a href="https://dlang.org/download.html">
+      <img src="https://dlang.org/images/do-it-in-d.png" alt="Do It In D" style="width: 100%; border: 1px solid #eee;">
+    </a>
+    <p style="font-size: 0.85em; color: #444; margin-top: 10px;">
+      Support the D Language Foundation by shopping at 
+      <a href="https://dlang.org/shop.html" style="color: #b03931; font-weight: bold; text-decoration: none;">the DO IT IN D shop!!</a>
+    </p>
+  </div>
+
+  <div style="text-align: center;">
+    <a href="https://dlang.org/donate.html">
+      <img src="https://dlang.org/images/donate-button.png" alt="Donate" style="width: 100%;">
+    </a>
+    <p style="font-size: 0.85em; color: #444; margin-top: 10px;">
+      Support the D Language Foundation 
+      <a href="https://dlang.org/donate.html" style="color: #b03931; font-weight: bold; text-decoration: none;">with a direct donation!</a>
+    </p>
+  </div>
+
 </aside>
