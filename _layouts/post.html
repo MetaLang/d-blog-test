@@ -2,7 +2,7 @@
 layout: default
 ---
 <style>
-  /* Base Mobile-First Styles */
+  /* Base Layout */
   .blog-container {
     max-width: 1200px;
     margin: 0 auto;
@@ -10,7 +10,6 @@ layout: default
   }
   .dlf-header {
     padding-top: 25px;
-    /* Keeps header text flush with the container edge */
     padding-left: 20px; 
     padding-right: 20px;
   }
@@ -23,7 +22,6 @@ layout: default
   .nav-bar {
     background-color: #b03931;
     padding: 12px 20px;
-    /* Outdents the red bar to the screen edges */
     margin: 15px -20px 0 -20px; 
   }
   .nav-bar ul {
@@ -41,18 +39,42 @@ layout: default
     font-size: 0.9em;
   }
   
-  /* Layout Grid: Stacked by default for mobile */
+  /* Responsive Grid */
   .main-grid {
     display: flex;
     flex-direction: column;
     gap: 40px;
-    margin-top: 40px; /* Restores the vertical breathing room */
+    margin-top: 40px; 
     padding: 0 20px;
   }
   .article-col { width: 100%; }
   .sidebar-col { width: 100%; border-top: 1px solid #eee; padding-top: 30px; }
 
-  /* Desktop Styles: Side-by-side & Perfectly Flush */
+  /* New: Professional Code Block Styling */
+  pre {
+    background: #f4f4f4;
+    padding: 15px;
+    border-radius: 4px;
+    overflow-x: auto; /* Enable horizontal scrolling */
+    white-space: pre;  /* Prevent code wrapping */
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.95em;
+    border: 1px solid #ddd;
+    margin: 20px 0;
+  }
+
+  /* New: Blockquote Callout for Author Intro */
+  blockquote {
+    margin: 30px 0;
+    padding: 20px 25px;
+    background-color: #f9f9f9;
+    border-left: 5px solid #b03931; /* Uses D Red */
+    font-style: italic;
+    color: #555;
+    line-height: 1.5;
+  }
+
+  /* Desktop Flush Alignment */
   @media (min-width: 900px) {
     .main-grid { flex-direction: row; align-items: flex-start; }
     .article-col { flex: 3; }
@@ -63,7 +85,6 @@ layout: default
       padding-top: 0; 
       padding-left: 40px; 
     }
-    /* Removes internal padding so text hits the red bar boundaries */
     .dlf-header, .main-grid { padding-left: 0; padding-right: 0; }
   }
 </style>
