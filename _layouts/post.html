@@ -2,26 +2,34 @@
 layout: default
 ---
 <style>
-  /* Base Mobile Styles */
+  /* 1. Base Container */
   .blog-container {
     max-width: 1200px;
     margin: 0 auto;
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: sans-serif;
+    overflow-x: hidden; /* Prevents the 'side of the screen' drift */
   }
+
+  /* 2. Large Bold Header */
   .dlf-header {
     padding: 25px 20px 0 20px;
     margin-bottom: 25px;
   }
   .dlf-header h1 {
-    font-size: 2.8em;
+    font-size: 3em;
     font-weight: bold;
     color: #333;
     margin: 0;
   }
+
+  /* 3. Navigation Bar */
   .nav-bar {
     background-color: #b03931;
     padding: 12px 20px;
     margin-top: 15px;
+    /* This margin trick keeps it flush with the edges */
+    margin-left: -20px;
+    margin-right: -20px;
   }
   .nav-bar ul {
     list-style: none;
@@ -29,7 +37,7 @@ layout: default
     padding: 0;
     display: flex;
     flex-wrap: wrap;
-    gap: 15px 25px;
+    gap: 15px 35px;
   }
   .nav-bar a {
     color: white;
@@ -37,46 +45,44 @@ layout: default
     font-weight: bold;
     font-size: 0.9em;
   }
-  
-  /* Layout Grid: Stacked by default for mobile */
+
+  /* 4. THE REFLOW GRID */
+  /* Default: Vertical Stack (Mobile) */
   .main-grid {
     display: flex;
-    flex-direction: column;
+    flex-direction: column; 
     gap: 40px;
     padding: 0 20px;
   }
-  .article-col { width: 100%; min-width: 0; } /* min-width: 0 is crucial for flex child overflow */
-  .sidebar-col { width: 100%; border-top: 1px solid #eee; padding-top: 30px; }
-
-  /* Code Block Responsiveness */
-  .post-content pre {
-    display: block;
-    width: 100%;
-    overflow-x: auto; /* Forces horizontal scroll bar on code only */
-    white-space: pre;
-    word-wrap: normal;
-    background: #f8f8f8;
-    padding: 15px;
-    border-radius: 4px;
-    border: 1px solid #eee;
-  }
-  .post-content code {
-    font-family: 'Consolas', 'Monaco', 'Andale Mono', monospace;
-    font-size: 0.95em;
+  
+  .article-col { width: 100%; }
+  .sidebar-col { 
+    width: 100%; 
+    border-top: 1px solid #eee; 
+    padding-top: 30px; 
   }
 
-  /* Desktop Styles: Side-by-side */
+  /* Desktop View: Side-by-Side (900px and up) */
   @media (min-width: 900px) {
-    .main-grid { flex-direction: row; align-items: flex-start; }
-    .article-col { flex: 3; }
+    .main-grid {
+      flex-direction: row; 
+      align-items: flex-start;
+      margin-left: -20px;
+      margin-right: -20px;
+      padding: 0;
+    }
+    .article-col { 
+      flex: 3; 
+      padding-left: 20px;
+    }
     .sidebar-col { 
       flex: 1; 
       border-top: none; 
       border-left: 1px solid #eee; 
       padding-top: 0; 
       padding-left: 40px; 
+      padding-right: 20px;
     }
-    .dlf-header, .main-grid { padding-left: 0; padding-right: 0; }
   }
 </style>
 
@@ -97,7 +103,7 @@ layout: default
   <div class="main-grid">
     <article class="article-col">
       <header>
-        <h1 style="font-size: 2.5em; font-weight: bold; color: #111; margin-bottom: 10px;">{{ page.title }}</h1>
+        <h1 style="font-size: 2.6em; font-weight: bold; color: #111; margin-bottom: 10px;">{{ page.title }}</h1>
         <p style="color: #888; margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 20px;">
           {{ page.date | date: "%b %-d, %Y" }}{% if page.author %} • {{ page.author }}{% endif %}
         </p>
