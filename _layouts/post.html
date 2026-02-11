@@ -13,7 +13,7 @@ layout: default
   .article-col { width: 100%; padding: 0 20px; }
   .sidebar-col { width: 100%; border-top: 1px solid #eee; padding: 30px 20px 0 20px; }
 
-  /* Saturated High-Contrast Highlighting */
+  /* High-Contrast Syntax Highlighting */
   .highlight  { background: #ffffff; color: #111; }
   .highlight .c1 { color: #999988; font-style: italic; } 
   .highlight .k  { color: #a31515; font-weight: bold; }  
@@ -24,9 +24,9 @@ layout: default
   .highlight .p  { color: #000; font-weight: bold; }    
   .highlight .o  { color: #000; }                        
 
-  /* Tightened Code Block Styling */
+  /* Tightened Code Blocks */
   pre.highlight {
-    padding: 12px 15px; /* Reduced vertical padding */
+    padding: 12px 15px;
     background: #fbfbfb; 
     border: 1px solid #eee; 
     border-radius: 4px;
@@ -34,14 +34,14 @@ layout: default
     white-space: pre;
     font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
     font-size: 0.92em;
-    line-height: 1.35; /* Tightened line spacing for a technical look */
+    line-height: 1.35; 
     margin: 20px 0;
   }
 
-  /* Intro Text Styling: targets the first-of-type paragraph */
-  .post-content > p:first-of-type { font-style: italic; color: #555; padding-bottom: 20px; border-bottom: 1px solid #eee; margin-bottom: 30px; }
+  /* Unified Content Styling */
+  .post-content { line-height: 1.6; font-size: 1.1em; color: #222; }
 
-  /* Desktop View: Side-by-Side & Flush */
+  /* Desktop View: perfectly flush and side-by-side */
   @media (min-width: 900px) {
     .main-grid { flex-direction: row; align-items: flex-start; }
     .article-col { flex: 3; }
@@ -71,7 +71,7 @@ layout: default
           {{ page.date | date: "%b %-d, %Y" }}{% if page.author %} • {{ page.author }}{% endif %}
         </p>
       </header>
-      <div class="post-content" style="line-height: 1.6; font-size: 1.1em; color: #222;">
+      <div class="post-content">
         {{ content }}
       </div>
     </article>
