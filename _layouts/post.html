@@ -1,22 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ page.title }}</title>
-  <link rel="stylesheet" href="{{ '/assets/main.css' | relative_url }}">
-</head>
-<body>
-  <header>
-    <h1><a href="{{ '/' | relative_url }}">{{ site.title }}</a></h1>
-  </header>
+<link rel="stylesheet" href="{{ '/assets/main.css' | relative_url }}">
 
-  <main>
-    {{ content }}
-  </main>
-
-  <footer>
-    <p>Testing the WordPress to Jekyll Migration</p>
-  </footer>
-</body>
-</html>
+{{ content }}
