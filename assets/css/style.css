@@ -43,29 +43,28 @@ html, body {
   width: 100%;
 }
 
-/* --- Header Spacing Parity --- */
+/* --- Content Styling (Quotes & Headers) --- */
 header h1 { font-size: 2.6em; font-weight: bold; color: #000; margin-bottom: 20px; }
 header p { color: #888; margin-bottom: 40px; border-bottom: 1px solid #eee; padding-bottom: 25px; }
 
-/* --- Single-Box Code Blocks --- */
-.highlight {
+blockquote {
+  margin: 30px 40px;
+  padding-left: 20px;
+  border-left: 5px solid #eee;
+  font-style: italic;
+  color: #555;
+}
+
+/* --- Code Blocks --- */
+.highlight, pre.highlight {
   background-color: #fbfbfb !important;
   border: 1px solid #eee;
   border-radius: 4px;
   margin: 24px 0;
-  width: 100%;
-  max-width: 100%;
-  overflow: hidden;
-}
-
-.highlight pre, 
-pre.highlight {
-  background: transparent !important; /* Fixes 'box-in-a-box' look */
-  border: none !important;
-  margin: 0 !important;
   padding: 15px;
   display: block;
   width: 100%;
+  max-width: 100%;
   overflow-x: auto;
   white-space: pre;
   word-wrap: normal;
