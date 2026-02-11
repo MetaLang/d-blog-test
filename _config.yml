@@ -1,8 +1,10 @@
 title: D Language Blog Archive
 description: Testing the WordPress to Jekyll Migration
 remote_theme: jekyll/minima
-permalink: /:title/ # Matches your SEO requirements
+permalink: /:title/
 
-# Essential for GitHub Pages
-url: "" 
-baseurl: ""
+url: "/d-blog-test" 
+baseurl: "https://metalang.github.io"
+
+permalink: /:title/
+
