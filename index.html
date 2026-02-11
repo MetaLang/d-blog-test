@@ -4,84 +4,25 @@ title: The D Blog
 paginate: true
 ---
 <style>
-  /* Base Layout & Grid Stability */
-  .blog-container { 
-    max-width: 1200px; 
-    margin: 0 auto; 
-    padding: 0 20px; 
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; 
-  }
+  /* Base Layout & Syntax Highlighting */
+  .blog-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
   .dlf-header { padding-top: 25px; }
   .dlf-header h1 { font-size: 3em; font-weight: bold; color: #333; margin: 0; }
-  
-  /* Red Nav Bar: Outdented to container edge */
-  .nav-bar { 
-    background-color: #b03931; 
-    padding: 12px 20px; 
-    margin: 15px -20px 0 -20px; 
-  }
-  .nav-bar ul { 
-    list-style: none; 
-    margin: 0; 
-    padding: 0; 
-    display: flex; 
-    flex-wrap: wrap; 
-    gap: 15px 35px; 
-  }
+  .nav-bar { background-color: #b03931; padding: 12px 20px; margin: 15px -20px 0 -20px; }
+  .nav-bar ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 15px 35px; }
   .nav-bar a { color: white; text-decoration: none; font-weight: bold; font-size: 0.9em; }
-  
-  /* Main Grid: Flexbox for responsive sidebar */
-  .main-grid { 
-    display: flex; 
-    flex-direction: column; 
-    gap: 40px; 
-    margin: 40px -20px 0 -20px; 
-  }
+  .main-grid { display: flex; flex-direction: column; gap: 40px; margin: 40px -20px 0 -20px; }
 
-  /* Official High-Contrast Syntax Highlighting */
-  .highlight  { background: #ffffff; color: #111; }
-  .highlight .c1 { color: #999988; font-style: italic; } 
-  .highlight .k  { color: #a31515; font-weight: bold; } /* Burgundy: alias, static if */
-  .highlight .kt { color: #a31515; font-weight: bold; } /* Burgundy: int, auto */
-  .highlight .s  { color: #0433ff; font-weight: 500; }  /* Royal Blue: "strings" */
-  .highlight .nf { color: #8a6343; font-weight: bold; } /* Brown: writeln, visit */
-  .highlight .mi { color: #009926; font-weight: bold; } /* Green: numbers */
-  .highlight .p  { color: #000; font-weight: bold; }    /* Punctuation */
+  /* High-Contrast Technical Colors */
+  .highlight .k, .highlight .kt { color: #a31515; font-weight: bold; }  
+  .highlight .s { color: #0433ff; font-weight: 500; }  
+  .highlight .nf { color: #8a6343; font-weight: bold; }  
+  .highlight .mi { color: #009926; font-weight: bold; }  
+  pre.highlight { padding: 12px 15px; background: #fbfbfb; border: 1px solid #eee; overflow-x: auto; line-height: 1.35; margin: 20px 0; font-size: 0.92em; }
 
-  /* Tightened Code Blocks for technical density */
-  pre.highlight {
-    padding: 12px 15px;
-    background: #fbfbfb; 
-    border: 1px solid #eee; 
-    border-radius: 4px;
-    overflow-x: auto;
-    white-space: pre;
-    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-    font-size: 0.92em;
-    line-height: 1.35; 
-    margin: 20px 0;
-  }
+  /* Fixed "Midnight Red" Separator */
+  .article-separator { border: 0; height: 4px; background-color: #b03931; opacity: 0.3; margin: 80px 0; }
 
-  /* The "Midnight Red" Separator */
-  .article-separator {
-    border: 0;
-    height: 4px; 
-    background-color: #b03931; 
-    opacity: 0.3; 
-    margin: 80px 0;
-  }
-
-  /* Pagination Styling */
-  .pagination-nav { 
-    display: flex; 
-    justify-content: space-between; 
-    padding: 40px 20px; 
-    border-top: 2px solid #eee; 
-    margin-top: 20px; 
-  }
-  .pagination-nav a { color: #b03931; text-decoration: none; font-weight: bold; }
-
-  /* Desktop View: Full Flush Side-by-Side */
   @media (min-width: 900px) {
     .main-grid { flex-direction: row; align-items: flex-start; }
     .article-col { flex: 3; padding: 0 20px; }
@@ -109,12 +50,10 @@ paginate: true
       {% for post in paginator.posts %}
         <div class="post-entry">
           <header>
-            <h1 style="font-size: 2.6em; font-weight: bold; color: #000; margin-bottom: 10px;">
-              <a href="{{ post.url | relative_url }}" style="color: black; text-decoration: none;">
-                {{ post.title }}
-              </a>
+            <h1 style="font-size: 2.6em; font-weight: bold; color: #000; margin-bottom: 20px;">
+              <a href="{{ post.url | relative_url }}" style="color: black; text-decoration: none;">{{ post.title }}</a>
             </h1>
-            <p style="color: #888; margin-bottom: 25px; border-bottom: 1px solid #eee; padding-bottom: 15px;">
+            <p style="color: #888; margin-bottom: 40px; border-bottom: 1px solid #eee; padding-bottom: 25px;">
               {{ post.date | date: "%b %-d, %Y" }}{% if post.author %} • {{ post.author }}{% endif %}
             </p>
           </header>
@@ -129,19 +68,15 @@ paginate: true
         </div>
       {% endfor %}
 
-      <nav class="pagination-nav">
+      <nav style="display: flex; justify-content: space-between; padding: 40px 20px; border-top: 2px solid #eee; margin-top: 20px;">
         {% if paginator.next_page %}
-          <a href="{{ paginator.next_page_path | relative_url }}">&larr; Older posts</a>
+          <a href="{{ paginator.next_page_path | relative_url }}" style="color: #b03931; text-decoration: none; font-weight: bold;">&larr; Older posts</a>
         {% else %}<span></span>{% endif %}
-        
         {% if paginator.previous_page %}
-          <a href="{{ paginator.previous_page_path | relative_url }}">Newer posts &rarr;</a>
+          <a href="{{ paginator.previous_page_path | relative_url }}" style="color: #b03931; text-decoration: none; font-weight: bold;">Newer posts &rarr;</a>
         {% endif %}
       </nav>
     </article>
-
-    <aside class="sidebar-col">
-      {% include sidebar.html %}
-    </aside>
+    <aside class="sidebar-col">{% include sidebar.html %}</aside>
   </div>
 </div>
