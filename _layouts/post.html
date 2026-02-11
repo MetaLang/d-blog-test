@@ -1,3 +1,29 @@
+<div class="dlf-header" style="margin-bottom: 20px;">
+  <h1 style="font-family: sans-serif; margin-bottom: 5px;">The D Blog</h1>
+  <p style="color: #666; font-style: italic; margin-bottom: 15px;">The official blog for the D Programming Language.</p>
+  
+  <nav style="background-color: #b03931; padding: 10px 20px;">
+    <ul style="list-style: none; margin: 0; padding: 0; display: flex; gap: 25px;">
+      <li><a href="https://dlang.org/" style="color: white; text-decoration: none; font-weight: bold; font-size: 0.9em;">D HOME</a></li>
+      <li><a href="https://forum.dlang.org/" style="color: white; text-decoration: none; font-weight: bold; font-size: 0.9em;">D FORUMS</a></li>
+      <li><a href="https://dlang.org/donate.html" style="color: white; text-decoration: none; font-weight: bold; font-size: 0.9em;">DONATE</a></li>
+      <li><a href="https://dlang.org/shop.html" style="color: white; text-decoration: none; font-weight: bold; font-size: 0.9em;">SHOP</a></li>
+    </ul>
+  </nav>
+</div>
+
 <link rel="stylesheet" href="{{ '/assets/main.css' | relative_url }}">
 
-{{ content }}
+<article class="post">
+  <header class="post-header">
+    <h1 class="post-title">{{ page.title | escape }}</h1>
+    <p class="post-meta">
+      <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%b %-d, %Y" }}</time>
+      {% if page.author %} • <span>{{ page.author }}</span>{% endif %}
+    </p>
+  </header>
+
+  <div class="post-content">
+    {{ content }}
+  </div>
+</article>
