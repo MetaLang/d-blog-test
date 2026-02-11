@@ -1,44 +1,84 @@
 ---
 layout: default
 ---
-<div style="max-width: 1200px; margin: 0 auto; padding: 0 20px; font-family: sans-serif;">
+<style>
+  /* Base Container Logic */
+  .d-blog-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
 
-  <div class="dlf-header" style="margin-bottom: 25px; padding-top: 25px;">
-    <h1 style="font-size: clamp(2em, 8vw, 3em); margin: 0; font-weight: bold; color: #333;">The D Blog</h1>
-    <p style="color: #666; font-size: 1.1em; margin: 5px 0 20px 0;">The official blog for the D Programming Language.</p>
+  /* Responsive Flex Logic */
+  .main-content-wrapper {
+    display: flex;
+    flex-direction: column; /* Force vertical on mobile */
+    gap: 40px;
+    margin: 0 -20px;
+  }
+
+  .article-column {
+    width: 100%;
+    padding: 0 20px;
+    box-sizing: border-box;
+  }
+
+  .sidebar-column {
+    width: 100%;
+    padding: 30px 20px;
+    border-top: 1px solid #eee; /* Visual break for mobile */
+    box-sizing: border-box;
+  }
+
+  /* Desktop Override (850px+) */
+  @media (min-width: 850px) {
+    .main-content-wrapper {
+      flex-direction: row; /* Side-by-side for desktop */
+      align-items: flex-start;
+    }
+    .article-column { width: 75%; }
+    .sidebar-column { 
+      width: 25%; 
+      border-top: none; 
+      border-left: 1px solid #eee; 
+      padding-top: 0;
+      padding-left: 30px;
+    }
+  }
+</style>
+
+<div class="d-blog-container">
+
+  <div class="dlf-header" style="margin-bottom: 30px; padding-top: 25px;">
+    <h2 style="font-size: 1.6em; margin: 0; font-weight: 500; color: #555;">The D Blog</h2>
+    <p style="color: #888; font-size: 0.95em; margin: 5px 0 20px 0;">The official blog for the D Programming Language.</p>
     
     <nav style="background-color: #b03931; padding: 12px 25px; margin: 0 -20px;">
       <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 15px 35px;">
-        <li><a href="https://dlang.org/" style="color: white; text-decoration: none; font-weight: bold; font-size: 0.9em;">D HOME</a></li>
-        <li><a href="https://forum.dlang.org/" style="color: white; text-decoration: none; font-weight: bold; font-size: 0.9em;">D FORUMS</a></li>
-        <li><a href="https://dlang.org/donate.html" style="color: white; text-decoration: none; font-weight: bold; font-size: 0.9em;">DONATE</a></li>
-        <li><a href="https://dlang.org/shop.html" style="color: white; text-decoration: none; font-weight: bold; font-size: 0.9em;">SHOP</a></li>
+        <li><a href="https://dlang.org/" style="color: white; text-decoration: none; font-weight: bold; font-size: 0.85em;">D HOME</a></li>
+        <li><a href="https://forum.dlang.org/" style="color: white; text-decoration: none; font-weight: bold; font-size: 0.85em;">D FORUMS</a></li>
+        <li><a href="https://dlang.org/donate.html" style="color: white; text-decoration: none; font-weight: bold; font-size: 0.85em;">DONATE</a></li>
+        <li><a href="https://dlang.org/shop.html" style="color: white; text-decoration: none; font-weight: bold; font-size: 0.85em;">SHOP</a></li>
       </ul>
     </nav>
   </div>
 
-  <div style="display: flex; flex-wrap: wrap; gap: 40px; margin: 0 -20px;">
-    
-    <article class="post" style="flex: 3; min-width: 300px; padding: 0 20px;">
-      <header class="post-header">
-        <h1 class="post-title" style="font-size: clamp(1.8em, 5vw, 2.6em); font-weight: bold; color: #000; margin-bottom: 10px;">{{ page.title }}</h1>
-        <p class="post-meta" style="color: #888; margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 20px;">
+  <div class="main-content-wrapper">
+    <article class="article-column">
+      <header>
+        <h1 style="font-size: clamp(1.8em, 5vw, 2.4em); font-weight: bold; color: #111; margin-bottom: 10px;">{{ page.title }}</h1>
+        <p style="color: #888; margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 20px; font-size: 0.9em;">
           {{ page.date | date: "%b %-d, %Y" }}{% if page.author %} • {{ page.author }}{% endif %}
         </p>
       </header>
 
-      <div class="post-content" style="line-height: 1.6; font-size: 1.1em; color: #222;">
+      <div style="line-height: 1.6; font-size: 1.05em; color: #222;">
         {{ content }}
       </div>
     </article>
 
-    <div style="flex: 1; min-width: 280px; padding: 0 20px; border-top: 1px solid #eee; padding-top: 30px;">
-      <style>
-        /* Small desktop tweak: only show side border if we aren't stacked */
-        @media (min-width: 850px) {
-          div[style*="min-width: 280px"] { border-top: none !important; border-left: 1px solid #eee; padding-top: 0 !important; padding-left: 30px !important; }
-        }
-      </style>
+    <div class="sidebar-column">
       {% include sidebar.html %}
     </div>
   </div>
