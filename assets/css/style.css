@@ -47,6 +47,7 @@ html, body {
 header h1 { font-size: 2.6em; font-weight: bold; color: #000; margin-bottom: 20px; }
 header p { color: #888; margin-bottom: 40px; border-bottom: 1px solid #eee; padding-bottom: 25px; }
 
+/* Restored Quote Styling */
 blockquote {
   margin: 30px 40px;
   padding-left: 20px;
@@ -55,29 +56,17 @@ blockquote {
   color: #555;
 }
 
-/* --- Code Block Fix: Single-Box Strategy --- */
-
-/* 1. The Outer Box (The div.highlight Jekyll creates) */
-.highlight {
+/* --- Simplified Code Blocks --- */
+.highlight, pre.highlight {
   background-color: #fbfbfb !important;
-  border: 1px solid #eee !important;
+  border: 1px solid #eee;
   border-radius: 4px;
   margin: 24px 0;
-  width: 100%;
-  max-width: 100%;
-  overflow: hidden; /* Clips the inner box to the rounded corners */
-}
-
-/* 2. The Inner Box (The pre.highlight Kramdown creates) */
-.highlight pre, 
-pre.highlight {
-  background: transparent !important; /* THIS REMOVES THE BOX-IN-A-BOX */
-  border: none !important;            /* Removes the second border */
-  margin: 0 !important;               /* Stops the inner box from shifting */
   padding: 15px;
   display: block;
   width: 100%;
-  overflow-x: auto;                   /* Enables mobile scrolling */
+  max-width: 100%;
+  overflow-x: auto; /* Handles long D lines on mobile */
   white-space: pre;
   word-wrap: normal;
   -webkit-overflow-scrolling: touch;
