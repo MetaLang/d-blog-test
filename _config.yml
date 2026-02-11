@@ -1,8 +1,13 @@
 title: D Language Blog Archive
 description: Testing the WordPress to Jekyll Migration
-remote_theme: jekyll/minima
 
 baseurl: "/d-blog-test"
 url: "https://metalang.github.io"
 
 permalink: /:title/
+
+plugins:
+  - jekyll-paginate
+
+paginate: 10
+paginate_path: "/page/:num/"
