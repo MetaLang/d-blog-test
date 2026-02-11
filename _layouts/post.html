@@ -2,18 +2,17 @@
 layout: default
 ---
 <style>
-  /* 1. Base Container */
+  /* Base Mobile-First Styles */
   .blog-container {
     max-width: 1200px;
     margin: 0 auto;
-    font-family: sans-serif;
-    overflow-x: hidden; /* Prevents the 'side of the screen' drift */
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   }
-
-  /* 2. Large Bold Header */
   .dlf-header {
-    padding: 25px 20px 0 20px;
-    margin-bottom: 25px;
+    padding-top: 25px;
+    /* Keeps header text flush with the container edge */
+    padding-left: 20px; 
+    padding-right: 20px;
   }
   .dlf-header h1 {
     font-size: 3em;
@@ -21,15 +20,11 @@ layout: default
     color: #333;
     margin: 0;
   }
-
-  /* 3. Navigation Bar */
   .nav-bar {
     background-color: #b03931;
     padding: 12px 20px;
-    margin-top: 15px;
-    /* This margin trick keeps it flush with the edges */
-    margin-left: -20px;
-    margin-right: -20px;
+    /* Outdents the red bar to the screen edges */
+    margin: 15px -20px 0 -20px; 
   }
   .nav-bar ul {
     list-style: none;
@@ -45,51 +40,38 @@ layout: default
     font-weight: bold;
     font-size: 0.9em;
   }
-
-  /* 4. THE REFLOW GRID */
-  /* Default: Vertical Stack (Mobile) */
+  
+  /* Layout Grid: Stacked by default for mobile */
   .main-grid {
     display: flex;
-    flex-direction: column; 
+    flex-direction: column;
     gap: 40px;
+    margin-top: 40px; /* Restores the vertical breathing room */
     padding: 0 20px;
   }
-  
   .article-col { width: 100%; }
-  .sidebar-col { 
-    width: 100%; 
-    border-top: 1px solid #eee; 
-    padding-top: 30px; 
-  }
+  .sidebar-col { width: 100%; border-top: 1px solid #eee; padding-top: 30px; }
 
-  /* Desktop View: Side-by-Side (900px and up) */
+  /* Desktop Styles: Side-by-side & Perfectly Flush */
   @media (min-width: 900px) {
-    .main-grid {
-      flex-direction: row; 
-      align-items: flex-start;
-      margin-left: -20px;
-      margin-right: -20px;
-      padding: 0;
-    }
-    .article-col { 
-      flex: 3; 
-      padding-left: 20px;
-    }
+    .main-grid { flex-direction: row; align-items: flex-start; }
+    .article-col { flex: 3; }
     .sidebar-col { 
       flex: 1; 
       border-top: none; 
       border-left: 1px solid #eee; 
       padding-top: 0; 
       padding-left: 40px; 
-      padding-right: 20px;
     }
+    /* Removes internal padding so text hits the red bar boundaries */
+    .dlf-header, .main-grid { padding-left: 0; padding-right: 0; }
   }
 </style>
 
 <div class="blog-container">
   <header class="dlf-header">
     <h1>The D Blog</h1>
-    <p style="color: #666; font-style: italic;">The official blog for the D Programming Language.</p>
+    <p style="color: #666; font-size: 1.1em; margin: 5px 0 0 0;">The official blog for the D Programming Language.</p>
     <nav class="nav-bar">
       <ul>
         <li><a href="{{ '/' | relative_url }}">D HOME</a></li>
@@ -103,12 +85,12 @@ layout: default
   <div class="main-grid">
     <article class="article-col">
       <header>
-        <h1 style="font-size: 2.6em; font-weight: bold; color: #111; margin-bottom: 10px;">{{ page.title }}</h1>
+        <h1 style="font-size: 2.6em; font-weight: bold; color: #000; margin-bottom: 10px;">{{ page.title }}</h1>
         <p style="color: #888; margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 20px;">
           {{ page.date | date: "%b %-d, %Y" }}{% if page.author %} • {{ page.author }}{% endif %}
         </p>
       </header>
-      <div class="post-content">
+      <div class="post-content" style="line-height: 1.6; font-size: 1.1em; color: #222;">
         {{ content }}
       </div>
     </article>
