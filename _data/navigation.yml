@@ -1,0 +1,8 @@
+- name: Language Spec
+  url: https://dlang.org/spec.html
+- name: Library Reference
+  url: https://dlang.org/phobos/index.html
+- name: DLF Donate
+  url: https://dlang.org/donate.html
+- name: D Shop
+  url: https://dlang.org/shop.html
