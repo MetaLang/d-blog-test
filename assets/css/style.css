@@ -2,7 +2,7 @@
 html, body {
   margin: 0;
   padding: 0;
-  overflow-x: hidden; /* Stops horizontal 'swiping' on mobile */
+  overflow-x: hidden;
   width: 100%;
   position: relative;
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -43,39 +43,47 @@ html, body {
   width: 100%;
 }
 
-/* --- Mobile-First Spacing Parity --- */
+/* --- Header Spacing Parity --- */
 header h1 { font-size: 2.6em; font-weight: bold; color: #000; margin-bottom: 20px; }
 header p { color: #888; margin-bottom: 40px; border-bottom: 1px solid #eee; padding-bottom: 25px; }
 
-/* --- Bulletproof Code Blocks & Syntax --- */
-.highlight, pre.highlight, .post-content pre {
-  background-color: #fbfbfb !important; /* Forced bg for mobile visibility */
+/* --- Single-Box Code Blocks --- */
+.highlight {
+  background-color: #fbfbfb !important;
   border: 1px solid #eee;
   border-radius: 4px;
-  padding: 15px;
-  margin: 20px 0;
-  display: block;
+  margin: 24px 0;
   width: 100%;
   max-width: 100%;
-  overflow-x: auto; /* Local scroll bar for long D/C++ lines */
-  white-space: pre;
-  word-wrap: normal;
-  -webkit-overflow-scrolling: touch; /* Smooth swiping on iOS/Android */
-  box-sizing: border-box;
-  line-height: 1.35;
-  font-size: 0.92em;
+  overflow: hidden;
 }
 
-/* High-Contrast Colors */
-.highlight .k, .highlight .kt { color: #a31515; font-weight: bold; }  /* D Keywords */
-.highlight .s { color: #0433ff; font-weight: 500; }                   /* Strings */
-.highlight .nf { color: #8a6343; font-weight: bold; }                 /* Functions */
-.highlight .mi { color: #009926; font-weight: bold; }                 /* Numbers */
-.highlight .c1 { color: #999988; font-style: italic; }                /* Comments */
+.highlight pre, 
+pre.highlight {
+  background: transparent !important; /* Fixes 'box-in-a-box' look */
+  border: none !important;
+  margin: 0 !important;
+  padding: 15px;
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  white-space: pre;
+  word-wrap: normal;
+  -webkit-overflow-scrolling: touch;
+  line-height: 1.45;
+  font-size: 0.92em;
+  box-sizing: border-box;
+}
+
+/* High-Contrast Syntax Colors */
+.highlight .k, .highlight .kt { color: #a31515; font-weight: bold; }  
+.highlight .s { color: #0433ff; font-weight: 500; }  
+.highlight .nf { color: #8a6343; font-weight: bold; }  
+.highlight .mi { color: #009926; font-weight: bold; }  
+.highlight .c1 { color: #999988; font-style: italic; }
 
 /* --- Custom Components --- */
 .article-separator { border: 0; height: 4px; background-color: #b03931; opacity: 0.3; margin: 80px 0; }
-
 .sidebar-col h3 { font-size: 1em; font-weight: bold; color: #333; margin-bottom: 15px; letter-spacing: 0.05em; }
 
 .promo-shadow-box { 
