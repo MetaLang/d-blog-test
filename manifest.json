@@ -1,0 +1,16 @@
+{
+  "name": "The D Blog",
+  "short_name": "D Blog",
+  "description": "The official blog for the D Programming Language.",
+  "start_url": "/d-blog-test/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#b03931",
+  "icons": [
+    {
+      "src": "/d-blog-test/assets/images/d6.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
