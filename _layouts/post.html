@@ -2,37 +2,40 @@
 layout: default
 ---
 <style>
-  /* Base Layout & Responsive Grid */
+  /* Layout & Responsive Grid */
   .blog-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
   .dlf-header { padding-top: 25px; }
   .dlf-header h1 { font-size: 3em; font-weight: bold; color: #333; margin: 0; }
-  .nav-bar { background-color: #b03931; padding: 12px 20px; margin: 15px -20px 0 -20px; }
+  .nav-bar { background-color: #b03931; padding: 12px 25px; margin: 15px -20px 0 -20px; }
   .nav-bar ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 15px 35px; }
   .nav-bar a { color: white; text-decoration: none; font-weight: bold; font-size: 0.9em; }
   .main-grid { display: flex; flex-direction: column; gap: 40px; margin: 40px -20px 0 -20px; }
   .article-col { width: 100%; padding: 0 20px; }
   .sidebar-col { width: 100%; border-top: 1px solid #eee; padding: 30px 20px 0 20px; }
 
-  /* New: Syntax Highlighting Theme (Rouge/Pygments compatible) */
-  .highlight  { background: #f6f8fa; color: #24292e; }
-  .highlight .c1 { color: #6a737d; font-style: italic; } /* Comments */
-  .highlight .k  { color: #d73a49; font-weight: bold; }   /* Keywords (auto, for, template) */
-  .highlight .s  { color: #032f62; }                     /* Strings */
-  .highlight .nf { color: #6f42c1; }                     /* Functions (std::visit) */
-  .highlight .nc { color: #e36209; }                     /* Classes/Templates */
-  .highlight .mi { color: #005cc5; }                     /* Numbers */
+  /* Official D Blog Syntax Highlighting */
+  .highlight  { background: #ffffff; color: #333; }
+  .highlight .c1 { color: #999988; font-style: italic; } /* Comments: Light grey */
+  .highlight .k  { color: #954121; font-weight: bold; }  /* Keywords: Burgundy red (alias, template) */
+  .highlight .kt { color: #954121; }                     /* Basic Types: Red-brown (int, size_t) */
+  .highlight .s  { color: #213c80; }                     /* Strings: Deep blue */
+  .highlight .nf { color: #8a6343; }                     /* Functions: Brown/Gold (indexOf, visit) */
+  .highlight .mi { color: #009926; }                     /* Integers: Green */
+  .highlight .mf { color: #009926; }                     /* Floats: Green (1.5) */
+  .highlight .p  { color: #333; }                        /* Punctuation: Dark grey */
 
   /* Refined Code Block Styling */
   pre.highlight {
-    padding: 15px;
-    border-radius: 6px;
+    padding: 20px;
+    background: #fdfdfd;
+    border: 1px solid #f0f0f0;
+    border-radius: 4px;
     overflow-x: auto;
     white-space: pre;
     font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-    font-size: 0.9em;
-    line-height: 1.45;
-    border: 1px solid #e1e4e8;
-    margin: 20px 0;
+    font-size: 0.95em;
+    line-height: 1.5;
+    margin: 25px 0;
   }
 
   /* Intro Text Styling */
