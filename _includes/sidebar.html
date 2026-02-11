@@ -1,35 +1,37 @@
-<aside style="flex: 1; min-width: 250px; padding-left: 30px; border-left: 1px solid #eee; font-family: sans-serif;">
+<aside style="flex: 1; min-width: 250px; padding-left: 30px; border-left: 1px solid #eee; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
   
   <div style="margin-bottom: 30px;">
-    <h3 style="font-size: 0.9em; font-weight: bold; color: #333; margin-bottom: 10px;">Search</h3>
+    <h3 style="font-size: 0.9em; font-weight: bold; color: #333; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em;">Search</h3>
     <div style="display: flex; gap: 5px;">
-      <input type="text" style="flex: 1; padding: 5px; border: 1px solid #ccc; border-radius: 3px;">
-      <button style="padding: 5px 10px; border: 1px solid #ccc; background: #f9f9f9; cursor: pointer;">Search</button>
+      <input type="text" placeholder="Search..." style="flex: 1; padding: 6px; border: 1px solid #ccc; border-radius: 3px; font-size: 0.9em;">
+      <button style="padding: 6px 12px; border: 1px solid #ccc; background: #f9f9f9; cursor: pointer; font-size: 0.9em; font-weight: 500;">Search</button>
     </div>
   </div>
 
   <div style="margin-bottom: 30px;">
-    <h3 style="font-size: 0.9em; font-weight: bold; color: #333; margin-bottom: 10px;">PAGES</h3>
-    <ul style="list-style: none; padding: 0; font-size: 0.9em; line-height: 1.8;">
+    <h3 style="font-size: 0.9em; font-weight: bold; color: #333; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em;">Pages</h3>
+    <ul style="list-style: none; padding: 0; font-size: 0.95em; line-height: 1.8;">
       <li><a href="{{ '/' | relative_url }}" style="color: #b03931; text-decoration: none;">All Posts ({{ site.posts.size }})</a></li>
+      <li><a href="https://dlang.org/spec.html" style="color: #b03931; text-decoration: none;">Language Spec</a></li>
+      <li><a href="https://dlang.org/phobos/index.html" style="color: #b03931; text-decoration: none;">Library Reference</a></li>
     </ul>
   </div>
 
   <div style="margin-bottom: 25px; text-align: center;">
     <a href="https://dlang.org/download.html">
-      <img src="https://dlang.org/images/do-it-in-d.png" alt="Do It In D" style="width: 100%; border: 1px solid #eee;">
+      <img src="{{ '/assets/images/do-it-in-d.png' | relative_url }}" alt="Do It In D" style="width: 100%; max-width: 220px; border: 1px solid #eee;">
     </a>
-    <p style="font-size: 0.85em; color: #444; margin-top: 10px;">
+    <p style="font-size: 0.85em; color: #666; margin-top: 10px; line-height: 1.4;">
       Support the D Language Foundation by shopping at 
       <a href="https://dlang.org/shop.html" style="color: #b03931; font-weight: bold; text-decoration: none;">the DO IT IN D shop!!</a>
     </p>
   </div>
 
-  <div style="text-align: center;">
+  <div style="text-align: center; margin-bottom: 30px;">
     <a href="https://dlang.org/donate.html">
-      <img src="https://dlang.org/images/donate-button.png" alt="Donate" style="width: 100%;">
+      <img src="{{ '/assets/images/donate-button.png' | relative_url }}" alt="Donate" style="width: 100%; max-width: 220px;">
     </a>
-    <p style="font-size: 0.85em; color: #444; margin-top: 10px;">
+    <p style="font-size: 0.85em; color: #666; margin-top: 10px; line-height: 1.4;">
       Support the D Language Foundation 
       <a href="https://dlang.org/donate.html" style="color: #b03931; font-weight: bold; text-decoration: none;">with a direct donation!</a>
     </p>
