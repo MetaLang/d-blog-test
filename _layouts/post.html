@@ -13,35 +13,35 @@ layout: default
   .article-col { width: 100%; padding: 0 20px; }
   .sidebar-col { width: 100%; border-top: 1px solid #eee; padding: 30px 20px 0 20px; }
 
-  /* High-Contrast Syntax Highlighting */
-  .highlight  { background: #ffffff; color: #333; }
+  /* Saturated High-Contrast Highlighting */
+  .highlight  { background: #ffffff; color: #111; }
   .highlight .c1 { color: #999988; font-style: italic; } /* Comments: //D, //C++ */
-  .highlight .k  { color: #954121; font-weight: bold; }  /* Deep Burgundy: alias, static if, constexpr */
-  .highlight .kt { color: #954121; font-weight: bold; }  /* Deep Burgundy: int, bool, string, auto */
-  .highlight .s  { color: #213c80; font-weight: 500; }  /* Deep Blue: "string: ", "integer: %d\n" */
-  .highlight .nf { color: #8a6343; }                     /* Earthy Brown: writeln, printf, visit */
-  .highlight .mi { color: #009926; font-weight: bold; }  /* Bold Green: numbers */
-  .highlight .p  { color: #333; }                        /* Punctuation: (), {}, [] */
-  .highlight .o  { color: #333; }                        /* Operators: ==, =, != */
+  .highlight .k  { color: #a31515; font-weight: bold; }  /* Deep Red: alias, static if, constexpr */
+  .highlight .kt { color: #a31515; font-weight: bold; }  /* Deep Red: int, bool, auto, string */
+  .highlight .s  { color: #0433ff; font-weight: 500; }  /* Vibrant Royal Blue: "string: ", "bool: " */
+  .highlight .nf { color: #8a6343; font-weight: bold; }  /* Bold Brown: writeln, printf, visit */
+  .highlight .mi { color: #009926; font-weight: bold; }  /* Vivid Green: 10, 151, 1.5 */
+  .highlight .p  { color: #000; font-weight: bold; }    /* Distinct Black: (), {}, [] */
+  .highlight .o  { color: #000; }                        /* Operators: ==, =, ! */
 
   /* Precision Code Block Styling */
   pre.highlight {
     padding: 20px;
-    background: #fbfbfb;  /* Matches official background */
+    background: #fbfbfb; 
     border: 1px solid #eee; 
     border-radius: 4px;
     overflow-x: auto;
     white-space: pre;
     font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
     font-size: 0.95em;
-    line-height: 1.5;
+    line-height: 1.6; /* Increased for readability */
     margin: 25px 0;
   }
 
-  /* Intro Text Styling: targets the first-of-type paragraph */
+  /* Intro Text Styling: target the first-of-type paragraph */
   .post-content > p:first-of-type { font-style: italic; color: #555; padding-bottom: 20px; border-bottom: 1px solid #eee; margin-bottom: 30px; }
 
-  /* Desktop View: perfectly flush and side-by-side */
+  /* Desktop View: Side-by-Side & Flush */
   @media (min-width: 900px) {
     .main-grid { flex-direction: row; align-items: flex-start; }
     .article-col { flex: 3; }
