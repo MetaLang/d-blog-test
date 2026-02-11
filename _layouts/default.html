@@ -7,10 +7,11 @@
   <title>{% if page.title %}{{ page.title }} | The D Blog{% else %}The D Blog{% endif %}</title>
 
   <link rel="manifest" href="{{ '/manifest.json' | relative_url }}">
-  <meta name="theme-color" content="#b03931"> <link rel="alternate" type="application/rss+xml" title="The D Blog Feed" href="{{ '/feed.xml' | relative_url }}">
+  <meta name="theme-color" content="#b03931">
+
+  {% feed_meta %}
 
   <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
-  
   <link rel="shortcut icon" type="image/png" href="{{ '/assets/images/d6.png' | relative_url }}">
 </head>
 <body>
