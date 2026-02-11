@@ -55,17 +55,29 @@ blockquote {
   color: #555;
 }
 
-/* --- Code Blocks --- */
-.highlight, pre.highlight {
+/* --- Code Block Fix: Single-Box Strategy --- */
+
+/* 1. The Outer Box (The div.highlight Jekyll creates) */
+.highlight {
   background-color: #fbfbfb !important;
-  border: 1px solid #eee;
+  border: 1px solid #eee !important;
   border-radius: 4px;
   margin: 24px 0;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden; /* Clips the inner box to the rounded corners */
+}
+
+/* 2. The Inner Box (The pre.highlight Kramdown creates) */
+.highlight pre, 
+pre.highlight {
+  background: transparent !important; /* THIS REMOVES THE BOX-IN-A-BOX */
+  border: none !important;            /* Removes the second border */
+  margin: 0 !important;               /* Stops the inner box from shifting */
   padding: 15px;
   display: block;
   width: 100%;
-  max-width: 100%;
-  overflow-x: auto;
+  overflow-x: auto;                   /* Enables mobile scrolling */
   white-space: pre;
   word-wrap: normal;
   -webkit-overflow-scrolling: touch;
