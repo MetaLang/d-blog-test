@@ -2,16 +2,15 @@
 layout: default
 ---
 <style>
-  /* Base Layout */
+  /* Base Layout with Safety Buffer */
   .blog-container {
     max-width: 1200px;
     margin: 0 auto;
+    padding: 0 20px; /* This prevents text from touching the browser edge */
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   }
   .dlf-header {
     padding-top: 25px;
-    padding-left: 20px; 
-    padding-right: 20px;
   }
   .dlf-header h1 {
     font-size: 3em;
@@ -22,6 +21,7 @@ layout: default
   .nav-bar {
     background-color: #b03931;
     padding: 12px 20px;
+    /* Negative margin pulls the red bar back to the edge of the 1200px container */
     margin: 15px -20px 0 -20px; 
   }
   .nav-bar ul {
@@ -44,37 +44,33 @@ layout: default
     display: flex;
     flex-direction: column;
     gap: 40px;
-    margin-top: 40px; 
-    padding: 0 20px;
+    margin: 40px -20px 0 -20px; /* Matches the nav bar's horizontal spread */
   }
-  .article-col { width: 100%; }
-  .sidebar-col { width: 100%; border-top: 1px solid #eee; padding-top: 30px; }
+  .article-col { width: 100%; padding: 0 20px; }
+  .sidebar-col { width: 100%; border-top: 1px solid #eee; padding: 30px 20px 0 20px; }
 
-  /* New: Professional Code Block Styling */
+  /* Code Block & Intro Text Styling */
   pre {
     background: #f4f4f4;
     padding: 15px;
     border-radius: 4px;
-    overflow-x: auto; /* Enable horizontal scrolling */
-    white-space: pre;  /* Prevent code wrapping */
+    overflow-x: auto; 
+    white-space: pre;  
     font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
     font-size: 0.95em;
     border: 1px solid #ddd;
     margin: 20px 0;
   }
-
-  /* New: Blockquote Callout for Author Intro */
-  blockquote {
-    margin: 30px 0;
-    padding: 20px 25px;
-    background-color: #f9f9f9;
-    border-left: 5px solid #b03931; /* Uses D Red */
+  .post-content > p:first-of-type {
     font-style: italic;
     color: #555;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 30px;
     line-height: 1.5;
   }
 
-  /* Desktop Flush Alignment */
+  /* Desktop View: Side-by-Side */
   @media (min-width: 900px) {
     .main-grid { flex-direction: row; align-items: flex-start; }
     .article-col { flex: 3; }
@@ -82,10 +78,8 @@ layout: default
       flex: 1; 
       border-top: none; 
       border-left: 1px solid #eee; 
-      padding-top: 0; 
-      padding-left: 40px; 
+      padding: 0 0 0 40px; 
     }
-    .dlf-header, .main-grid { padding-left: 0; padding-right: 0; }
   }
 </style>
 
