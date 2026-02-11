@@ -2,84 +2,97 @@
 layout: default
 ---
 <style>
-  /* Base Container Logic */
-  .d-blog-container {
+  /* Base Mobile Styles */
+  .blog-container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 20px;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   }
-
-  /* Responsive Flex Logic */
-  .main-content-wrapper {
+  .dlf-header {
+    padding: 25px 20px 0 20px;
+    margin-bottom: 25px;
+  }
+  .dlf-header h1 {
+    font-size: 2.8em;
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+  }
+  .nav-bar {
+    background-color: #b03931;
+    padding: 12px 20px;
+    margin-top: 15px;
+  }
+  .nav-bar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
     display: flex;
-    flex-direction: column; /* Force vertical on mobile */
+    flex-wrap: wrap;
+    gap: 15px 25px;
+  }
+  .nav-bar a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 0.9em;
+  }
+  
+  /* Layout Grid: Stacked by default for mobile */
+  .main-grid {
+    display: flex;
+    flex-direction: column;
     gap: 40px;
-    margin: 0 -20px;
-  }
-
-  .article-column {
-    width: 100%;
     padding: 0 20px;
-    box-sizing: border-box;
   }
+  .article-col { width: 100%; }
+  .sidebar-col { width: 100%; border-top: 1px solid #eee; padding-top: 30px; }
 
-  .sidebar-column {
-    width: 100%;
-    padding: 30px 20px;
-    border-top: 1px solid #eee; /* Visual break for mobile */
-    box-sizing: border-box;
-  }
-
-  /* Desktop Override (850px+) */
-  @media (min-width: 850px) {
-    .main-content-wrapper {
-      flex-direction: row; /* Side-by-side for desktop */
-      align-items: flex-start;
-    }
-    .article-column { width: 75%; }
-    .sidebar-column { 
-      width: 25%; 
+  /* Desktop Styles: Side-by-side */
+  @media (min-width: 900px) {
+    .main-grid { flex-direction: row; align-items: flex-start; }
+    .article-col { flex: 3; }
+    .sidebar-col { 
+      flex: 1; 
       border-top: none; 
       border-left: 1px solid #eee; 
-      padding-top: 0;
-      padding-left: 30px;
+      padding-top: 0; 
+      padding-left: 40px; 
     }
+    /* Ensures red bar and sidebar are perfectly flush */
+    .dlf-header, .main-grid { padding-left: 0; padding-right: 0; }
   }
 </style>
 
-<div class="d-blog-container">
-
-  <div class="dlf-header" style="margin-bottom: 30px; padding-top: 25px;">
-    <h2 style="font-size: 1.6em; margin: 0; font-weight: 500; color: #555;">The D Blog</h2>
-    <p style="color: #888; font-size: 0.95em; margin: 5px 0 20px 0;">The official blog for the D Programming Language.</p>
-    
-    <nav style="background-color: #b03931; padding: 12px 25px; margin: 0 -20px;">
-      <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 15px 35px;">
-        <li><a href="https://dlang.org/" style="color: white; text-decoration: none; font-weight: bold; font-size: 0.85em;">D HOME</a></li>
-        <li><a href="https://forum.dlang.org/" style="color: white; text-decoration: none; font-weight: bold; font-size: 0.85em;">D FORUMS</a></li>
-        <li><a href="https://dlang.org/donate.html" style="color: white; text-decoration: none; font-weight: bold; font-size: 0.85em;">DONATE</a></li>
-        <li><a href="https://dlang.org/shop.html" style="color: white; text-decoration: none; font-weight: bold; font-size: 0.85em;">SHOP</a></li>
+<div class="blog-container">
+  <header class="dlf-header">
+    <h1>The D Blog</h1>
+    <p style="color: #666; font-style: italic;">The official blog for the D Programming Language.</p>
+    <nav class="nav-bar">
+      <ul>
+        <li><a href="{{ '/' | relative_url }}">D HOME</a></li>
+        <li><a href="https://forum.dlang.org/">D FORUMS</a></li>
+        <li><a href="https://dlang.org/donate.html">DONATE</a></li>
+        <li><a href="https://dlang.org/shop.html">SHOP</a></li>
       </ul>
     </nav>
-  </div>
+  </header>
 
-  <div class="main-content-wrapper">
-    <article class="article-column">
+  <div class="main-grid">
+    <article class="article-col">
       <header>
-        <h1 style="font-size: clamp(1.8em, 5vw, 2.4em); font-weight: bold; color: #111; margin-bottom: 10px;">{{ page.title }}</h1>
-        <p style="color: #888; margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 20px; font-size: 0.9em;">
+        <h1 style="font-size: 2.5em; font-weight: bold; color: #111; margin-bottom: 10px;">{{ page.title }}</h1>
+        <p style="color: #888; margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 20px;">
           {{ page.date | date: "%b %-d, %Y" }}{% if page.author %} • {{ page.author }}{% endif %}
         </p>
       </header>
-
-      <div style="line-height: 1.6; font-size: 1.05em; color: #222;">
+      <div class="post-content" style="line-height: 1.6; font-size: 1.1em; color: #222;">
         {{ content }}
       </div>
     </article>
 
-    <div class="sidebar-column">
+    <aside class="sidebar-col">
       {% include sidebar.html %}
-    </div>
+    </aside>
   </div>
 </div>
