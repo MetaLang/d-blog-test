@@ -8,6 +8,10 @@ permalink: /:title/
 
 plugins:
   - jekyll-paginate
+  - jekyll-feed
 
 paginate: 10
 paginate_path: "/page/:num/"
+
+feed:
+  path: "/feed.xml"
