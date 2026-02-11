@@ -1,12 +1,11 @@
 ---
 layout: default
 ---
-<div class="dlf-header" style="margin: -20px -20px 30px -20px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+<div class="dlf-header" style="margin: -20px -20px 30px -20px; font-family: sans-serif;">
   <div style="padding: 20px 20px 10px 20px;">
     <h1 style="font-size: 2.2em; margin: 0; font-weight: 500; color: #333;">The D Blog</h1>
     <p style="color: #777; font-size: 1.1em; margin: 5px 0 15px 0;">The official blog for the D Programming Language.</p>
   </div>
-  
   <nav style="background-color: #b03931; padding: 12px 25px;">
     <ul style="list-style: none; margin: 0; padding: 0; display: flex; gap: 35px;">
       <li><a href="https://dlang.org/" style="color: white; text-decoration: none; font-weight: bold; font-size: 0.85em; letter-spacing: 0.05em;">D HOME</a></li>
@@ -17,20 +16,23 @@ layout: default
   </nav>
 </div>
 
-<link rel="stylesheet" href="{{ '/assets/main.css' | relative_url }}">
+<div style="display: flex; gap: 40px; align-items: flex-start;">
+  
+  <article class="post" style="width: 75%; flex: none;">
+    <header class="post-header">
+      <h1 class="post-title" style="font-size: 2.5em; margin-bottom: 10px;">{{ page.title }}</h1>
+      <p class="post-meta" style="color: #888; margin-bottom: 30px;">
+        {{ page.date | date: "%b %-d, %Y" }}{% if page.author %} • {{ page.author }}{% endif %}
+      </p>
+    </header>
 
-<article class="post">
-  <header class="post-header">
-    <h1 class="post-title">{{ page.title | escape }}</h1>
-    <p class="post-meta">
-      <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%b %-d, %Y" }}</time>
-      {% if page.author %} • <span>{{ page.author }}</span>{% endif %}
-    </p>
-  </header>
+    <div class="post-content">
+      {{ content }}
+    </div>
+  </article>
 
-  <div class="post-content">
-    {{ content }}
+  <div style="width: 25%; flex: none; border-left: 1px solid #eee; padding-left: 30px;">
+    {% include sidebar.html %}
   </div>
 
-  {% include sidebar.html %}
-</article>
+</div>
