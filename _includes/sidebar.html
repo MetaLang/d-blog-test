@@ -12,8 +12,10 @@
     <h3 style="font-size: 0.9em; font-weight: bold; color: #333; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em;">Pages</h3>
     <ul style="list-style: none; padding: 0; font-size: 0.95em; line-height: 1.8;">
       <li><a href="{{ '/' | relative_url }}" style="color: #b03931; text-decoration: none;">All Posts ({{ site.posts.size }})</a></li>
-      <li><a href="https://dlang.org/spec.html" style="color: #b03931; text-decoration: none;">Language Spec</a></li>
-      <li><a href="https://dlang.org/phobos/index.html" style="color: #b03931; text-decoration: none;">Library Reference</a></li>
+      
+      {% for item in site.data.navigation %}
+        <li><a href="{{ item.url }}" style="color: #b03931; text-decoration: none;">{{ item.name }}</a></li>
+      {% endfor %}
     </ul>
   </div>
 
@@ -31,10 +33,6 @@
     <a href="https://dlang.org/donate.html">
       <img src="{{ '/assets/images/donatenew.png' | relative_url }}" alt="Donate" style="width: 100%; max-width: 220px;">
     </a>
-    <p style="font-size: 0.85em; color: #666; margin-top: 10px; line-height: 1.4;">
-      Support the D Language Foundation 
-      <a href="https://dlang.org/donate.html" style="color: #b03931; font-weight: bold; text-decoration: none;">with a direct donation!</a>
-    </p>
   </div>
 
 </aside>
