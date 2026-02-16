@@ -22,7 +22,7 @@ html, body {
 .nav-bar { 
   background-color: #b03931; 
   padding: 12px 20px; 
-  margin: 15px -20px 0 -20px; /* Full-bleed for narrow views */
+  margin: 15px -20px 0 -20px; 
 }
 .nav-bar ul { 
   list-style: none; 
@@ -34,10 +34,10 @@ html, body {
 }
 .nav-bar a { color: white; text-decoration: none; font-weight: bold; font-size: 0.9em; }
 
-/* --- Main Layout Grid (Fluid Sidebar Fix) --- */
+/* --- Main Layout Grid --- */
 .main-grid { 
   display: flex; 
-  flex-direction: column; /* Stack vertically by default */
+  flex-direction: column; 
   gap: 40px; 
   margin: 40px 0 0 0; 
   width: 100%;
@@ -55,7 +55,7 @@ blockquote {
   color: #555;
 }
 
-/* --- Code Blocks (Dense Technical Look) --- */
+/* --- Code Blocks --- */
 .highlight {
   background-color: #fbfbfb !important;
   border: 1px solid #eee;
@@ -85,9 +85,39 @@ blockquote {
 .highlight .mi { color: #009926; font-weight: bold; }  
 .highlight .c1 { color: #999988; font-style: italic; }
 
-/* --- Sidebar & Components --- */
-.sidebar-col img { max-width: 100%; height: auto; display: block; }
-.sidebar-col h3 { font-size: 1em; font-weight: bold; color: #333; margin-bottom: 15px; letter-spacing: 0.05em; }
+/* --- Sidebar (Reflow Centering) --- */
+.sidebar-col {
+  text-align: center; /* Centers everything for mobile reflow */
+}
+
+.sidebar-col .sidebar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Aligns nested flex items (like RSS) */
+}
+
+.sidebar-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto;
+  display: inline-block; /* Allows text-align center to work on the list */
+  text-align: left; /* Keeps the article titles themselves left-justified within the centered list */
+}
+
+.sidebar-col img { 
+  max-width: 100%; 
+  height: auto; 
+  display: block; 
+  margin: 0 auto; 
+}
+
+.sidebar-col h3 { 
+  font-size: 1em; 
+  font-weight: bold; 
+  color: #333; 
+  margin-bottom: 15px; 
+  letter-spacing: 0.05em; 
+}
 
 .promo-shadow-box { 
   box-shadow: 0 4px 12px rgba(0,0,0,0.15); 
@@ -97,25 +127,35 @@ blockquote {
   border-radius: 4px; 
 }
 
-/* --- Desktop Enhancements (Reflow Logic) --- */
+/* --- Desktop Enhancements --- */
 @media (min-width: 900px) {
   .nav-bar { margin-left: -20px; margin-right: -20px; }
   
   .main-grid { 
-    flex-direction: row; /* Switch to side-by-side */
+    flex-direction: row; 
     align-items: flex-start;
   }
 
   .article-col { 
-    flex: 1; /* Takes up remaining space */
-    min-width: 0; /* Prevents code blocks from breaking flexbox */
+    flex: 1; 
+    min-width: 0; 
   }
 
   .sidebar-col { 
-    width: 300px; /* Fixed ideal width */
-    flex-shrink: 0; /* Ensures it never gets "squished" */
+    width: 300px; 
+    flex-shrink: 0; 
     border-left: 1px solid #eee; 
     padding-left: 40px; 
     box-sizing: border-box;
+    text-align: left; /* Reverts to left-align for desktop sidebar */
+  }
+
+  .sidebar-col .sidebar-section {
+    align-items: flex-start; /* Reverts alignment for desktop */
+  }
+
+  .sidebar-col ul {
+    margin: 0;
+    display: block;
   }
 }

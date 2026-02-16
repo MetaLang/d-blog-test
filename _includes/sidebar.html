@@ -1,13 +1,13 @@
 <div class="sidebar-section">
   <h3>SEARCH</h3>
-  <form action="{{ '/search' | relative_url }}" method="get" style="display: flex; gap: 5px;">
+  <form action="{{ '/search' | relative_url }}" method="get" style="display: flex; gap: 5px; width: 100%; max-width: 300px;">
     <input type="text" name="q" placeholder="Search..." style="flex: 1; padding: 5px; border: 1px solid #ccc; border-radius: 2px;">
     <button type="submit" style="padding: 5px 10px; cursor: pointer; background: #f4f4f4; border: 1px solid #ccc; border-radius: 2px;">Search</button>
   </form>
 </div>
 
 <div class="sidebar-section" style="margin-top: 20px;">
-  <a href="{{ '/feed.xml' | relative_url }}" style="text-decoration: none; color: #b03931; font-weight: bold; font-size: 0.9em; display: flex; align-items: center; gap: 8px;">
+  <a href="{{ '/feed.xml' | relative_url }}" style="text-decoration: none; color: #b03931; font-weight: bold; font-size: 0.9em; display: flex; align-items: center; justify-content: inherit; gap: 8px;">
     <span style="background: #b03931; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.7em;">RSS</span> 
     RSS FEED
   </a>
@@ -15,7 +15,7 @@
 
 <div class="sidebar-section" style="margin-top: 30px;">
   <h3>RECENT ARTICLES</h3>
-  <ul style="list-style: none; padding: 0; margin: 0;">
+  <ul>
     {% for post in site.posts limit:10 %}
       <li style="margin-bottom: 12px; line-height: 1.3;">
         <a href="{{ post.url | relative_url }}" style="color: #b03931; text-decoration: none; font-weight: 500; font-size: 0.95em;">
@@ -26,20 +26,20 @@
   </ul>
 </div>
 
-<div class="sidebar-section" style="margin-top: 40px; text-align: center;">
-  <div class="promo-shadow-box" style="max-width: 100%;">
+<div class="sidebar-section" style="margin-top: 40px;">
+  <div class="promo-shadow-box">
     <img src="{{ '/assets/images/do-it-in-d-banner.png' | relative_url }}" alt="Do it in D" style="width: 100%; display: block;">
   </div>
   
-  <p style="font-size: 0.85em; color: #555; margin-top: 15px;">
+  <p style="font-size: 0.85em; color: #555; margin-top: 15px; max-width: 250px;">
     Support the D Language Foundation by shopping at <a href="https://dlang.org/shop.html" style="color: #b03931; font-weight: bold;">the DO IT IN D shop!!</a>
   </p>
   
   <a href="https://dlang.org/donate.html" style="display: block; margin-top: 25px;">
-    <img src="{{ '/assets/images/donatenew.png' | relative_url }}" alt="Donate" style="max-width: 100%;">
+    <img src="{{ '/assets/images/donatenew.png' | relative_url }}" alt="Donate" style="max-width: 180px;">
   </a>
 
-  <p style="font-size: 0.85em; color: #555; margin-top: 10px;">
+  <p style="font-size: 0.85em; color: #555; margin-top: 10px; max-width: 250px;">
     Support the D Language Foundation <a href="https://dlang.org/donate.html" style="color: #b03931; font-weight: bold;">with a direct donation!</a>
   </p>
 </div>
