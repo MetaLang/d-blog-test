@@ -22,7 +22,7 @@ html, body {
 .nav-bar { 
   background-color: #b03931; 
   padding: 12px 20px; 
-  margin: 15px -20px 0 -20px; 
+  margin: 15px -20px 0 -20px; /* Full-bleed for narrow/mobile views */
 }
 .nav-bar ul { 
   list-style: none; 
@@ -55,7 +55,7 @@ blockquote {
   color: #555;
 }
 
-/* --- Code Blocks --- */
+/* --- Code Blocks (Dense Technical Look) --- */
 .highlight {
   background-color: #fbfbfb !important;
   border: 1px solid #eee;
@@ -87,21 +87,20 @@ blockquote {
 
 /* --- Sidebar (Reflow Centering) --- */
 .sidebar-col {
-  text-align: center; /* Centers everything for mobile reflow */
+  text-align: center; /* Centers text for headers and simple blocks */
 }
 
 .sidebar-col .sidebar-section {
   display: flex;
   flex-direction: column;
-  align-items: center; /* Aligns nested flex items (like RSS) */
+  align-items: center; /* Aligns complex items like search and RSS */
 }
 
 .sidebar-col ul {
   list-style: none;
   padding: 0;
-  margin: 0 auto;
-  display: inline-block; /* Allows text-align center to work on the list */
-  text-align: left; /* Keeps the article titles themselves left-justified within the centered list */
+  margin: 0;
+  /* Titles will center because of the parent's text-align: center */
 }
 
 .sidebar-col img { 
@@ -134,6 +133,7 @@ blockquote {
   .main-grid { 
     flex-direction: row; 
     align-items: flex-start;
+    /* Removed negative margins to prevent sidebar truncation on vertical monitors */
   }
 
   .article-col { 
@@ -147,15 +147,14 @@ blockquote {
     border-left: 1px solid #eee; 
     padding-left: 40px; 
     box-sizing: border-box;
-    text-align: left; /* Reverts to left-align for desktop sidebar */
+    text-align: left; /* Revert to left-align for desktop sidebar */
   }
 
   .sidebar-col .sidebar-section {
-    align-items: flex-start; /* Reverts alignment for desktop */
+    align-items: flex-start; /* Aligns items to the left for desktop */
   }
 
   .sidebar-col ul {
-    margin: 0;
-    display: block;
+    text-align: left; /* Titles left-aligned in desktop view */
   }
 }
