@@ -22,7 +22,7 @@ html, body {
 .nav-bar { 
   background-color: #b03931; 
   padding: 12px 20px; 
-  margin: 15px -20px 0 -20px; /* Full-bleed remains for mobile */
+  margin: 15px -20px 0 -20px; /* Full-bleed for narrow views */
 }
 .nav-bar ul { 
   list-style: none; 
@@ -34,13 +34,13 @@ html, body {
 }
 .nav-bar a { color: white; text-decoration: none; font-weight: bold; font-size: 0.9em; }
 
-/* --- Main Layout Grid (Fixed Overflow) --- */
+/* --- Main Layout Grid (Fluid Sidebar Fix) --- */
 .main-grid { 
   display: flex; 
-  flex-direction: column; 
+  flex-direction: column; /* Stack vertically by default */
   gap: 40px; 
   margin: 40px 0 0 0; 
-  width: 100%; /* Removed negative margins to prevent truncation */
+  width: 100%;
 }
 
 /* --- Content Styling --- */
@@ -55,7 +55,7 @@ blockquote {
   color: #555;
 }
 
-/* --- Tightened Code Blocks --- */
+/* --- Code Blocks (Dense Technical Look) --- */
 .highlight {
   background-color: #fbfbfb !important;
   border: 1px solid #eee;
@@ -78,7 +78,7 @@ blockquote {
   line-height: inherit; 
 }
 
-/* Syntax Highlighting Colors */
+/* Syntax Highlighting */
 .highlight .k, .highlight .kt { color: #a31515; font-weight: bold; }  
 .highlight .s { color: #0433ff; font-weight: 500; }  
 .highlight .nf { color: #8a6343; font-weight: bold; }  
@@ -86,8 +86,7 @@ blockquote {
 .highlight .c1 { color: #999988; font-style: italic; }
 
 /* --- Sidebar & Components --- */
-.sidebar-col img { max-width: 100%; height: auto; } /* Prevent image overflow */
-.article-separator { border: 0; height: 4px; background-color: #b03931; opacity: 0.3; margin: 80px 0; }
+.sidebar-col img { max-width: 100%; height: auto; display: block; }
 .sidebar-col h3 { font-size: 1em; font-weight: bold; color: #333; margin-bottom: 15px; letter-spacing: 0.05em; }
 
 .promo-shadow-box { 
@@ -98,14 +97,25 @@ blockquote {
   border-radius: 4px; 
 }
 
-/* --- Desktop Enhancements --- */
+/* --- Desktop Enhancements (Reflow Logic) --- */
 @media (min-width: 900px) {
   .nav-bar { margin-left: -20px; margin-right: -20px; }
+  
   .main-grid { 
-    flex-direction: row; 
-    align-items: flex-start; 
-    /* Removed negative margins to stay within container */
+    flex-direction: row; /* Switch to side-by-side */
+    align-items: flex-start;
   }
-  .article-col { flex: 3; }
-  .sidebar-col { flex: 1; border-left: 1px solid #eee; padding-left: 40px; min-width: 250px; }
+
+  .article-col { 
+    flex: 1; /* Takes up remaining space */
+    min-width: 0; /* Prevents code blocks from breaking flexbox */
+  }
+
+  .sidebar-col { 
+    width: 300px; /* Fixed ideal width */
+    flex-shrink: 0; /* Ensures it never gets "squished" */
+    border-left: 1px solid #eee; 
+    padding-left: 40px; 
+    box-sizing: border-box;
+  }
 }
