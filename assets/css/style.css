@@ -47,6 +47,22 @@ html, body {
 header h1 { font-size: 2.6em; font-weight: bold; color: #000; margin-bottom: 20px; }
 header p { color: #888; margin-bottom: 40px; border-bottom: 1px solid #eee; padding-bottom: 25px; }
 
+/* Stronger Blockquote Styling */
+blockquote, .post-content blockquote {
+  margin: 40px 0;
+  padding: 5px 30px;
+  border-left: 4px solid #b03931; /* Restores the D-Red accent bar */
+  font-style: italic; /* Forces the italicized look from your screenshot */
+  color: #333;
+  background-color: transparent; /* Keeping it clean and minimalist */
+  line-height: 1.6;
+}
+
+/* Ensure any paragraphs inside blockquotes don't add extra margins */
+blockquote p {
+  margin: 10px 0;
+}
+
 /* Global Left-Justified Table Default */
 .post-content table {
   width: 100%;
@@ -58,11 +74,10 @@ header p { color: #888; margin-bottom: 40px; border-bottom: 1px solid #eee; padd
 .post-content td, .post-content th {
   padding: 12px 0; 
   border-bottom: 1px solid #eee; 
-  text-align: left; /* Forces all columns to be left-justified */
+  text-align: left; /* Restores left-justification for all columns */
   color: #444;
 }
 
-/* Specifically style the first row as a "header" look */
 .post-content table tr:first-child td {
   color: #888;
   font-weight: normal;
@@ -82,7 +97,6 @@ header p { color: #888; margin-bottom: 40px; border-bottom: 1px solid #eee; padd
   line-height: 1.3 !important; 
 }
 
-/* Neutralize inner tags for single-layered borders */
 .highlight > pre, 
 .highlight > pre.highlight,
 .highlight code {
