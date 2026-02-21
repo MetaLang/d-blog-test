@@ -186,43 +186,37 @@ To jump-start the network study, I set up a server with the reference implementa
 I had the same code golf contest again. And again, I promised to give a free pass to whoever could beat me. I'm sure you can see where this is going, but first I must explain the problem in detail. The task was to implement a function, `challenge`, defined as follows:
 
 
-    
-    import std;
-    
-    /**
-    * Params:
-    * s = Multiline string, each line containing positive integers separated by whitespace.
-    * Returns: An array containing the sums of each line and the grand total as the last element.
-    */
-    uint[] challenge(string s);
-    
-    unittest {
-        assert(challenge("0") == [0, 0]);
-        assert(challenge("1\n1") == [1, 1, 2]);
-        assert(challenge("2\n2\n3") == [2, 2, 3, 7]);
-        assert(challenge("2\n2 0 3\n3 1 1 4") == [2, 5, 9, 16]);
-    }
+```d
+import std;
 
+/**
+* Params:
+* s = Multiline string, each line containing positive integers separated by whitespace.
+* Returns: An array containing the sums of each line and the grand total as the last element.
+*/
+uint[] challenge(string s);
 
-
+unittest {
+    assert(challenge("0") == [0, 0]);
+    assert(challenge("1\n1") == [1, 1, 2]);
+    assert(challenge("2\n2\n3") == [2, 2, 3, 7]);
+    assert(challenge("2\n2 0 3\n3 1 1 4") == [2, 5, 9, 16]);
+}
+```
 Only the symbols inside the function body count. Using any Phobos functionality is allowed, but no renamed imports.
 
 My solution from the previous year was pretty straightforward:
 
 
-    
-    auto r=s.split('\n').map!(a=>a.split.map!(i=>i.to!uint).sum); return r.array~r.sum; // 84 characters
-
-
-
+```d
+auto r=s.split('\n').map!(a=>a.split.map!(i=>i.to!uint).sum); return r.array~r.sum; // 84 characters
+```
 I didn't show them my solution, I just told them its character count. I was absolutely sure that, just like the previous year, nobody could beat it. Imagine my shock when I was outdone in a mere week:
 
 
-    
-    auto r=split(src,"\n").map!"sum(map!(to!uint)(a.split))".array;return r~[sum(r)]; // 82 characters
-
-
-
+```d
+auto r=split(src,"\n").map!"sum(map!(to!uint)(a.split))".array;return r~[sum(r)]; // 82 characters
+```
 Even with the unneeded brackets, this solution was better, thanks to the shortened `map` syntax: passing a lambda as a string in the first case and passing `to` directly in the second. The latter was just my oversight, but the former was a typical teacher's mistake. You see, back when I first wrote my solution, it wasn't possible to pass a string to `map` like that. I don't remember well what the problem was, something about scopes. I missed that it was fixed at some point. That's how in just one year you become an old geezer teacher who can't keep up with the times.
 
 I stayed true to my word and granted a free pass to the resourceful student at the end of the semester. I was concerned that securing the pass in the middle of the semester would demotivate him to attend classes, but fortunately, I was wrong.
@@ -264,21 +258,17 @@ I need some way to track students' progress to be sure that they actually follow
 My students keep surprising me, coming up with newer and better solutions to the code golf puzzle. Unfortunately, I don't have the exact code of the student who won in the third year (it appears that she deleted her Github account), but it was something like:
 
 
-    
-    auto r=s.split('\n').map!(a=>a.split.to!(uint[]).sum); return r.array~r.sum; // 74 characters 
-
-
-
+```d
+auto r=s.split('\n').map!(a=>a.split.to!(uint[]).sum); return r.array~r.sum; // 74 characters 
+```
 Again, it was a feature I didn't know about: `to` converts between arrays, too.
 
 I thought that this problem was done and that there was no room for further improvement. Oh, how wrong I was. This is what they've brought me this year:
 
 
-    
-    return(s.split('\n')~s).map!(a=>a.split.to!(uint[]).sum).array; // 63 characters
-
-
-
+```d
+return(s.split('\n')~s).map!(a=>a.split.to!(uint[]).sum).array; // 63 characters
+```
 This completely destroys my solution with all the improvements! Note that the trick is not in the syntax, but in the logic. This works by concatenating the split lines with the original string, making it unnecessary to declare an intermediate array, which allows implementing this function as a single statement. I would never have thought to do that! Algorithms win over micro-optimizations, even in code golf.
 
 The biggest change this year is a new, formalized evaluation system. In the semester, students earn points for doing assignments and writing reports on them. The first and simplest assignment is worth 5 points, and the last and hardest is worth 30. The maximum number of points a student can score without participating in code golf is 100. Code golf is scored by the formula `110 − length`. The code golf winner this year got 47 points for his solution which earned him an exemption from writing any reports. We have a table listing every student's points so everybody knows how many points they need to score. Everything is very transparent, so I don't need to worry about not being objective when evaluating students.

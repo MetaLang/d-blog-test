@@ -33,21 +33,17 @@ Let’s imagine a hypothetical programmer named J.P. who, for reasons he conside
 
 One option is to make a call to `GC.disable` when the program is starting up. This doesn't stop allocations, but puts a hold on collections. That means _all_ collections, including any that may result from allocations in other threads.
 
-    
-    void main() {
-        import core.memory;
-        import std.stdio;
-        GC.disable;
-        writeln("Goodbye, GC!");
-    }
-
-
+```d
+void main() {
+    import core.memory;
+    import std.stdio;
+    GC.disable;
+    writeln("Goodbye, GC!");
+}
+```
 Output:
 
-    
     Goodbye, GC!
-
-
 This has the benefit that all language features making use of the GC heap will still work as expected. But, considering that allocations are still going without any cleanup, when you do the math you'll realize this might be problematic. If allocations start to get out of hand, something's gotta give. From [the documentation](http://dlang.org/phobos/core_memory.html#.GC.disable):
 
 
@@ -62,55 +58,44 @@ Depending on J.P.'s perspective, this might not be a good thing. But if this con
 
 When the GC is simply intolerable, J.P. can turn to the `@nogc` attribute. Slap it at the front of the `main` function and thou shalt suffer no collections.
 
-    
-    @nogc
-    void main() { ... }
-
-
+```d
+@nogc
+void main() { ... }
+```
 This is the ultimate GC mitigation strategy. `@nogc` applied to `main` will guarantee that the garbage collector will never run anywhere further along the callstack. No more caveats about collecting “where the implementation deems necessary”.
 
 At first blush, this may appear to be a much better option than `GC.disable`. Let’s try it out.
 
-    
-    @nogc
-    void main() {
-        import std.stdio;
-        writeln("GC be gone!");
-    }
-    
-
-
+```d
+@nogc
+void main() {
+    import std.stdio;
+    writeln("GC be gone!");
+}
+```
 This time, we aren’t going to get past compilation:
 
-    
     Error: @nogc function 'D main' cannot call non-@nogc function 'std.stdio.writeln!string.writeln'
-
-
 What makes `@nogc` tick is the compiler’s ability to enforce it. It’s a very blunt approach. If a function is annotated with `@nogc`, then any function called from inside it must also be annotated with `@nogc`. As may be obvious, `writeln` is not.
 
 That’s not all:
 
-    
-    @nogc 
-    void main() {
-        auto ints = new int[](100);
-    }
-
-
+```d
+@nogc 
+void main() {
+    auto ints = new int[](100);
+}
+```
 The compiler isn’t going to let you get away with that one either.
 
-    
     Error: cannot use 'new' in @nogc function 'D main'
-
-
 Any language feature that allocates from the GC heap is out of reach inside a function marked `@nogc` (refer to [the first post in this series](https://dlang.org/blog/2017/03/20/dont-fear-the-reaper/) for an overview of those features). It’s turtles all the way down. The big benefit here is that it guarantees that third-party code can’t use those features either, so can’t be allocating GC memory behind your back. Another downside is that any third-party library that is not `@nogc` aware is not going to be available in your program.
 
 Using this approach requires a number of workarounds to make up for non-`@nogc` language features and library functions, including several in the standard library. Some are trivial, some are not, and others can’t be worked around at all (we’ll dive into the details in a future post). One example that might not be obvious is throwing an exception. The idiomatic way is:
 
-    
-    throw new Exception("Blah");
-
-
+```d
+throw new Exception("Blah");
+```
 Because of the `new` in that line, this isn’t possible in `@nogc` functions. Getting around this requires preallocating any exceptions that will be thrown, which in turn runs into the issue that any exception memory allocated from the regular heap still needs to be deallocated, which leads to ideas of reference counting or stack allocation… In other words, it’s a big can of worms. There’s currently [a D Improvement Proposal](https://github.com/dlang/DIPs/blob/master/DIPs/DIP1008.md) from Walter Bright intended to stuff all the worms back into the can by making `throw new Exception` work without the GC when it needs to.
 
 It’s not an insurmountable task to get around the limitations of `@nogc main`, it just requires a good bit of motivation and dedication.
@@ -131,73 +116,68 @@ The DRuntime [GC option](https://dlang.org/spec/garbage.html#gc_config) `--DRT-g
 
 To demonstrate, **gcstat.d** appends twenty values to a dynamic array of integers.
 
-    
-    void main() {
-        import std.stdio;
-        int[] ints;
-        foreach(i; 0 .. 20) {
-            ints ~= i;
-        }
-        writeln(ints);
+```d
+void main() {
+    import std.stdio;
+    int[] ints;
+    foreach(i; 0 .. 20) {
+        ints ~= i;
     }
-
-
+    writeln(ints);
+}
+```
 Compiling and running with the GC profile switch:
 
-    
-    dmd gcstat.d
-    gcstat --DRT-gcopt=profile:1
-    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
-            Number of collections:  1
-            Total GC prep time:  0 milliseconds
-            Total mark time:  0 milliseconds
-            Total sweep time:  0 milliseconds
-            Total page recovery time:  0 milliseconds
-            Max Pause Time:  0 milliseconds
-            Grand total GC time:  0 milliseconds
-    GC summary:    1 MB,    1 GC    0 ms, Pauses    0 ms <    0 ms
-
-
+```bash
+dmd gcstat.d
+gcstat --DRT-gcopt=profile:1
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+        Number of collections:  1
+        Total GC prep time:  0 milliseconds
+        Total mark time:  0 milliseconds
+        Total sweep time:  0 milliseconds
+        Total page recovery time:  0 milliseconds
+        Max Pause Time:  0 milliseconds
+        Grand total GC time:  0 milliseconds
+GC summary:    1 MB,    1 GC    0 ms, Pauses    0 ms <    0 ms
+```
 This reports one collection, which almost certainly happened as the program was shutting down. The runtime terminates the GC as it exits which, in the current implementation, will generally trigger a collection. This is done primarily to run destructors on collected objects, even though D does not require destructors of GC-allocated objects to ever be run (a topic for a future post).
 
 DMD supports a command-line option, `-vgc`, that will display every GC allocation in a program, including those that are hidden behind language features like the array append operator.
 
 To demonstrate, take a look at **inner.d**:
 
-    
-    void printInts(int[] delegate() dg)
-    {
-        import std.stdio;
-        foreach(i; dg()) writeln(i);
-    } 
-    
-    void main() {
-        int[] ints;
-        auto makeInts() {
-            foreach(i; 0 .. 20) {
-                ints ~= i;
-            }
-            return ints;
+```d
+void printInts(int[] delegate() dg)
+{
+    import std.stdio;
+    foreach(i; dg()) writeln(i);
+} 
+
+void main() {
+    int[] ints;
+    auto makeInts() {
+        foreach(i; 0 .. 20) {
+            ints ~= i;
         }
-    
-        printInts(&makeInts);
+        return ints;
     }
 
-
+    printInts(&makeInts);
+}
+```
 Here, `makeInts` is an inner function. A pointer to a non-static inner function is not a function pointer, but a `delegate` (a context pointer/function pointer pair; if an inner function is `static`, a pointer of type `function` is produced instead). In this particular case, the delegate makes use of a variable in its parent scope. Here’s the output of compiling with `-vgc`:
 
-    
-    dmd -vgc inner.d
-    inner.d(11): vgc: operator ~= may cause GC allocation
-    inner.d(7): vgc: using closure causes GC allocation
-
-
+```bash
+dmd -vgc inner.d
+inner.d(11): vgc: operator ~= may cause GC allocation
+inner.d(7): vgc: using closure causes GC allocation
+```
 What we’re seeing here is that memory needs to be allocated so that the delegate can carry the state of `ints`, making it a _closure_ (which is not itself a type – the type is still `delegate`). Move the declaration of `ints` inside the scope of `makeInts` and recompile. You’ll find that the closure allocation goes away. A better option is to change the declaration of `printInts` to look like this:
 
-    
-    void printInts(scope int[] delegate() dg)
-
-
+```d
+void printInts(scope int[] delegate() dg)
+```
 Adding `scope` to any function parameter ensures that any references in the parameter cannot be escaped. In other words, it now becomes impossible to do something like assign `dg` to a global variable, or return it from the function. The effect is that there is no longer a need to create a closure, so there will be no allocation. See the documentation for more on [function pointers, delegates and closures](https://dlang.org/spec/function.html#closures), and [function parameter storage classes](https://dlang.org/spec/function.html#parameters).
 
 

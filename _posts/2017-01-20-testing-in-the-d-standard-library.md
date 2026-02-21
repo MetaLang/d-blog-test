@@ -52,28 +52,27 @@ Hopefully this will provide some insight into how a project like a standard libr
 In D, unit tests are an integrated part of the language rather than a library
 feature:
 
-    
-    size_t sum(int[] a)
-    {
-        size_t result;
-    
-        foreach (e; a)
-        {
-            result += e;
-        }
-    
-        return result;
-    }
-    
-    unittest
-    {
-        assert(sum([1, 2, 3]) == 6);
-        assert(sum([0, 50, 100]) == 150);
-    }
-    
-    void main() {}
+```d
+size_t sum(int[] a)
+{
+    size_t result;
 
+    foreach (e; a)
+    {
+        result += e;
+    }
 
+    return result;
+}
+
+unittest
+{
+    assert(sum([1, 2, 3]) == 6);
+    assert(sum([0, 50, 100]) == 150);
+}
+
+void main() {}
+```
 Save this as `test.d` and run **dmd -unittest -run test.d**. Before your `main` function is run, all of the `unittest` blocks will be executed. If any of the asserts fail, execution is terminated and an error is printed to `stderr`.
 
 The effect of putting unit tests in the language has been enormous. One of the main ones we've seen is tests no longer have the "out of sight, out of mind" problem. Comprehensive tests in D projects are the rule and not the exception. Phobos dogfoods inline `unittest` blocks and uses them as its complete test suite. There are no other tests for Phobos than the inline tests, meaning for a reviewer to check their changes, they can just run **dmd -main -unittest -run std/algorithm/searching.d** (this is just for quick and dirty tests; full tests are done via **make**).
@@ -117,44 +116,43 @@ With this format, if the unit test goes out of date, then the test suite fails. 
 
 Here's an example:
 
-    
-    /**
-     * Sums an array of `int`s.
-     * 
-     * Params:
-     *      a = the array to sum
-     * Returns:
-     *      The sum of the array.
-     */
-    size_t sum(int[] a)
-    {
-        size_t result;
-    
-        foreach (e; a)
-        {
-            result += e;
-        }
-    
-        return result;
-    }
-    
-    ///
-    unittest
-    {
-        assert(sum([1, 2, 3]) == 6);
-        assert(sum([0, 50, 100]) == 150);
-    }
-    
-    // only tests with a doc string above them get included in the
-    // docs
-    unittest
-    {
-        assert(sum([100, 100, 100]) == 300);
-    }
-    
-    void main() {}
+```d
+/**
+ * Sums an array of `int`s.
+ * 
+ * Params:
+ *      a = the array to sum
+ * Returns:
+ *      The sum of the array.
+ */
+size_t sum(int[] a)
+{
+    size_t result;
 
+    foreach (e; a)
+    {
+        result += e;
+    }
 
+    return result;
+}
+
+///
+unittest
+{
+    assert(sum([1, 2, 3]) == 6);
+    assert(sum([0, 50, 100]) == 150);
+}
+
+// only tests with a doc string above them get included in the
+// docs
+unittest
+{
+    assert(sum([100, 100, 100]) == 300);
+}
+
+void main() {}
+```
 Run **dmd -D test.d** and it generates the following un-styled HTML:
 
 ![](http://dlang.org/blog/wp-content/uploads/2017/01/Screen-Shot-2017-01-12-at-12.06.27-PM-290x300.png)

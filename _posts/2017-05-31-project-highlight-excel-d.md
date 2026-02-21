@@ -22,7 +22,6 @@ I'm going to talk about how you can write Excel add-ins in D. Don't ask me why. 
 
 From there he goes into a quick intro on how to write plugins for Excel and gives a taste of what it looks like to register a single function in a C++ implementation:
 
-    
     Excel12f(
         xlfRegister, NULL, 11,          // 11: Number of args
         &xDLL,                          // name of the DLL
@@ -36,24 +35,21 @@ From there he goes into a quick intro on how to write plugins for Excel and give
         TempStr12(L"Number to compute to"), // function help
         TempStr12(L"Computes the nth Fibonacci number") // arg help 
     );
-
-
 Two things to note about this. First, `Excel12f` is a C++ function (wrapping a C API) that must be called in an add-in DLL's entry point (`xlAutoOpen`) for each function that needs to be registered when the add-in is loaded by Excel. For a small plugin, the implementations of any registered functions might be in the same source file, but in a larger one they might be a bit of a maintenance headache by being located somewhere else. Also take note of all the comments used to document the function arguments, a common sight in C and C++ code bases.
 
 The example D code Atila showed using [excel-d](https://github.com/kaleidicassociates/excel-d) is a world of difference:
 
-    
-    @Register(
-        ArgumentText("Array"),
-        HelpTopic("Length of Array"),
-        FunctionHelp("Length of an Array"),
-        ArgumentHelp(["array"])
-    )
-    double DoublesLength(double[] arg) {
-        return arg.length;
-    }
-
-
+```d
+@Register(
+    ArgumentText("Array"),
+    HelpTopic("Length of Array"),
+    FunctionHelp("Length of an Array"),
+    ArgumentHelp(["array"])
+)
+double DoublesLength(double[] arg) {
+    return arg.length;
+}
+```
 Here, the boilerplate for the registration is being generated at compile-time via a [User Defined Attribute](http://dlang.org/spec/attribute.html#UserDefinedAttribute), which is used to annotate the function. Implementation and registration are happening in the same place. Another key difference is that the UDA has fields with descriptive names, eliminating the need to comment each argument. Finally, the UDA only requires four arguments, nine less than the C++ function. This is because it makes use of D's compile-time introspection features to figure out as much as it possibly can and, at the same time, optional arguments (like the shortcut text) can just be omitted.
 
 Since this is a Project Highlight on the D Blog, we're going to ignore Atila's opening request and ask, "Why?" There are actually two parts to that. First, why Excel?

@@ -67,22 +67,20 @@ Until now, when both a postblit and a copy constructor were present, priority wa
 The example in the changelog looks like this:
 
 
-    
-    // library code using postblit
-    struct A
-    {
-        this(this) {}
-    }
-    
-    // new code using copy constructor
-    struct B
-    {
-        A a;
-        this(const scope ref B) {}
-    }
+```d
+// library code using postblit
+struct A
+{
+    this(this) {}
+}
 
-
-
+// new code using copy constructor
+struct B
+{
+    A a;
+    this(const scope ref B) {}
+}
+```
 Because `A` implements a postblit, then given an instance `b` of `B`, the postblit of `a` should be invoked anytime a copy of `b` is made. Since the user defined no postblit for `B`, the compiler will generate one that, when invoked, will in turn invoke the postblit of `a`.
 
 Now that postblit constructors have priority over copy constructors, the programmer who implemented B is expecting its copy constructor to run, but it never will.

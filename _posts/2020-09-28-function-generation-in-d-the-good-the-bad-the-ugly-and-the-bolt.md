@@ -56,60 +56,51 @@ I speculate that many a programmer who is a moderately advanced beginner in D wo
 
 
 
-    
-    template forward(alias fun)
+```d
+template forward(alias fun)
+{
+  import std.traits: Parameters;
+  static foreach (
+    ovl; __traits(getOverloads, __traits(parent, fun), __traits(identifier, fun))) {
+    auto forward(Parameters!ovl args)
     {
-      import std.traits: Parameters;
-      static foreach (
-        ovl; __traits(getOverloads, __traits(parent, fun), __traits(identifier, fun))) {
-        auto forward(Parameters!ovl args)
-        {
-          return ovl(args);
-        }
-      }
+      return ovl(args);
     }
-    
-    ...
-    
-    int plus(int a, int b) { return a + b; }
-    string plus(string a, string b) { return a ~ b; }
-    
-    assert(forward!plus(1, 2) == 3);        // pass
-    assert(forward!plus("a", "b") == "ab"); // pass
+  }
+}
 
+...
 
+int plus(int a, int b) { return a + b; }
+string plus(string a, string b) { return a ~ b; }
 
-
-
+assert(forward!plus(1, 2) == 3);        // pass
+assert(forward!plus("a", "b") == "ab"); // pass
+```
 This solution is not perfect, as we shall see, but it is not far off either. It covers many cases, including some that a beginner may not even be aware of. For example, `forward` handles the following function without dropping function attributes or parameter storage classes:
 
 
 
 
-    
-    class Matrix { ... }
-    
-    Matrix times(scope const Matrix a, scope const Matrix b) pure @safe
-    {
-      return ...;
-    }
-    
-    pragma(msg, typeof(times));
-    // pure @safe Matrix(scope const(Matrix) a, scope const(Matrix) b)
-    
-    pragma(msg, typeof(forward!times));
-    // pure @safe Matrix(scope const(Matrix) _param_0, scope const(Matrix) _param_1)
+```d
+class Matrix { ... }
 
+Matrix times(scope const Matrix a, scope const Matrix b) pure @safe
+{
+  return ...;
+}
 
+pragma(msg, typeof(times));
+// pure @safe Matrix(scope const(Matrix) a, scope const(Matrix) b)
 
-
-
+pragma(msg, typeof(forward!times));
+// pure @safe Matrix(scope const(Matrix) _param_0, scope const(Matrix) _param_1)
+```
 It even handles [user-defined attributes (UDAs)](https://dlang.org/spec/attribute.html#uda) on parameters:
 
 
 
 
-    
     struct testParameter;
     
     void testPlus(@testParameter int a, @testParameter int b);
@@ -119,49 +110,36 @@ It even handles [user-defined attributes (UDAs)](https://dlang.org/spec/attribut
     
     pragma(msg, typeof(forward!testPlus));
     // void(@(testParameter) int a, @(testParameter) int b)
-
-
-
-
-
 Speaking of UDAs, that's one of the issues with the solution above: it doesn't carry _function_ UDAs. It also doesn't work with functions that return a reference. Both issues are easy to fix:
 
 
 
 
-    
-    template forward(alias fun)
+```d
+template forward(alias fun)
+{
+  import std.traits: Parameters;
+  static foreach (ovl; __traits(getOverloads, __traits(parent, fun), __traits(identifier, fun)))
+  {
+    @(__traits(getAttributes, fun)) // copy function UDAs
+    auto ref forward(Parameters!ovl args)
     {
-      import std.traits: Parameters;
-      static foreach (ovl; __traits(getOverloads, __traits(parent, fun), __traits(identifier, fun)))
-      {
-        @(__traits(getAttributes, fun)) // copy function UDAs
-        auto ref forward(Parameters!ovl args)
-        {
-          return ovl(args);
-        }
-      }
+      return ovl(args);
     }
-
-
-
-
-
+  }
+}
+```
 This solution is still not 100% correct though. If the forwardee is `@trusted`, the forwarder will be `@safe`:
 
 
 
 
-    
-    @trusted void useSysCall() { ... }
-    
-    pragma(msg, typeof(&useSysCall));         // void function() @trusted
-    pragma(msg, typeof(&forward!useSysCall)); // void function() @safe
+```d
+@trusted void useSysCall() { ... }
 
-
-
-
-
+pragma(msg, typeof(&useSysCall));         // void function() @trusted
+pragma(msg, typeof(&forward!useSysCall)); // void function() @safe
+```
 This happens because the body of the forwarder consists of a single statement calling the `useSysCall` function. Since calling a trusted function is safe, the forwarder is [automatically deemed safe](https://dlang.org/spec/function.html#function-attribute-inference) by the compiler.
 
 
@@ -179,25 +157,21 @@ However, Andrei's challenge was not exactly what we discussed in the previous se
 
 
 
-    
-    // the instantiation of forward!myfun would be (stylized):
-    
-    template forward!myfun
+```d
+// the instantiation of forward!myfun would be (stylized):
+
+template forward!myfun
+{
+    void myfun(int a, ref double b, out string c)
     {
-        void myfun(int a, ref double b, out string c)
-        {
-            return myfun(a, b, c);
-        }
-        int myfun(in string a, inout double b)
-        {
-            return myfun(a, b);
-        }
+        return myfun(a, b, c);
     }
-
-
-
-
-
+    int myfun(in string a, inout double b)
+    {
+        return myfun(a, b);
+    }
+}
+```
 Though this looks like a small difference, if we want to implement exactly this, a complication arises. In the eponymous `forward`, we did not need to create a new identifier; we simply used the template name as the function name. Thus, the function name was fixed. Now we need to create a function with a name that depends on the forwardee's name. And the only way to do this is [with a string mixin](https://dlang.org/spec/statement.html#mixin-statement).
 
 
@@ -209,51 +183,43 @@ The first time I had to do this, I tried the following:
 
 
 
-    
-    template forward(alias fun)
+```d
+template forward(alias fun)
+{
+  import std.format : format;
+  import std.traits: Parameters;
+  enum name = __traits(identifier, fun);
+  static foreach (ovl; __traits(getOverloads, __traits(parent, fun), name)) {
+    @(__traits(getAttributes, fun))
+    auto ref mixin(name)(Parameters!ovl args)
     {
-      import std.format : format;
-      import std.traits: Parameters;
-      enum name = __traits(identifier, fun);
-      static foreach (ovl; __traits(getOverloads, __traits(parent, fun), name)) {
-        @(__traits(getAttributes, fun))
-        auto ref mixin(name)(Parameters!ovl args)
-        {
-          return ovl(args);
-        }
-      }
+      return ovl(args);
     }
-
-
-
-
-
+  }
+}
+```
 This doesn't work because a string mixin can only be used to create expressions or statements. Therefore, the solution is to simply expand the mixin to encompass the entire function definition. The token-quote operator `q{}` is very handy for this:
 
 
 
 
-    
-    template forward(alias fun)
-    {
-      import std.format : format;
-      import std.traits: Parameters;
-      enum name = __traits(identifier, fun);
-      static foreach (ovl; __traits(getOverloads, __traits(parent, fun), name)) {
-        mixin(q{
-            @(__traits(getAttributes, fun))
-              auto ref %s(Parameters!ovl args)
-            {
-              return ovl(args);
-            }
-          }.format(name));
-      }
-    }
-
-
-
-
-
+```d
+template forward(alias fun)
+{
+  import std.format : format;
+  import std.traits: Parameters;
+  enum name = __traits(identifier, fun);
+  static foreach (ovl; __traits(getOverloads, __traits(parent, fun), name)) {
+    mixin(q{
+        @(__traits(getAttributes, fun))
+          auto ref %s(Parameters!ovl args)
+        {
+          return ovl(args);
+        }
+      }.format(name));
+  }
+}
+```
 Though string mixins are powerful, they are essentially C macros. For many D programmers, resorting to a string mixin can feel like a defeat.
 
 
@@ -283,107 +249,83 @@ For example:
 
 
 
-    
-    interface JsonSerializable
-    {
-      string asJson() const;
-    }
-    
-    void main()
-    {
-      auto mock = new Mock!JsonSerializable();
-    }
+```d
+interface JsonSerializable
+{
+  string asJson() const;
+}
 
-
-
-
-
+void main()
+{
+  auto mock = new Mock!JsonSerializable();
+}
+```
 Extrapolating the techniques acquired during the previous challenge, a beginner would probably try this first:
 
 
 
 
-    
-    class Mock(alias Interface) : Interface
-    {
-      import std.format : format;
-      import std.traits: Parameters;
-      static foreach (member; __traits(allMembers, Interface)) {
-        static foreach (fun; __traits(getOverloads, Interface, member)) {
-          mixin(q{
-              @(__traits(getAttributes, fun))
-              auto ref %s(Parameters!fun args)
-              {
-                // record call
-                static if (!is(ReturnType!fun == void)) {
-                  return ReturnType!fun.init;
-                }
-              }
-            }.format(member));
-        }
-      }
+```d
+class Mock(alias Interface) : Interface
+{
+  import std.format : format;
+  import std.traits: Parameters;
+  static foreach (member; __traits(allMembers, Interface)) {
+    static foreach (fun; __traits(getOverloads, Interface, member)) {
+      mixin(q{
+          @(__traits(getAttributes, fun))
+          auto ref %s(Parameters!fun args)
+          {
+            // record call
+            static if (!is(ReturnType!fun == void)) {
+              return ReturnType!fun.init;
+            }
+          }
+        }.format(member));
     }
-
-
-
-
-
+  }
+}
+```
 Alas, this fails to compile, throwing errors like:
 
 
 
 
-    
     Error: function `challenge.Mock!(JsonSerializable).Mock.asJson` return type
     inference is not supported if may override base class function
-
-
-
-
-
 In other words, `auto` cannot be used here. We have to fall back to explicitly specifying the return type:
 
 
 
 
-    
-    class Mock(alias Interface) : Interface
-    {
-      import std.format : format;
-      import std.traits: Parameters, ReturnType;
-      static foreach (member; __traits(allMembers, Interface)) {
-        static foreach (fun; __traits(getOverloads, Interface, member)) {
-          mixin(q{
-              @(__traits(getAttributes, fun))
-              ReturnType!fun %s(Parameters!fun args)
-              {
-                // record call
-                static if (!is(ReturnType!fun == void)) {
-                  return ReturnType!fun.init;
-                }
-              }
-            }.format(member));
-        }
-      }
+```d
+class Mock(alias Interface) : Interface
+{
+  import std.format : format;
+  import std.traits: Parameters, ReturnType;
+  static foreach (member; __traits(allMembers, Interface)) {
+    static foreach (fun; __traits(getOverloads, Interface, member)) {
+      mixin(q{
+          @(__traits(getAttributes, fun))
+          ReturnType!fun %s(Parameters!fun args)
+          {
+            // record call
+            static if (!is(ReturnType!fun == void)) {
+              return ReturnType!fun.init;
+            }
+          }
+        }.format(member));
     }
-
-
-
-
-
+  }
+}
+```
 This will not handle `ref` functions though. What about adding a `ref` in front of the return type, like we did in the first challenge?
 
 
 
 
-    
     // as before
               ref ReturnType!fun %s(Parameters!fun args) ...
-
-
-
-
-
 This will fail with all the functions in the interface that do _not_ return a reference.
 
 
@@ -407,27 +349,23 @@ At this point, there is no other option than to analyze some of the function att
 
 
 
-    
-          mixin(q{
-              @(__traits(getAttributes, fun))
-              %sReturnType!fun %s(Parameters!fun args)
-              {
-                // record call
-                static if (!is(ReturnType!fun == void)) {
-                  return ReturnType!fun.init;
-                }
-              }
-            }.format(
-                (functionAttributes!fun & FunctionAttribute.const_ ? "const " : "")
-              ~ (functionAttributes!fun & FunctionAttribute.ref_ ? "ref " : "")
-              ~ ...,
-              member));
-        }
-
-
-
-
-
+```d
+      mixin(q{
+          @(__traits(getAttributes, fun))
+          %sReturnType!fun %s(Parameters!fun args)
+          {
+            // record call
+            static if (!is(ReturnType!fun == void)) {
+              return ReturnType!fun.init;
+            }
+          }
+        }.format(
+            (functionAttributes!fun & FunctionAttribute.const_ ? "const " : "")
+          ~ (functionAttributes!fun & FunctionAttribute.ref_ ? "ref " : "")
+          ~ ...,
+          member));
+    }
+```
 If you look at the implementation of `std.typecons.wrap`, you will see that part of the code deals with synthesizing bits of a string mixin for the storage classes and modifiers.
 
 
@@ -451,28 +389,18 @@ I won't delve into the details of `openmethods` here (see [an older blog post](h
 
 
 
-    
     Matrix times(virtual!Matrix a, double b);
-
-
-
-
-
 `openmethods` generates this function:
 
 
 
 
-    
-    Matrix dispatcher(Matrix a, double b)
-    {
-      return resolve(a)(a, b);
-    }
-
-
-
-
-
+```d
+Matrix dispatcher(Matrix a, double b)
+{
+  return resolve(a)(a, b);
+}
+```
 The `virtual` template is a marker; it indicates which parameters should be taken into account (i.e., passed to `resolve`) when picking the appropriate specialization of `times`. Note that only `a` is passed to the `resolve` function--that is because the first parameter uses the `virtual!` marker and the second does not.
 
 
@@ -490,19 +418,15 @@ Let's put aside function attributes and UDAs - we already discussed those in the
 
 
 
-    
-    ReturnType!times dispatcher(
-      RemoveVirtual!(Parameters!times[0]) a, Parameters!times[1] b)
-    {
-      return resolve(a)(a, b);
-    }
-    
-    pragma(msg, typeof(&dispatcher)); // Matrix function(Matrix, double)
+```d
+ReturnType!times dispatcher(
+  RemoveVirtual!(Parameters!times[0]) a, Parameters!times[1] b)
+{
+  return resolve(a)(a, b);
+}
 
-
-
-
-
+pragma(msg, typeof(&dispatcher)); // Matrix function(Matrix, double)
+```
 where `RemoveVirtual` is a simple template that peels off the `virtual!` marker from the type.
 
 
@@ -514,20 +438,16 @@ Does this preserve _parameter_ storage classes and UDAs? Unfortunately, it does 
 
 
 
-    
-    @nogc void scale(ref virtual!Matrix m, lazy double by);
-    
-    @nogc ReturnType!scale dispatcher(RemoveVirtual!(Parameters!scale[0]) a, Parameters!scale[1] b)
-    {
-      return resolve(a)(a, b);
-    }
-    
-    pragma(msg, typeof(&dispatcher)); // void function(Matrix a, double b)
+```d
+@nogc void scale(ref virtual!Matrix m, lazy double by);
 
+@nogc ReturnType!scale dispatcher(RemoveVirtual!(Parameters!scale[0]) a, Parameters!scale[1] b)
+{
+  return resolve(a)(a, b);
+}
 
-
-
-
+pragma(msg, typeof(&dispatcher)); // void function(Matrix a, double b)
+```
 We lost the `ref` on the first parameter and the `lazy` on the second. What happened to them?
 
 
@@ -539,15 +459,9 @@ The culprit is `Parameters`. This template is a wrapper around an obscure featur
 
 
 
-    
     pragma(msg, Parameters!scale.stringof); // (ref virtual!(Matrix), lazy double)
     pragma(msg, Parameters!scale[0].stringof); // virtual!(Matrix)
     pragma(msg, Parameters!scale[1].stringof); // double
-
-
-
-
-
 We see that accessing a parameter individually returns the type... and discards everything else!
 
 
@@ -559,26 +473,16 @@ There is actually a way to extract everything about a single parameter: use a _s
 
 
 
-    
     pragma(msg, Parameters!scale[0..1].stringof); // (ref virtual!(Matrix))
     pragma(msg, Parameters!scale[1..2].stringof); // (lazy double)
-
-
-
-
-
 So this gives us a solution for handling the second parameter of `scale`:
 
 
 
 
-    
-    ReturnType!scale dispatcher(???, Parameters!scale[1..2]) { ... }
-
-
-
-
-
+```d
+ReturnType!scale dispatcher(???, Parameters!scale[1..2]) { ... }
+```
 But what can we put in place of `???`. `RemoveVirtual!(Parameters!scale[0..1])` would not work. `RemoveVirtual` expects a type, and `Parameters!scale[1..2]` is not a type--it is a sort of conglomerate that contains a type, and perhaps storage classes, type constructors, and UDAs.
 
 
@@ -590,25 +494,21 @@ At this point, we have no other choice but to construct a string mixin once agai
 
 
 
-    
-    mixin(q{
-        %s ReturnType!(scale) dispatcher(
-          %s RemoveVirtual!(Parameters!(scale)[1]) a,
-          Parameters!(scale)[1..2] b)
-        {
-            resolve(a)(a, b);
-        }
-      }.format(
-        functionAttributes!scale & FunctionAttribute.nogc ? "@nogc " : ""
-        /* also handle other function attributes */,
-        __traits(getParameterStorageClasses, scale, 0)));
-    
-    pragma(msg, typeof(dispatcher)); // @nogc void(ref double a, lazy double)
+```d
+mixin(q{
+    %s ReturnType!(scale) dispatcher(
+      %s RemoveVirtual!(Parameters!(scale)[1]) a,
+      Parameters!(scale)[1..2] b)
+    {
+        resolve(a)(a, b);
+    }
+  }.format(
+    functionAttributes!scale & FunctionAttribute.nogc ? "@nogc " : ""
+    /* also handle other function attributes */,
+    __traits(getParameterStorageClasses, scale, 0)));
 
-
-
-
-
+pragma(msg, typeof(dispatcher)); // @nogc void(ref double a, lazy double)
+```
 This is not quite sufficient though, because it still doesn't take care of parameter UDAs.
 
 
@@ -638,15 +538,9 @@ This is not quite sufficient though, because it still doesn't take care of param
 
 
 
-    
     Matrix times(virtual!Matrix a, double b);
     pragma(msg, refract!(times, "times").mixture);
     // @system ReturnType!(times) times(Parameters!(times) _0);
-
-
-
-
-
 Why does `refract` need the anchor string? Can't the string `"times"` be inferred from the function by means of `__traits(identifier...)`? Yes, it can, but in real applications we don't want to use this. The whole point of the library is to be used in templates, where the function is typically passed to `refract` via an alias. In general, the function's name has no meaning in the template's scope--or if, by chance, the name exists, it does not name the function. All the meta-expressions used to dissect the function must work in terms of the _local_ symbol that identifies the alias.
 
 
@@ -658,28 +552,24 @@ Consider:
 
 
 
-    
-    module matrix;
-    
-    Matrix times(virtual!Matrix a, double b);
-    
-    Method!times timesMethod; // openmethods creates a `Method` object for each
-                              // declared method
-    
-    module openmethods;
-    
-    struct Method(alias fun)
-    {
-        enum returnTypeMixture = refract!(fun, "fun").returnType;
-        pragma(msg, returnTypeMixture);              // ReturnType!(fun)
-        mixin("alias R = ", returnTypeMixture, ";"); // ok
-        pragma(msg, R.stringof);                     // Matrix
-    }
+```d
+module matrix;
 
+Matrix times(virtual!Matrix a, double b);
 
+Method!times timesMethod; // openmethods creates a `Method` object for each
+                          // declared method
 
+module openmethods;
 
-
+struct Method(alias fun)
+{
+    enum returnTypeMixture = refract!(fun, "fun").returnType;
+    pragma(msg, returnTypeMixture);              // ReturnType!(fun)
+    mixin("alias R = ", returnTypeMixture, ";"); // ok
+    pragma(msg, R.stringof);                     // Matrix
+}
+```
 There is no `times` and no `Matrix` in `module openmethods`. Even if they existed, they could _not_ be the `times` function and the `Matrix` class from `module matrix`, as this would require a circular dependency between the two modules, something that D forbids by default. However, there is a `fun` symbol, and it aliases to the function; thus, the return type can be expressed as `ReturnType!(fun)`.
 
 
@@ -691,36 +581,26 @@ All aspects of the function are available piecemeal. For example:
 
 
 
-    
     @nogc void scale(ref virtual!Matrix m, lazy double by);
     pragma(msg, refract!(scale, "scale").parameters[0].storageClasses); // ["ref"]
-
-
-
-
-
 `Function` also has methods that return a new `Function` object, with an alteration to one of the aspects. They can be used to create a variation of a function. For example:
 
 
 
 
-    
-    pragma(msg,
-      refract!(scale, "scale")
-      .withName("dispatcher")
-      .withBody(q{{ resolve(_0[0])(_0); }})
-      .mixture
-    );
-    
-    @nogc @system ReturnType!(scale) dispatcher(ref Parameters!(scale)[0] _0, lazy Parameters!(scale)[1] _1)
-    {
-      resolve(_0[0])(_0);
-    }
+```d
+pragma(msg,
+  refract!(scale, "scale")
+  .withName("dispatcher")
+  .withBody(q{{ resolve(_0[0])(_0); }})
+  .mixture
+);
 
-
-
-
-
+@nogc @system ReturnType!(scale) dispatcher(ref Parameters!(scale)[0] _0, lazy Parameters!(scale)[1] _1)
+{
+  resolve(_0[0])(_0);
+}
+```
 This is the reason behind the name "refraction": the module creates a blueprint of a function, performs some alterations on it, and returns a string--called a mixture--which, when passed to `mixin`, will create a new function.
 
 
@@ -732,42 +612,34 @@ This is the reason behind the name "refraction": the module creates a blueprint 
 
 
 
-    
-    original = refract!(scale, "scale");
-    
-    pragma(msg,
-      original
-      .withName("dispatcher")
-      .withParameters(
-        [original.parameters[0].withType(
-            "RemoveVirtual!(%s)".format(original.parameters[0].type)),
-         original.parameters[1],
-        ])
-      .withBody(q{{
-          return resolve(_0)(%s);
-       }}.format(original.argumentMixture))
-    );
+```python
+original = refract!(scale, "scale");
 
-
-
-
-
+pragma(msg,
+  original
+  .withName("dispatcher")
+  .withParameters(
+    [original.parameters[0].withType(
+        "RemoveVirtual!(%s)".format(original.parameters[0].type)),
+     original.parameters[1],
+    ])
+  .withBody(q{{
+      return resolve(_0)(%s);
+   }}.format(original.argumentMixture))
+);
+```
 This time, the generated code splits the parameter pack into individual components:
 
 
 
 
-    
-    @nogc @system ReturnType!(scale) dispatcher(
-      ref RemoveVirtual!(Parameters!(scale)[0]) _0, Parameters!(scale)[1..2] _1)
-    {
-      return resolve(_0)(_0);
-    }
-
-
-
-
-
+```d
+@nogc @system ReturnType!(scale) dispatcher(
+  ref RemoveVirtual!(Parameters!(scale)[0]) _0, Parameters!(scale)[1..2] _1)
+{
+  return resolve(_0)(_0);
+}
+```
 Note how the first and second parameters are handled differently. The first parameter is cracked open because we need to replace the type. That forces us to access the first `Parameters` value via indexing, and that loses the storage classes, UDAs, etc. So they need to be re-applied explicitly.
 
 

@@ -50,22 +50,21 @@ As I’ve said above, C objects are pointers to structures. All C pointers to st
 
 Using the mixins shown below, we can declare the public structs of our API this way (you should look into the actual source for real examples):
 
-    
-    struct URIWithoutFinalize {
-        mixin WithoutFinalize!(URIHandle,
-                               URIWithoutFinalize,
-                               URI,
-                               raptor_uri_copy);
-        // …
-    }
-    struct URI {
-        mixin WithFinalize!(URIHandle,
-                            URIWithoutFinalize,
-                            URI,
-                            raptor_free_uri);
-    }
-
-
+```d
+struct URIWithoutFinalize {
+    mixin WithoutFinalize!(URIHandle,
+                           URIWithoutFinalize,
+                           URI,
+                           raptor_uri_copy);
+    // …
+}
+struct URI {
+    mixin WithFinalize!(URIHandle,
+                        URIWithoutFinalize,
+                        URI,
+                        raptor_free_uri);
+}
+```
 The difference between the `WithoutFinalize` and `WithFinalize` mixins is explained below.
 
 
@@ -78,61 +77,60 @@ In the C library in consideration (as well as in many other C libraries), every 
 
 As such, I first define both (for example) `URIWithoutFinalize` and `URI`. Only `URI` has a destructor. For `URIWithoutFinalize`, a shared handle is not finalized. As D does not support inheritance for structs, I do it with template mixins instead. Below is a partial listing. See the above `URI` example on how to use them:
 
-    
-    mixin template WithoutFinalize(alias Dummy,
-                                   alias _WithoutFinalize,
-                                   alias _WithFinalize,
-                                   alias copier = null)
-    {
-        private Dummy* ptr;
-        private this(Dummy* ptr) {
-            this.ptr = ptr;
-        }
-        @property Dummy* handle() const {
-            return cast(Dummy*)ptr;
-        }
-        static _WithoutFinalize fromHandle(const Dummy* ptr) {
-            return _WithoutFinalize(cast(Dummy*)ptr);
-        }
-        static if(isCallable!copier) {
-            _WithFinalize dup() {
-                return _WithFinalize(copier(ptr));
-            }
-        }
-        // ...
+```d
+mixin template WithoutFinalize(alias Dummy,
+                               alias _WithoutFinalize,
+                               alias _WithFinalize,
+                               alias copier = null)
+{
+    private Dummy* ptr;
+    private this(Dummy* ptr) {
+        this.ptr = ptr;
     }
-    
-    
-    mixin template WithFinalize(alias Dummy,
-                                alias _WithoutFinalize,
-                                alias _WithFinalize,
-                                alias destructor,
-                                alias constructor = null)
-    {
-        private Dummy* ptr;
-        @disable this();
-        @disable this(this);
-        // Use fromHandle() instead
-        private this(Dummy* ptr) {
-            this.ptr = ptr;
-        }
-        ~this() {
-            destructor(ptr);
-        }
-        /*private*/ @property _WithoutFinalize base() { // private does not work in v2.081.2
-            return _WithoutFinalize(ptr);
-        }
-        alias base this;
-        @property Dummy* handle() const {
-            return cast(Dummy*)ptr;
-        }
-        static _WithFinalize fromHandle(const Dummy* ptr) {
-            return _WithFinalize(cast(Dummy*)ptr);
-        }
-        // ...
+    @property Dummy* handle() const {
+        return cast(Dummy*)ptr;
     }
+    static _WithoutFinalize fromHandle(const Dummy* ptr) {
+        return _WithoutFinalize(cast(Dummy*)ptr);
+    }
+    static if(isCallable!copier) {
+        _WithFinalize dup() {
+            return _WithFinalize(copier(ptr));
+        }
+    }
+    // ...
+}
 
 
+mixin template WithFinalize(alias Dummy,
+                            alias _WithoutFinalize,
+                            alias _WithFinalize,
+                            alias destructor,
+                            alias constructor = null)
+{
+    private Dummy* ptr;
+    @disable this();
+    @disable this(this);
+    // Use fromHandle() instead
+    private this(Dummy* ptr) {
+        this.ptr = ptr;
+    }
+    ~this() {
+        destructor(ptr);
+    }
+    /*private*/ @property _WithoutFinalize base() { // private does not work in v2.081.2
+        return _WithoutFinalize(ptr);
+    }
+    alias base this;
+    @property Dummy* handle() const {
+        return cast(Dummy*)ptr;
+    }
+    static _WithFinalize fromHandle(const Dummy* ptr) {
+        return _WithFinalize(cast(Dummy*)ptr);
+    }
+    // ...
+}
+```
 I’ve used [template alias parameters](https://dlang.org/spec/template.html#aliasparameters) here, which allow a template to be parameterized with more than just types. The `Dummy` argument is the type of the handle instance (usually an opaque struct). The `destructor` and `copier` arguments are self-explanatory. For the usage of the `constructor` argument, see the real source (here it is omitted).
 
 The `_WithoutFinalize` and `_WithFinalize` template arguments should specify the structs we define, allowing them to reference each other. Note that the `alias this` construct makes `_WithoutFinalize` essentially a base of `_WithFinalize`, allowing us to use all methods and properties of `_WithoutFinalize` in `_WithFinalize`.
@@ -147,74 +145,68 @@ To deal with C callbacks (particularly when accepting a `void*` argument for add
 
 First, the D object, which is passed as a callback parameter to C, should not unexpectedly be moved in memory by the D garbage collector. So I make them descendants of this class:
 
-    
-    class UnmovableObject {
-        this() {
-            GC.setAttr(cast(void*)this, GC.BlkAttr.NO_MOVE);
-        }
+```d
+class UnmovableObject {
+    this() {
+        GC.setAttr(cast(void*)this, GC.BlkAttr.NO_MOVE);
     }
-
-
+}
+```
 Moreover, I add the property `context()` to pass it as a `void*` pointer to C functions which register callbacks:
 
-    
-    abstract class UserObject : UnmovableObject {
-        final @property void* context() const { return cast(void*)this; }
-    }
-
-
+```d
+abstract class UserObject : UnmovableObject {
+    final @property void* context() const { return cast(void*)this; }
+}
+```
 When we create a callback we need to pass a D object as a C pointer and an `extern(C)` function defined by us as the callback. The callback receives the pointer previously passed by us and in the callback code we should (if we want to stay object-oriented) convert this pointer into a D object pointer.
 
 What we need is a bijective (“back and forth”) mapping between D pointers and C `void*` pointers. This is trivial in D: just use the `cast()` operator.
 
 How to do this in practice? The best way to explain is with an example. We will consider how to create an I/O stream class which uses the C library callbacks to implement it. For example, when the user of our wrapper requests to write some information to a file, our class receives _write_ message. To handle this message, our implementation calls our virtual function `doWriteBytes()`, which actually handles the user’s request.
 
-    
-    private immutable DispatcherType Dispatch =
-        { version_: 2,
-          init: null,
-          finish: null,
-          write_byte : &raptor_iostream_write_byte_impl,
-          write_bytes: &raptor_iostream_write_bytes_impl,
-          write_end  : &raptor_iostream_write_end_impl,
-          read_bytes : &raptor_iostream_read_bytes_impl,
-          read_eof   : &raptor_iostream_read_eof_impl };
-    
-    
-    class UserIOStream : UserObject {
-        IOStream record;
-        this(RaptorWorldWithoutFinalize world) {
-            IOStreamHandle* handle = raptor_new_iostream_from_handler(world.handle,
-                                                                      context,
-                                                                      &Dispatch);
-            record = IOStream.fromNonnullHandle(handle);
-        }
-        void doWriteByte(char byte_) {
-            if(doWriteBytes(&byte_, 1, 1) != 1)
-                throw new IOStreamException();
-        }
-        abstract int doWriteBytes(char* data, size_t size, size_t count);
-        abstract void doWriteEnd();
-        abstract size_t doReadBytes(char* data, size_t size, size_t count);
-        abstract bool doReadEof();
+```rust
+private immutable DispatcherType Dispatch =
+    { version_: 2,
+      init: null,
+      finish: null,
+      write_byte : &raptor_iostream_write_byte_impl,
+      write_bytes: &raptor_iostream_write_bytes_impl,
+      write_end  : &raptor_iostream_write_end_impl,
+      read_bytes : &raptor_iostream_read_bytes_impl,
+      read_eof   : &raptor_iostream_read_eof_impl };
+
+
+class UserIOStream : UserObject {
+    IOStream record;
+    this(RaptorWorldWithoutFinalize world) {
+        IOStreamHandle* handle = raptor_new_iostream_from_handler(world.handle,
+                                                                  context,
+                                                                  &Dispatch);
+        record = IOStream.fromNonnullHandle(handle);
     }
-
-
+    void doWriteByte(char byte_) {
+        if(doWriteBytes(&byte_, 1, 1) != 1)
+            throw new IOStreamException();
+    }
+    abstract int doWriteBytes(char* data, size_t size, size_t count);
+    abstract void doWriteEnd();
+    abstract size_t doReadBytes(char* data, size_t size, size_t count);
+    abstract bool doReadEof();
+}
+```
 And for example:
 
-    
-    int raptor_iostream_write_bytes_impl(void* context, const void* ptr, size_t size, size_t nmemb) {
-        try {
-            return (cast(UserIOStream)context).doWriteBytes(cast(char*)ptr, size, nmemb);
-        }
-        catch(Exception) {
-            return -1;
-        }
+```d
+int raptor_iostream_write_bytes_impl(void* context, const void* ptr, size_t size, size_t nmemb) {
+    try {
+        return (cast(UserIOStream)context).doWriteBytes(cast(char*)ptr, size, nmemb);
     }
-
-
-
-
+    catch(Exception) {
+        return -1;
+    }
+}
+```
 ### More little things
 
 
@@ -228,51 +220,47 @@ I would write a lot more advice on how to write D bindings for a C library, but 
 
 One thing which can be done in D but not in Ada is compile-time comparison [via `static if`](https://dlang.org/spec/version.html#staticif). This is a D construct (similar to but more advanced than C conditional preprocessor directives) which allows conditional compilation based on compile-time values. I use `static if` with my custom `Version` type to enable/disable features of my library depending on the available features of the version of the base C library in use. In the following example, `rasqalVersionFeatures` is a D constant defined in my `rdf.config package`, created by the GNU configure script from the `config.d.in` file.
 
-    
-    static if(Version(rasqalVersionFeatures) >= Version("0.9.33")) {
-        private extern extern(C)
-        QueryResultsHandle* rasqal_new_query_results_from_string(RasqalWorldHandle* world,
-                                                                 QueryResultsType type,
-                                                                 URIHandle* base_uri,
-                                                                 const char* string,
-                                                                 size_t string_len);
-        static create(RasqalWorldWithoutFinalize world,
-                      QueryResultsType type,
-                      URITypeWithoutFinalize baseURI,
-                      string value)
-        {
-            return QueryResults.fromNonnullHandle(
-                rasqal_new_query_results_from_string(world.handle,
-                                                     type,
-                                                     baseURI.handle,
-                                                     value.ptr, value.length));
-        }
+```d
+static if(Version(rasqalVersionFeatures) >= Version("0.9.33")) {
+    private extern extern(C)
+    QueryResultsHandle* rasqal_new_query_results_from_string(RasqalWorldHandle* world,
+                                                             QueryResultsType type,
+                                                             URIHandle* base_uri,
+                                                             const char* string,
+                                                             size_t string_len);
+    static create(RasqalWorldWithoutFinalize world,
+                  QueryResultsType type,
+                  URITypeWithoutFinalize baseURI,
+                  string value)
+    {
+        return QueryResults.fromNonnullHandle(
+            rasqal_new_query_results_from_string(world.handle,
+                                                 type,
+                                                 baseURI.handle,
+                                                 value.ptr, value.length));
     }
-
-
-
-
+}
+```
 ### Comparisons
 
 
 Order comparisons between structs can be easily done with this mixin:
 
-    
-    mixin template CompareHandles(alias equal, alias compare) {
-        import std.traits;
-        bool opEquals(const ref typeof(this) s) const {
-            static if(isCallable!equal) {
-              return equal(handle, s.handle) != 0;
-            } else {
-              return compare(handle, s.handle) == 0;
-            }
-        }
-        int opCmp(const ref typeof(this) s) const {
-          return compare(handle, s.handle);
+```d
+mixin template CompareHandles(alias equal, alias compare) {
+    import std.traits;
+    bool opEquals(const ref typeof(this) s) const {
+        static if(isCallable!equal) {
+          return equal(handle, s.handle) != 0;
+        } else {
+          return compare(handle, s.handle) == 0;
         }
     }
-
-
+    int opCmp(const ref typeof(this) s) const {
+      return compare(handle, s.handle);
+    }
+}
+```
 Sadly, this mixin has to be called in both the `_WithoutFinalization` and the `_WithFinalization` structs. I found no solution to write it once.
 
 

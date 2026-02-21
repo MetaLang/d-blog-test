@@ -88,26 +88,24 @@ As a solution the xUnit patterns suggest a structuring of the test implementatio
 
 At first glance, this approach seems to be incompatible with D’s `unittest` functions. The `unittest` functions do not get automatic access to the attributes of a class, even if they are defined in the context of a class. On the other hand, one can mimic the approach, for example, by implementing the fixtures next to the `unittest` functions as a `struct`:
 
-    
-    unittest
-    {
-        Fixture fixture;
-        fixture.setup;
-        scope (exit) fixture.teardown;
-        (fixture.x * fixture.y).should.eq(42);
-    }
-
-
+```d
+unittest
+{
+    Fixture fixture;
+    fixture.setup;
+    scope (exit) fixture.teardown;
+    (fixture.x * fixture.y).should.eq(42);
+}
+```
 The test implementation can be improved by executing the fixture setup in the constructor (or in [`opCall()`](https://dlang.org/spec/operatoroverloading.html#function-call), since default constructors are disallowed in `struct`s) and the fixture teardown in the destructor:
 
-    
-    unittest
-    {
-        with (Fixture())
-            (x * y).should.eq(42);
-    }
-
-
+```d
+unittest
+{
+    with (Fixture())
+        (x * y).should.eq(42);
+}
+```
 The `with (Fixture())` pulls the context, in which test methods are executed implicitly in JUnit, explicitly into the `unittest` function. With this simple pattern you can structure unit tests in a tried and trusted way without having to use a framework for test classes ever again.
 
 
@@ -118,25 +116,19 @@ A parameterized test is a means to reuse a test implementation with different va
 
 With the new [`static foreach` feature](https://dlang.org/spec/version.html#staticforeach) however, it is easy to implement parameterized tests without the support of a framework:
 
-    
-    static foreach (i; 0 .. 2)
-        static foreach (j; 0 .. 2)
-            @(format!"%s + %s == 1"(i, j))
-            unittest
-            {
-                (i + j).should.eq(1);
-            }
-
-
+```d
+static foreach (i; 0 .. 2)
+    static foreach (j; 0 .. 2)
+        @(format!"%s + %s == 1"(i, j))
+        unittest
+        {
+            (i + j).should.eq(1);
+        }
+```
 And if you run the failing test with unit-threaded, the descriptions of the failing test cases reveal the problem without the need to take a look at the test implementation:
 
-    
     0 + 0 == 1: expected 1 but got 0
     1 + 1 == 1: expected 1 but got 2
-
-
-
-
 ### Conclusion
 
 

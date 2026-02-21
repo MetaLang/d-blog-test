@@ -38,50 +38,48 @@ Third, we continuously improve the existing code with dscanner, which, among oth
 
 As an example of the checks that dscanner can provide, let’s take a look at some code that contains a very hard-to-spot bug. The following code creates a type that mimics an `int`, but allows a `null` state:
 
-    
-    struct NullableInt
+```d
+struct NullableInt
+{
+    private int value;
+    bool isNull;
+
+    int get()
     {
-        private int value;
-        bool isNull;
-    
-        int get()
-        {
-            assert(!isNull, "can't get a null");
-            return value;
-        }
-    
-        void nullify() { isNull = true; }
-    
-        bool opEquals(T rhs) // D's equality overloading function
-        {
-            if (isNull && rhs.isNull)
-                return true;
-            if (isNull != rhs.isNull)
-                return false;
-            return value == rhs.value;
-        }
+        assert(!isNull, "can't get a null");
+        return value;
     }
 
+    void nullify() { isNull = true; }
 
+    bool opEquals(T rhs) // D's equality overloading function
+    {
+        if (isNull && rhs.isNull)
+            return true;
+        if (isNull != rhs.isNull)
+            return false;
+        return value == rhs.value;
+    }
+}
+```
 The bug is not in the code that’s there, it’s in the code that’s not there. All `struct`s in D have default versions of the standard operator overloading functions if they aren’t defined by the user. One of those functions provides a hash to represent the value to use in D’s built-in associative arrays. The default version uses all the type fields to make the hash, which is a problem for `NullableInt`, as we’ve decided that all instances of the type that are `null` are equal. Here’s an illustration of the bug:
 
-    
-    void main()
-    {
-        auto a = NullableInt(10, false);
-        auto b = NullableInt(10, false);
-        auto c = NullableInt(10, true);
-        auto d = NullableInt(0, true);
-    
-        assert(a == b);
-        assert(b != c);
-        assert(c == d);
-    
-        import core.internal.hash : hashOf; // D's internal hashing function
-        assert(c.hashOf != d.hashOf);
-    }
+```d
+void main()
+{
+    auto a = NullableInt(10, false);
+    auto b = NullableInt(10, false);
+    auto c = NullableInt(10, true);
+    auto d = NullableInt(0, true);
 
+    assert(a == b);
+    assert(b != c);
+    assert(c == d);
 
+    import core.internal.hash : hashOf; // D's internal hashing function
+    assert(c.hashOf != d.hashOf);
+}
+```
 dscanner will emit a message every time it finds a type that defines a custom `opEquals`, but doesn’t define a custom `toHash` as well, alerting us to this bug.
 
 

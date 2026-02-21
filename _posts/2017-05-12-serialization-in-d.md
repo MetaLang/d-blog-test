@@ -33,33 +33,31 @@ This was an interesting coincidence in that it occurred during [DConf](http://dc
 
 Justin's blog starts off with the following Python code:
 
-    
-    import configparser
-    config = ConfigParser()
-    config.read("config.conf")
-
-
+```python
+import configparser
+config = ConfigParser()
+config.read("config.conf")
+```
 This is actually very similar to a pattern I use in many of my D programs. For example, [DFeed](https://github.com/CyberShadow/DFeed) (the software behind [forum.dlang.org](https://forum.dlang.org/)), has [this code](https://github.com/CyberShadow/DFeed/blob/5a2fc9284f4b201be27db6cfca8750c9f9e66fbc/web.d#L4027-L4042) for configuring its built-in web server:
 
-    
-    struct ListenConfig
-    {
-        string addr;
-        ushort port = 80;
-    }
-    
-    struct Config
-    {
-        ListenConfig listen;
-        string staticDomain = null;
-        bool indexable = false;
-    }
-    const Config config;
-    
-    import ae.utils.sini;
-    shared static this() { config = loadIni!Config("config/web.ini"); }
+```d
+struct ListenConfig
+{
+    string addr;
+    ushort port = 80;
+}
 
+struct Config
+{
+    ListenConfig listen;
+    string staticDomain = null;
+    bool indexable = false;
+}
+const Config config;
 
+import ae.utils.sini;
+shared static this() { config = loadIni!Config("config/web.ini"); }
+```
 This is certainly more code than the Python example, but that's only the case because I declare the configuration as a D type. The `loadIni` function then accepts the type as a template parameter and returns an instance of it. The strong typing makes it easier to catch typos and other mistakes in the configuration - an unknown field or a non-numeric value where a number is expected will immediately result in an error.
 
 On the last line, the configuration is saved to a global by a static constructor (`shared` indicates it runs once during program initialization, instead of once per thread). Even though `loadIni`'s return type is mutable, D allows the implicit conversion to `const` because, as it occurs in a static constructor, it is treated as an initialization.
@@ -70,27 +68,26 @@ On the last line, the configuration is saved to a global by a static constructor
 
 The Rust code from Justin's blog is as follows:
 
-    
-    #[macro_use]
-    extern crate serde_derive;
-    extern crate toml;
-    
-    #[derive(Deserialize)]
-    struct MyConfiguration {
-      jenkins_host: String,
-      jenkins_username: String,
-      jenkins_token: String
-    }
-    
-    fn gimme_config(some_filename: &str) -> MyConfiguration {
-      let mut file = File::open(some_filename).unwrap();
-      let mut s = String::new();
-      file.read_to_string(&mut s).unwrap();
-      let my_config: MyConfiguration = toml::from_str(s).unwrap();
-      my_config
-    }
+```rust
+#[macro_use]
+extern crate serde_derive;
+extern crate toml;
 
+#[derive(Deserialize)]
+struct MyConfiguration {
+  jenkins_host: String,
+  jenkins_username: String,
+  jenkins_token: String
+}
 
+fn gimme_config(some_filename: &str) -> MyConfiguration {
+  let mut file = File::open(some_filename).unwrap();
+  let mut s = String::new();
+  file.read_to_string(&mut s).unwrap();
+  let my_config: MyConfiguration = toml::from_str(s).unwrap();
+  my_config
+}
+```
 The first thing that jumps out to me is that the `MyConfiguration` struct is annotated with `#[derive(Deserialize)]`. It doesn't seem optional, either - quoting Justin:
 
 
@@ -99,24 +96,23 @@ This was something that actually really discouraged me upon learning, but you ca
 
 D allows introspecting the fields and methods of any type at compile-time, so serializing third-party types is not an issue. For example (and I'll borrow [a slide from my DConf talk](http://thecybershadow.net/d/dconf2017/#/6)), deserializing one struct field from JSON looks something like this:
 
-    
-    string jsonField = parseJsonString(s);
-    enforce(s.skipOver(":"), ": expected");
-    
-    bool found;
-    foreach (i, ref field; v.tupleof)
+```d
+string jsonField = parseJsonString(s);
+enforce(s.skipOver(":"), ": expected");
+
+bool found;
+foreach (i, ref field; v.tupleof)
+{
+    enum name = __traits(identifier, v.tupleof[i]);
+    if (name == jsonField)
     {
-        enum name = __traits(identifier, v.tupleof[i]);
-        if (name == jsonField)
-        {
-            field = jsonParse!(typeof(field))(s);
-            found = true;
-            break;
-        }
+        field = jsonParse!(typeof(field))(s);
+        found = true;
+        break;
     }
-    enforce(found, "Unknown field " ~ jsonField);
-
-
+}
+enforce(found, "Unknown field " ~ jsonField);
+```
 Because the `foreach` aggregate is a tuple (`v.tupleof` is a tuple of `v`'s fields), the loop will be unrolled at compile time. Then, all that's left to do is compare each struct field with the field name we got from the JSON stream and, if it matches, read it in. This is a minimal example that can be improved e.g. [by replacing the `if` statements with a `switch`](http://thecybershadow.net/d/dconf2017/#/7), which allows the compiler to optimize the string comparisons to hash lookups.
 
 That's not to say D lacks means for adding functionality to existing types. Although D does not have struct inheritance like C++ or struct traits like Rust, it does have:
@@ -143,23 +139,21 @@ That's not to say D lacks means for adding functionality to existing types. Alth
 
 It doesn't always make sense to deserialize to a concrete type, such as when we only know or care about a small part of the schema. D's standard JSON module, `std.json`, currently only allows deserializing to a tree of variant-like types (essentially a DOM). For example:
 
-    
-    auto config = readText("config.json").parseJSON;
-    string jenkinsServer = config["jenkins_server"].str;
-
-
+```d
+auto config = readText("config.json").parseJSON;
+string jenkinsServer = config["jenkins_server"].str;
+```
 The code above is the D equivalent of the code [erickt posted on Hacker News](https://news.ycombinator.com/item?id=14285368):
 
-    
-    let config: Value = serde::from_reader(file)
-        .expect("config has invalid json");
-    
-    let jenkins_server = config.get("jenkins_server")
-        .expect("jenkins_server key not in config")
-        .as_str()
-        .expect("jenkins_server key is not a string");
+```rust
+let config: Value = serde::from_reader(file)
+    .expect("config has invalid json");
 
-
+let jenkins_server = config.get("jenkins_server")
+    .expect("jenkins_server key not in config")
+    .as_str()
+    .expect("jenkins_server key is not a string");
+```
 As D generally uses exceptions for error handling, the checks that must be done explicitly in the Rust example are taken care of by the JSON library.
 
 

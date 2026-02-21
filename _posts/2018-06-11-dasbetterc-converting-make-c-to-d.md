@@ -75,175 +75,153 @@ The `#include files are replaced` by corresponding D imports, such as [replacing
 
 A global search/replace changes uses of the [debug1, debug2 and debug3](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55L27) macros to [debug printf](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55R499). In general, [`#ifdef DEBUG` preprocessor directives](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff–14c44b49b9f46b1aeab33a6684214e55L290) are replaced with [`debug` conditional compilation](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55R276). (See the documentation [for the `debug` statement](https://dlang.org/spec/version.html#DebugStatement).)
 
-    
-    /* Delete these old C macro definitions...
-    #ifdef DEBUG
-    -#define debug1(a)       printf(a)
-    -#define debug2(a,b)     printf(a,b)
-    -#define debug3(a,b,c)   printf(a,b,c)
-    -#else
-    -#define debug1(a)
-    -#define debug2(a,b)
-    -#define debug3(a,b,c)
-    -#endif
-    */
-    
-    // And replace their usage with the debug statement
-    // debug2("Returning x%lx\n",datetime);
-    debug printf("Returning x%lx\n",datetime);
+```c
+/* Delete these old C macro definitions...
+#ifdef DEBUG
+-#define debug1(a)       printf(a)
+-#define debug2(a,b)     printf(a,b)
+-#define debug3(a,b,c)   printf(a,b,c)
+-#else
+-#define debug1(a)
+-#define debug2(a,b)
+-#define debug3(a,b,c)
+-#endif
+*/
 
-
+// And replace their usage with the debug statement
+// debug2("Returning x%lx\n",datetime);
+debug printf("Returning x%lx\n",datetime);
+```
 The [`TRUE`, `FALSE`](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55L37) and `NULL` macros are search/replaced with `true`, `false`, and `null`.
 
 The [`ESC macro is replaced`](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55L40) by a [manifest constant](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55R66). (See the documentation [for manifest constants](https://dlang.org/spec/enum.html#manifest_constants).)
 
-    
-    // #define ESC     '!'
-    enum ESC =      '!';
-
-
+```c
+// #define ESC     '!'
+enum ESC =      '!';
+```
 The [`NEWOBJ macro is replaced`](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55L42) with a [template function](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55R68).
 
-    
-    // #define NEWOBJ(type)    ((type *) mem_calloc(sizeof(type)))
-    type* NEWOBJ(type)() { return cast(type*) mem_calloc(type.sizeof); }
-
-
+```c
+// #define NEWOBJ(type)    ((type *) mem_calloc(sizeof(type)))
+type* NEWOBJ(type)() { return cast(type*) mem_calloc(type.sizeof); }
+```
 The [`filenamecmp` macro is replaced](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55L56) with [a function](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55R74).
 
 Support for [obsolete platforms is removed](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55L45).
 
 Global variables in D are placed by default into thread-local storage (TLS). But since `make` is a single-threaded program, they can be inserted into global storage with the [`__gshared` storage class](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55R82). (See the documentation [for the `__gshared` attribute](https://dlang.org/spec/attribute.html#gshared).)
 
-    
     // int CMDLINELEN;
     __gshared int CMDLINELEN
-
-
 D doesn’t have a separate struct tag name space, so the typedefs are not necessary. An
 [`alias`](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55R113) can be used instead. (See the documentation [for `alias` declarations](https://dlang.org/spec/declaration.html#alias).) Also, [`struct`](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55R131) is omitted from variable declarations.
 
-    
-    /*
-    typedef struct FILENODE
-            {       char            *name,genext[EXTMAX+1];
-                    char            dblcln;
-                    char            expanding;
-                    time_t          time;
-                    filelist        *dep;
-                    struct RULE     *frule;
-                    struct FILENODE *next;
-            } filenode;
-    */
-    struct FILENODE
-    {
-            char            *name;
-            char[EXTMAX1]  genext;
-            char            dblcln;
-            char            expanding;
-            time_t          time;
-            filelist        *dep;
-            RULE            *frule;
-            FILENODE        *next;
-    }
-    
-    alias filenode = FILENODE;
+```python
+/*
+typedef struct FILENODE
+        {       char            *name,genext[EXTMAX+1];
+                char            dblcln;
+                char            expanding;
+                time_t          time;
+                filelist        *dep;
+                struct RULE     *frule;
+                struct FILENODE *next;
+        } filenode;
+*/
+struct FILENODE
+{
+        char            *name;
+        char[EXTMAX1]  genext;
+        char            dblcln;
+        char            expanding;
+        time_t          time;
+        filelist        *dep;
+        RULE            *frule;
+        FILENODE        *next;
+}
 
-
+alias filenode = FILENODE;
+```
 [`macro` is a keyword in D](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55L86), so we’ll just use `MACRO` instead.
 
 Grouping together [multiple pointer declarations](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55L83) is not allowed in D, [use this instead](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55R98):
 
-    
     // char *name,*text;
     // In D, the * is part of the type and 
     // applies to each symbol in the declaration.
     char* name, text;
-
-
 [C array declarations](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55L111) are transformed to [D array declarations](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55R131). (See the documentation [for D’s declaration syntax](https://dlang.org/spec/declaration.html#declaration_syntax).)
 
-    
     // char            *name,genext[EXTMAX+1];
     char            *name;
     char[EXTMAX+1]  genext;
-
-
 [`static`](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55L159) has no meaning at module scope in D. `static` globals in C are equivalent to `private` module-scope variables in D, but that doesn’t really matter when the module is never imported anywhere. They still need to be `__gshared` and that can be [applied to an entire block of declarations](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55R191). (See the documentation [for the `static` attribute](https://dlang.org/spec/attribute.html#static))
 
-    
-    /*
-    static ignore_errors = FALSE;
-    static execute = TRUE;
-    static gag = FALSE;
-    static touchem = FALSE;
-    static debug = FALSE;
-    static list_lines = FALSE;
-    static usebuiltin = TRUE;
-    static print = FALSE;
+```d
+/*
+static ignore_errors = FALSE;
+static execute = TRUE;
+static gag = FALSE;
+static touchem = FALSE;
+static debug = FALSE;
+static list_lines = FALSE;
+static usebuiltin = TRUE;
+static print = FALSE;
+...
+*/
+
+__gshared
+{
+    bool ignore_errors = false;
+    bool execute = true;
+    bool gag = false;
+    bool touchem = false;
+    bool xdebug = false;
+    bool list_lines = false;
+    bool usebuiltin = true;
+    bool print = false;
     ...
-    */
-    
-    __gshared
-    {
-        bool ignore_errors = false;
-        bool execute = true;
-        bool gag = false;
-        bool touchem = false;
-        bool xdebug = false;
-        bool list_lines = false;
-        bool usebuiltin = true;
-        bool print = false;
-        ...
-    }
-
-
+}
+```
 [Forward reference declarations](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55L189) for functions are not necessary in D. Functions defined in a module can be called at any point in the same module, before or after their definition.
 
 [Wildcard expansion](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55L240) doesn’t have much meaning to a `make` program.
 
 [Function parameters declared with array syntax](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55L242) are pointers in reality, and are declared as pointers in D.
 
-    
     // int cdecl main(int argc,char *argv[])
     int main(int argc,char** argv)
-
-
 [`mem_init()` expands to nothing](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55L248) and we previously removed the macro.
 
 C code can play fast and loose with [arguments to functions](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55L275), D demands that function prototypes be respected.
 
-    
-    void cmderr(const char* format, const char* arg) {...}
-    
-    // cmderr("can't expand response file\n");
-    cmderr("can't expand response file\n", null);
+```d
+void cmderr(const char* format, const char* arg) {...}
 
-
+// cmderr("can't expand response file\n");
+cmderr("can't expand response file\n", null);
+```
 [Global search/replace C's arrow operator](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55L297) (`->`) with the dot operator (`.`), as member access in D is uniform.
 
 Replace [conditional compilation directives](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55L303) with D’s `version`.
 
-    
-    /*
-     #if TERMCODE
+```d
+/*
+ #if TERMCODE
+    ...
+ #endif
+*/
+    version (TERMCODE)
+    {
         ...
-     #endif
-    */
-        version (TERMCODE)
-        {
-            ...
-        }
-
-
+    }
+```
 The [lack of function prototypes](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55R312) shows the age of this code. D requires proper prototypes.
 
-    
     // doswitch(p)
     // char *p;
     void doswitch(char* p)
-
-
 [`debug` is a D keyword](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55L335). Rename it to `xdebug`.
 
 The [`\n\` line endings](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55L396) for C multiline string literals are not necessary in D.
@@ -254,55 +232,40 @@ The [`\n\` line endings](https://github.com/DigitalMars/Compiler/commit/a25bee1b
 
 [Decay of arrays to pointers](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55L585) is not automatic in D, use `.ptr`.
 
-    
     // utime(name,timep);
     utime(name,timep.ptr);
-
-
 [Use `const` for C-style strings](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55L658) derived from string literals in D, because D won’t allow taking mutable pointers to string literals. (See the documentation [for `const` and `immutable`](https://dlang.org/spec/const3.html#const_and_immutable).)
 
-    
     // linelist **readmakefile(char *makefile,linelist **rl)
     linelist **readmakefile(const char *makefile,linelist **rl)
-
-
 [`void*` cannot be implicitly cast to `char*`](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55R920). Make it explicit.
 
-    
-    // buf = mem_realloc(buf,bufmax);
-    buf = cast(char*)mem_realloc(buf,bufmax);
-
-
+```python
+// buf = mem_realloc(buf,bufmax);
+buf = cast(char*)mem_realloc(buf,bufmax);
+```
 [Replace `unsigned` with `uint`](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55L1099).
 
 [`inout` can be used to transfer](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55R1160) the “const-ness” of a function from its argument to its return value. If the parameter is `const`, so will be the return value. If the parameter is not `const`, neither will be the return value. (See the documentation [for `inout` functions](https://dlang.org/spec/function.html#inout-functions).)
 
-    
-    // char *skipspace(p) {...}
-    inout(char) *skipspace(inout(char)* p) {...}
-
-
+```d
+// char *skipspace(p) {...}
+inout(char) *skipspace(inout(char)* p) {...}
+```
 [`arraysize` can be replaced](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55L1628) with the `.length` property of arrays. (See the documentation [for array properties](https://dlang.org/spec/arrays.html#array-properties).)
 
-    
     // useCOMMAND  |= inarray(p,builtin,arraysize(builtin));
     useCOMMAND  |= inarray(p,builtin.ptr,builtin.length)
-
-
 String literals are immutable, so it is necessary to [replace mutable ones with a stack allocated array](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55L1683). (See the documentation [for string literals](https://dlang.org/spec/lex.html#string_literals).)
 
-    
     // static char envname[] = "@_CMDLINE";
     char[10] envname = "@_CMDLINE";
-
-
 [`.sizeof` replaces C’s `sizeof()`](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55L1688). (See the documentation [for the `.sizeof` property](https://dlang.org/spec/property.html#sizeof)).
 
-    
-    // q = (char *) mem_calloc(sizeof(envname) + len);
-    q = cast(char *) mem_calloc(envname.sizeof + len);
-
-
+```python
+// q = (char *) mem_calloc(sizeof(envname) + len);
+q = cast(char *) mem_calloc(envname.sizeof + len);
+```
 Don’t care about [old versions of Windows](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55R1692).
 
 Replace ancient C usage of [`char *` with `void*`.](https://github.com/DigitalMars/Compiler/commit/a25bee1ba3a3b5231fd80aa1b24aa18ce3eb3a34#diff-14c44b49b9f46b1aeab33a6684214e55L1773)
@@ -313,12 +276,7 @@ This leaves the file [man.c](https://github.com/DigitalMars/Compiler/commit/473b
 
 Building `make` is so easy it doesn’t even need a makefile:
 
-    
     \dmd2.079\windows\bin\dmd make.d dman.d -O -release -betterC -I. -I\dmd2.079\src\druntime\import\ shell32.lib
-
-
-
-
 ## Summary
 
 
@@ -341,24 +299,21 @@ The issues encountered are typical and easily dealt with:
   * Replacement of preprocessor macros with:
 
  	
-    * manifest constants
+```d
+* manifest constants
 
  	
-    * simple templates
+* simple templates
 
  	
-    * functions
+* functions
 
  	
-    * version declarations
+* version declarations
 
  	
-    * debug declarations
-
-
-
-
- 	
+* debug declarations
+```
   * Handling identifiers that are D keywords
 
  	

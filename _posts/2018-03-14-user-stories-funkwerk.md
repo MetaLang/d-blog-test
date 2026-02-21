@@ -45,52 +45,41 @@ _Michael Schnelle has been working as a software developer for about 5 years. Be
 
 In my experience, no matter what I am programming, I always end up applying functions to a set of data and filter this set of data. Occasionally I also execute something with side effects in between. Let’s look at a simplified use case: the transformation of a given set of data and filtering for a condition afterwards. I could simply write:
 
-    
-    foreach(element; elements) {
-      auto transformed = transform(element);
-      if (metCondition(transformed) {
-         results ~= transformed
-      } 
-    }
-
-
+```d
+foreach(element; elements) {
+  auto transformed = transform(element);
+  if (metCondition(transformed) {
+     results ~= transformed
+  } 
+}
+```
 Using the power from [`std.algorithm`](https://dlang.org/phobos/std_algorithm.html), I can instead write:
 
-    
     filter!(element => metCondition(element))
            (map!(element => transform(element))(elements));
-
-
 At this point, we have a mixture of functional and object-oriented code, which is quite nice, but still not quite as readable or easy to understand as it could be. Let’s combine it with [UFCS (Uniform Function Call Syntax)](https://tour.dlang.org/tour/en/gems/uniform-function-call-syntax-ufcs):
 
-    
     elements.map!(element => element.transform)
             .filter!(element => element.metCondition);
-
-
 I really like this kind of code, because it is clearly self-explanatory. The `foreach` loop, on the other hand, only tells me how it is being done. If I look through our code at Funkwerk, it is almost impossible to find traditional loops.
 
 But this only takes you one step further. In many cases, there happen to be side effects which need to be executed during the workflow of the program. For this kind of thing, the library provides functions like [`std.range.tee`](https://dlang.org/phobos/std_range.html#tee). Let’s say I want to execute something external with the transformed value before filtering:
 
-    
     elements
       .map!(element => element.transform)
       .tee!(element => operation(element))
       .filter!(element => element.metCondition)
       .array;
-
-
 It is crucial that operations with side effects are only executed with higher-order functions that are built for that purpose.
 
-    
-    int square(int a) { writefln("square value"); return a*a; }
-    
-    [4, 5, 8]
-      .map!(a => square(a))
-      .tee!(a => writeln(a))
-      .array;
+```d
+int square(int a) { writefln("square value"); return a*a; }
 
-
+[4, 5, 8]
+  .map!(a => square(a))
+  .tee!(a => writeln(a))
+  .array;
+```
 The code above would print out the square value six times, because `tee` calls `range.front` twice. It is possible to avoid this by using functions like [`std.algorithm.iteration.cache`](https://dlang.org/phobos/std_algorithm_iteration.html#.cache), but in my opinion, the nice way would be to avoid side effects in functions that are not meant for that.
 
 In the end, D gives you the possibility to combine the advantages of object-oriented and functional programming, resulting in more readable and maintainable code.
@@ -107,10 +96,7 @@ The establishment of coding guidelines is crucial for a team in order to create 
 
 Example:
 
-    
     StationMessage(GeneralMessage(4711, 2017-12-12T10:00:00Z), station="BAR", …)
-
-
 The generated string should follow some conventions:
 
 
@@ -120,35 +106,25 @@ The generated string should follow some conventions:
 
  	
     * start with the class name
-
- 	
+    
+     	
     * continue with any potential superclasses
-
- 	
+    
+     	
     * list all fields providing their name and value separated by a comma
-
-
-
-
- 	
   * be compact but still human readable (for developers)
 
  	
     * skip the name where it matches the type (e.g. a field of type `SysTime` is called `time`)
-
- 	
+    
+     	
     * skip the name if the field is called `id` (usually there’s an `IdType` used for type safety)
-
- 	
+    
+     	
     * there’s some special output format defined for types like `Date` and `SysTime`
-
- 	
+    
+     	
     * `Nullable!T`’s will be skipped if `null` etc.
-
-
-
-
-
 To format output in a consistent manner, we implemented a `SinkWriter` wrapping `formattedWrite` in a way that follows the listed conventions. If this `SinkWriter` is used everywhere, this is the first step to fully generate the `toString` method.
 
 Unfortunately that’s not enough; it’s very common to forget something when adding a new field to a class. Today I stumbled across some code where a field was missing in the diagnostics output and that led to some confusion.
@@ -157,56 +133,51 @@ Using [(template) mixins](https://dlang.org/spec/template-mixin.html) together w
 
 We usually implement an alternative `toString` method which uses a sink delegate as described in [https://wiki.dlang.org/Defining_custom_print_format_specifiers](https://wiki.dlang.org/Defining_custom_print_format_specifiers). The implementation is a no-brainer and looks like this:
 
-    
-    public void toString(scope void delegate(const(char)[]) sink) const
+```d
+public void toString(scope void delegate(const(char)[]) sink) const
+{
+    alias MySelf = Unqual!(typeof(this));
+
+    sink(MySelf.stringof);
+    sink("(");
+
+    with (SinkWriter(sink))
     {
-        alias MySelf = Unqual!(typeof(this));
-    
-        sink(MySelf.stringof);
-        sink("(");
-    
-        with (SinkWriter(sink))
-        {
-            write("%s", this.id_);
-            write("station=%s", this.station_);
-            // ...
-        }
-    
-        sink(")");
+        write("%s", this.id_);
+        write("station=%s", this.station_);
+        // ...
     }
 
-
+    sink(")");
+}
+```
 This code seems to be so easy that it might be generalized like this:
 
-    
-    public void toString(scope void delegate(const(char)[]) sink) const
+```d
+public void toString(scope void delegate(const(char)[]) sink) const
+{
+    import std.traits : FieldNameTuple, Unqual;
+
+    alias MySelf = Unqual!(typeof(this));
+
+    sink(MySelf.stringof);
+    sink("(");
+
+    with (SinkWriter(sink))
     {
-        import std.traits : FieldNameTuple, Unqual;
-    
-        alias MySelf = Unqual!(typeof(this));
-    
-        sink(MySelf.stringof);
-        sink("(");
-    
-        with (SinkWriter(sink))
-        {
-            static foreach (fieldName; FieldNameTuple!MySelf)
-            {{
-                mixin("const value = this." ~ fieldName ~ ";");
-                write!"%s=%s"(fieldName, value);
-            }}
-        }
-    
-        sink(")");
+        static foreach (fieldName; FieldNameTuple!MySelf)
+        {{
+            mixin("const value = this." ~ fieldName ~ ";");
+            write!"%s=%s"(fieldName, value);
+        }}
     }
 
-
+    sink(")");
+}
+```
 The above is just a rough sketch of how such a generic function might look. For a class to use this generation approach, simply call something like
 
-    
     mixin(GenerateToString);
-
-
 inside the class declaration, and that’s it. Never again will a field be missing in the class’s `toString` output.
 
 Generating the `toString` method automatically might also help us to switch from the common `toString` method to an alternative implementation. If there will be more conventions over time, we will only have to extend the `SinkWriter` and/or the `toString`-template, and that’s it.

@@ -36,45 +36,42 @@ Enter [automem](https://github.com/atilaneves/automem), a library I wrote provid
 
 Another goal was to preserve the possibility of `Unique`, like `std::unique_ptr`, to be a zero-cost abstraction. In that sense the allocator type must be specified (it defaults to `IAllocator`); if it's a value type with no state, then it takes up no space. In fact, if it's a singleton (determined at compile-time by probing where `Allocator.instance` exists), then it doesn't even need to be passed in to the constructor! As in much modern D code, [Design by Instropection](http://dconf.org/2015/talks/alexandrescu.html) pays its dues here. Example code:
 
-    
-    struct Point {
-        int x;
-        int y;
-    }
-    
-    {
-        // must pass arguments to initialise the contained object
-        // but not an allocator instance since Mallocator is
-        // a singleton (Mallocator.instance) returns the only
-        // instantiation
-        
-        auto u1 = Unique!(Point, Mallocator)(2, 3);
-        assert(*u1 == Point(2, 3));
-        assert(u1.y == 3); // forwards to the contained object
-    
-        // auto u2 = u1; // won't compile, can only move
-        typeof(u1) u2;
-        move(u1, u2);
-        assert(cast(bool)u1 == false); // u1 is now empty
-    }
-    // memory freed for the Point structure created in the block
+```d
+struct Point {
+    int x;
+    int y;
+}
 
+{
+    // must pass arguments to initialise the contained object
+    // but not an allocator instance since Mallocator is
+    // a singleton (Mallocator.instance) returns the only
+    // instantiation
+    
+    auto u1 = Unique!(Point, Mallocator)(2, 3);
+    assert(*u1 == Point(2, 3));
+    assert(u1.y == 3); // forwards to the contained object
 
+    // auto u2 = u1; // won't compile, can only move
+    typeof(u1) u2;
+    move(u1, u2);
+    assert(cast(bool)u1 == false); // u1 is now empty
+}
+// memory freed for the Point structure created in the block
+```
 `RefCounted` is automem's equivalent of C++'s `std::shared_ptr`. Unlike `std::shared_ptr` however, it doesn't always do an atomic reference count increment/decrement. The reason is that it leverage's D's type system to determine when it has to; if the payload is `shared`, then the reference count is changed atomically. If not, it can't be sent to other threads anyway and the performance penalty doesn't have to be paid. C++ always does an atomic increment/decrement. Rust gets around this with two types, `Arc` and `Rc`. In D the type system disambiguates. Another win for Design by Introspection, something that really is only possible in D. Example code:
 
-    
+```d
+{
+    auto s1 = RefCounted!(Point, Mallocator)(4, 5);
+    assert(*s1 == Point(4, 5));
+    assert(s1.x == 4);
     {
-        auto s1 = RefCounted!(Point, Mallocator)(4, 5);
-        assert(*s1 == Point(4, 5));
-        assert(s1.x == 4);
-        {
-            auto s2 = s1; // can be copied, non-atomic reference count
-        } // ref count goes to 1 here
-    
-    } // ref count goes to 0 here, memory released
-    
+        auto s2 = s1; // can be copied, non-atomic reference count
+    } // ref count goes to 1 here
 
-
+} // ref count goes to 0 here, memory released
+```
 Given that the allocator type is usually specified, it means that when using a `@nogc` allocator (most of them), the code using automem can itself be made `@nogc`, with RAII taking care of any memory management duties. That means compile-time guarantees of no GC allocation for the applications that need them.
 
 I hope automem and `std.experimental.allocator` manage to solve D's GC framing problem. Now it should be possible to write `@nogc` code with no manual memory disposal in D, just as it is in C++ and Rust.

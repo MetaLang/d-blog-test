@@ -42,13 +42,11 @@ It did take some convincing. As activity grew in the (then singular) D newsgroup
 From this perspective, there's no need to introduce a special template syntax (like the C++ style `<T>`) when there's already a syntax for parameter lists in the form of `(T)`. So a template declaration in D could look like this:
 
 
-    
-    template foo(T, U) {
-        // template members here
-    }
-
-
-
+```d
+template foo(T, U) {
+    // template members here
+}
+```
 From there, the basic features fell into place and [were expanded and enhanced over time](https://dlang.org/spec/template.html).
 
 In this article, we're going to lay the foundation for future articles by introducing the most basic concepts and terminology of D's template implementation. If you've never used templates before in any language, this may be confusing. That's not unexpected. Even though many find D's templates easier to understand than other implementations, the concept itself can still be confusing. You'll find links at the end to some tutorial resources to help build a better understanding.
@@ -62,22 +60,20 @@ In this article, we're going to lay the foundation for future articles by introd
 Inside a template declaration, one can nest any other valid D declaration:
 
 
-    
-    template foo(T, U) {
-        int x;
-        T y;
-    
-        struct Bar {
-            U thing;
-        }
-    
-        void doSomething(T t, U u) {
-            ...
-        }
+```d
+template foo(T, U) {
+    int x;
+    T y;
+
+    struct Bar {
+        U thing;
     }
 
-
-
+    void doSomething(T t, U u) {
+        ...
+    }
+}
+```
 In the above example, the parameters `T` and `U` are [template type parameters](https://dlang.org/spec/template.html#template_type_parameters), meaning they are generic substitutes for concrete types, which might be built-in types like `int`, `float`, or any type the programmer might implement with a `class` or `struct` declaration. By declaring a template, it's possible to, for example, write a single implementation of a function like `doSomething` that can accept multiple types for the same parameters. The compiler will generate as many copies of the function as it needs to accomodate the concrete types used in each unique template instantiation.
 
 Other kinds of parameters are supported: [value parameters](https://dlang.org/spec/template.html#template_value_parameter), [alias parameters](https://dlang.org/spec/template.html#aliasparameters), [sequence (or variadic) parameters](https://dlang.org/spec/template.html#variadic-templates), and [this parameters](https://dlang.org/spec/template.html#template_this_parameter), all of which we'll explore in future blog posts.
@@ -91,43 +87,37 @@ Other kinds of parameters are supported: [value parameters](https://dlang.org/sp
 In practice, it's not very common to implement templates with multiple members. By far, the most common form of template declaration is the single-member eponymous template. Consider the following:
 
 
-    
-    template max(T) {
-        T max(T a, T b) { ... }
-    }
-
-
-
+```d
+template max(T) {
+    T max(T a, T b) { ... }
+}
+```
 An eponymous template can have multiple members that share the template name, but when there is only one, D provides us with an alternate template declaration syntax. In this example, we can opt for a normal function declaration that has the template parameter list in front of the function parameter list:
 
 
-    
-    T max(T)(T a, T b) { ... }
-
-
-
+```d
+T max(T)(T a, T b) { ... }
+```
 The same holds for eponymous templates that declare an aggregate type:
 
 
-    
-    // Instead of the longhand template declaration...
-    /* 
-    template MyStruct(T, U) {
-        struct MyStruct { 
-            T t;
-            U u;
-        }
-    }
-    */
-    
-    // ...just declare a struct with a type parameter list
-    struct MyStruct(T, U) {
+```d
+// Instead of the longhand template declaration...
+/* 
+template MyStruct(T, U) {
+    struct MyStruct { 
         T t;
         U u;
     }
+}
+*/
 
-
-
+// ...just declare a struct with a type parameter list
+struct MyStruct(T, U) {
+    T t;
+    U u;
+}
+```
 Eponymous templates also offer a shortcut for instantiation, as we'll see in the next section.
 
 
@@ -149,43 +139,39 @@ We'll see an example, but first we need to see the syntax.
 An _explicit instantiation_ is a template instance created by the programmer using the template instantiation syntax. To easily disambiguate template instantiations from function calls, D requires the template instantiation operator, `!`, to be present in explicit instantiations. If the template has multiple members, they can be accessed in the same manner that members of aggregates are accessed: using dot notation.
 
 
-    
-    import std;
-    
-    template Temp(T, U) {
-        T x;
-        struct Pair {
-            T t;
-            U u;
-        }
+```d
+import std;
+
+template Temp(T, U) {
+    T x;
+    struct Pair {
+        T t;
+        U u;
     }
-    
-    void main()
-    {
-        Temp!(int, float).x = 10;
-        Temp!(int, float).Pair p;
-        p.t = 4;
-        p.u = 3.2;
-        writeln(Temp!(int, float).x);
-        writeln(p);            
-    }
+}
 
-
-
+void main()
+{
+    Temp!(int, float).x = 10;
+    Temp!(int, float).Pair p;
+    p.t = 4;
+    p.u = 3.2;
+    writeln(Temp!(int, float).x);
+    writeln(p);            
+}
+```
 [_Run it online at run.dlang.io_](https://run.dlang.io/is/9BkV2d)
 
 There is one template instantiation in this example: `Temp!(int, float)`. Although it appears three times, it refers to the same instance of `Temp`, one in which `T == int` and `U == float`. The compiler will generate declarations of `x` and the `Pair` type as if the programmer had written the following:
 
 
-    
-    int x;
-    struct Pair {
-        int t;
-        float u;
-    }
-
-
-
+```d
+int x;
+struct Pair {
+    int t;
+    float u;
+}
+```
 However, we can't just refer to `x` and `Pair` by themselves. We might have other instantiations of the same template, like `Temp!(double, long)`, or `Temp(MyStruct, short)`. To avoid conflict, the template members must be accessed through a namespace unique to each instantiation. In that regard, `Temp!(int, float)` is like a class or struct with static members; just as you would access a static `x` member variable in a struct `Foo` using the struct name, `Foo.x`, you access a template member using the template name, `Temp!(int, float).x`.
 
 There is only ever one instance of the variable `x` for the instantiation `Temp!(int float)`, so no matter where you use it in a code base, you will always be reading and writing the same `x`. Hence, the first line of `main` isn't declaring and initializing the variable `x`, but is assigning to the already declared variable. `Temp!(int, float).Pair` is a struct type, so that after the declaration `Temp!(int, float).Pair p`, we can refer to `p` by itself. Unlike `x`, `p` is not a member of the template. The type `Pair` _is_ a member, so we can't refer to it without the prefix.
@@ -199,38 +185,34 @@ There is only ever one instance of the variable `x` for the instantiation `Temp!
 It's possible to simplify the syntax by using [an `alias` declaration](https://dlang.org/spec/declaration.html#alias) for the instantiation:
 
 
-    
-    import std;
-    
-    template Temp(T, U) {
-        T x;
-        struct Pair {
-            T t;
-            U u;
-        }
+```d
+import std;
+
+template Temp(T, U) {
+    T x;
+    struct Pair {
+        T t;
+        U u;
     }
-    alias TempIF = Temp!(int, float);
-    
-    void main()
-    {
-        TempIF.x = 10;
-        TempIF.Pair p = TempIF.Pair(4, 3.2);
-        writeln(TempIF.x);
-        writeln(p);            
-    }
+}
+alias TempIF = Temp!(int, float);
 
-
-
+void main()
+{
+    TempIF.x = 10;
+    TempIF.Pair p = TempIF.Pair(4, 3.2);
+    writeln(TempIF.x);
+    writeln(p);            
+}
+```
 [_Run it online at run.dlang.io_](https://run.dlang.io/is/nal7dV)
 
 Since we no longer need to type the template argument list, using a struct literal to initialize `p`, in this case `TempIF.Pair(3, 3.2)`, looks cleaner than it would with the template arguments. So I opted to use that here rather than first declare `p` and then initialize its members. We can trim it down still more [using D's `auto` attribute](https://dlang.org/spec/attribute.html#auto), but whether this is cleaner is a matter of preference:
 
 
-    
-    auto p = TempIF.Pair(4, 3.2);
-
-
-
+```d
+auto p = TempIF.Pair(4, 3.2);
+```
 [_Run it online at run.dlang.io_](https://run.dlang.io/is/cLeE7X)
 
 
@@ -242,26 +224,24 @@ Since we no longer need to type the template argument list, using a struct liter
 Not only do eponymous templates have a shorthand declaration syntax, they also allow for a shorthand instantiation syntax. Let's take the `x` out of `Temp` and rename the template to `Pair`. We're left with a `Pair` template that provides a declaration `struct Pair`. Then we can take advantage of both the shorthand declaration and instantiation syntaxes:
 
 
-    
-    import std;
-    
-    struct Pair(T, U) {
-        T t;
-        U u;
-    }
-    
-    // We can instantiate Pair without the dot operator, but still use
-    // the alias to avoid writing the argument list every time
-    alias PairIF = Pair!(int, float);
-    
-    void main()
-    {
-        PairIF p = PairIF(4, 3.2);
-        writeln(p);            
-    }
+```d
+import std;
 
+struct Pair(T, U) {
+    T t;
+    U u;
+}
 
+// We can instantiate Pair without the dot operator, but still use
+// the alias to avoid writing the argument list every time
+alias PairIF = Pair!(int, float);
 
+void main()
+{
+    PairIF p = PairIF(4, 3.2);
+    writeln(p);            
+}
+```
 [_Run it online at run.dlang.io_](https://run.dlang.io/is/2X4DiW)
 
 The shorthand instantiation syntax means we don't have to use the dot operator to access the `Pair` type.
@@ -275,25 +255,21 @@ The shorthand instantiation syntax means we don't have to use the dot operator t
 When a template instantiation is passed only one argument, and the argument's symbol is a single token (e.g., `int` as opposed to `int[]` or `int*`), the parentheses can be dropped from the template argument list. Take [the standard library template function `std.conv.to`](https://dlang.org/phobos/std_conv.html#to) as an example:
 
 
-    
-    void main() {
-        import std.stdio : writeln;
-        import std.conv : to;
-        writeln(to!(int)("42"));
-    }
-
-
-
+```d
+void main() {
+    import std.stdio : writeln;
+    import std.conv : to;
+    writeln(to!(int)("42"));
+}
+```
 [_Run it online at run.dlang.io_](https://run.dlang.io/is/uezRpo)
 
 `std.conv.to` is an eponymous template, so we can use the shortened instantiation syntax. But the fact that we've instantiated it as an argument to the `writeln` function means we've got three pairs of parentheses in close proximity. That sort of thing can impair readability if it pops up too often. We could move it out and store it in a variable if we really care about it, but since we've only got one template argument, this is a good place to drop the parentheses from the template argument list.
 
 
-    
-    writeln(to!int("42"));
-
-
-
+```d
+writeln(to!int("42"));
+```
 Whether that looks better is another case where it's up to preference, but it's fairly idiomatic these days to drop the parentheses for a single template argument no matter where the instantiation appears.
 
 
@@ -307,29 +283,23 @@ Whether that looks better is another case where it's up to preference, but it's 
 For a somewhat simpler example, [take a look at `std.utf.toUTF8`](https://dlang.org/phobos/std_utf.html#toUTF8):
 
 
-    
-    void main()
-    {    
-        import std.stdio : writeln;
-        import std.utf : toUTF8;
-        string s1 = toUTF8("This was a UTF-16 string."w);
-        string s2 = toUTF8("This was a UTF-32 string."d);
-        writeln(s1);
-        writeln(s2);
-    }
-
-
-
+```d
+void main()
+{    
+    import std.stdio : writeln;
+    import std.utf : toUTF8;
+    string s1 = toUTF8("This was a UTF-16 string."w);
+    string s2 = toUTF8("This was a UTF-32 string."d);
+    writeln(s1);
+    writeln(s2);
+}
+```
 [_Run it online at run.dlang.io_](https://run.dlang.io/is/wQ3N4J)
 
 Unlike `std.conv.to`, `toUTF8` takes exactly one parameter. The signature of the declaration looks like this:
 
 
-    
     string toUTF8(S)(S s)
-
-
-
 But in the example, we aren't passing a type as a template argument. Just as the compiler was able to deduce `to`'s second argument, it's able to deduce `toUTF8`'s sole argument.
 
 `toUTF8` is an eponymous function template with a template parameter `S` and a function parameter `s` of type `S`. There are two things we can say about this: 1) the return type is independent of the template parameter and 2) the template parameter is the type of the function parameter. Because of 2), the compiler has all the information it needs from the function call itself and has no need for the template argument in the instantiation.
@@ -341,13 +311,11 @@ Similarly, the `d` suffix on the literal in the initialization of `s2` indicates
 It does seem silly to convert a `wstring` or `dstring` literal to a `string` when we could just drop the `w` and `d` prefixes and have `string` literals that we can directly assign to `s1` and `s2`. Contrived examples and all that. But the syntax the examples are demonstrating really shines when we work with variables.
 
 
-    
-    wstring ws = "This is a UTF-16 string"w;
-    string s = ws.toUTF8;
-    writeln(s);
-
-
-
+```d
+wstring ws = "This is a UTF-16 string"w;
+string s = ws.toUTF8;
+writeln(s);
+```
 [_Run it online at run.dlang.io_](https://run.dlang.io/is/8Z2CZ9)
 
 Take a close look at the initialization of `s`. This combines the shorthand template instantiation syntax with Uniform Function Call Syntax (UFCS) and D's shorthand function call syntax. We've already seen the template syntax in this post. As for the other two:

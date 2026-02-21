@@ -29,31 +29,28 @@ This article explains the steps that were needed to have editable and runnable e
 
 One of D’s coolest features is its `unittest` block, which allows the insertion of testable code anywhere in a program. It has become idiomatic for a function to be followed directly by its tests. For example, let’s consider a simple function `add` which is accompanied by two tests:
 
-    
-    auto add(int a, int b)
-    {
-        return a + b;
-    }
-    
-    unittest
-    {
-        assert(2.add(2) == 4);
-        assert(3.add(4) == 7);
-    }
+```d
+auto add(int a, int b)
+{
+    return a + b;
+}
 
-
+unittest
+{
+    assert(2.add(2) == 4);
+    assert(3.add(4) == 7);
+}
+```
 By default, all `unittest` blocks will be ignored by the compiler. Specifying **-unittest** on the compiler's command line will cause the unit tests to be included in the compiled binary. Combined with **-main**, tests in D can be directly executed with:
 
-    
-    rdmd -main -unittest add.d
-
-
+```bash
+rdmd -main -unittest add.d
+```
 If a `unittest` block is annotated with [embedded documentation](http://dlang.org/spec/ddoc.html), a D documentation generator can also display the tests as examples in the generated documentation. The DMD compiler ships with a built-in documentation generator ([DDoc](http://dlang.org/spec/ddoc.html)), which can be run with the **-D** flag, so executing:
 
-    
-    dmd -D -main add.d
-
-
+```bash
+dmd -D -main add.d
+```
 would yield the documentation of the `add` function above with its tests displayed as examples, as demonstrated here:
 
 ![](http://dlang.org/blog/wp-content/uploads/2017/03/image00.png)
@@ -88,16 +85,12 @@ With this setup in place, hitting the “Run” button would merely show the use
 
 [Documentation](https://lodash.com/docs) that supports runnable examples tends to send any output to `stdout`. This allows the reader to take the example and modify it as needed while still seeing useful output about the modifications. So, for example, instead of using assertions to validate the output of a function, which is idiomatic in D unit tests and examples:
 
-    
     assert(myFun() == 4);
-
-
 Other documentation usually prints to `stdout` and shows the expected output in a comment. In D, that would look like this:
 
-    
-    writeln(myFun()); // 4
-
-
+```d
+writeln(myFun()); // 4
+```
 I [initially](https://github.com/dlang/dlang.org/pull/1297/files#diff-034369de775110cb179ed1e925b62a0fR10) tried to do such a transformation with regular expressions, but I was quickly [bitten](http://forum.dlang.org/post/mxdwzkirgzutmbrlpzgb@forum.dlang.org) by the complexity of a context-free language. So I made [another attempt](https://github.com/dlang/dlang.org/pull/1582) using Brian Schott’s [libdparse](https://github.com/Hackerpilot/libdparse), a library to parse and lex D source code. libdparse allows one to traverse the abstract syntax tree (AST) of a D source file. During the traversal of the AST, the transformation tool can rewrite all **AssertExpressions** into `writeln` calls, similar to the way other documentation displays examples. To speak in the [vocabulary](http://www.drdobbs.com/architecture-and-design/so-you-want-to-write-your-own-language/240165488?pgno=2) of compiler devs: we are _lowering_ **AssertExpressions** into the more humanly digestible `writeln` calls!
 
 Once the AST has been traversed and modified, it needs to be transformed into source code again. This led to improvements in libdparse’s formatting capabilities ([1](https://github.com/Hackerpilot/libdparse/pull/128), [2](https://github.com/Hackerpilot/libdparse/pull/130)).

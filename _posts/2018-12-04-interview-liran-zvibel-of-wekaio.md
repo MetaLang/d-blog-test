@@ -36,15 +36,12 @@ There are three main types of centralized storage systems:
 
 
 
-    
   * Block storage systems, that provide the abstraction of a local drive that sits remotely. Several systems may get access to their own “volume” on the centralized system. The AWS equivalent for such a system is Elastic Block Store. These volumes are usually not shared between more than one server, and the reason to use them is failure resiliency, reliability, and performance (also some advanced features such as taking a point in time, backup, integration into a VM environment, etc.).
 
-    
   * File systems, centralized storage that is also shared, and allows several
 servers on the network to access the same data. This is the kind of system
 that WekaIO provides. Traditionally, people have turned to block-based solutions if they needed high performance, then created a local file system based on that shared volume, but with WekaIO we show that we enable a shareable file system that is even faster than a local file system over block storage.
 
-    
   * Object storage solutions, these enable storing objects with reduced semantics (no ability to modify, data stored is only eventually consistent, etc) to enable cost savings, and generally don’t care about performance.
 
 
@@ -55,13 +52,10 @@ using different methods.
 Requirements for storage systems are:
 
 
-    
   * Reliability
 
-    
   * Performance (low-latency IOPS and throughput)
 
-    
   * Features
 
 
@@ -89,13 +83,10 @@ The biggest limitation we had initially was the availability of an optimizing co
 
 
 
-    
   * Using static polymorphism, object types get fully assembled by the compiler and runtime runs the correct code.
 
-    
   * In many cases, passing compile-time arguments saves expensive memory loads and branches leading to much faster execution.
 
-    
   * Compile-time introspection allows placing objects in memory differently, and also makes code run faster based on static decisions.
 
 

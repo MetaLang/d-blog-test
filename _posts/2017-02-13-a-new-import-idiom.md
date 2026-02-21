@@ -24,13 +24,12 @@ _Daniel Nielsen is an Embedded Software Engineer. He is currently using D in his
 
 Anyway, this is what all the fuss is about this time:
 
-    
-    template from(string moduleName)
-    {
-      mixin("import from = " ~ moduleName ~ ";");
-    }
-
-
+```d
+template from(string moduleName)
+{
+  mixin("import from = " ~ moduleName ~ ";");
+}
+```
 The TL;DR version: A new idiom to achieve even lazier imports.
 
 Before the C programmers start running for the hills, please forget you ever got burned by C++ templates. The above snippet doesn't look that complicated, now does it? If you enjoy inventing new abstractions, take my advice and [give D a try](http://ddili.org/ders/d.en/index.html). Powerful, yet an ideal beginner's language. No need to be a template archwizard.
@@ -39,29 +38,27 @@ Before we proceed further, I'd like to call out Andrei Alexandrescu for identify
 
 D, like many modern languages, has [a fully fledged module system](http://dlang.org/spec/module.html) where symbols are directly imported (unlike the infamous C `#include`). This has ultimately resulted in the widespread use of local imports, limiting the scope as much as possible, in preference to the somewhat slower and less maintainable module-level imports:
 
-    
-    // A module-level import
-    import std.datetime;
-      
-    void fun(SysTime time)
-    {
-      import std.stdio; // A local import
-      ...
-    }
-
-
+```d
+// A module-level import
+import std.datetime;
+  
+void fun(SysTime time)
+{
+  import std.stdio; // A local import
+  ...
+}
+```
 Similar lazy import idioms are possible in other languages, for instance Python.
 
 The observant among you might notice that because `SysTime` is used as the type of a function parameter, `std.datetime` must be imported at module level. Which brings us to the point of this blog post (and DIP 1005). How can we get around that?
 
-    
-    void fun(from!"std.datetime".SysTime time)
-    {
-      import std.stdio;
-      ...
-    }
-
-
+```d
+void fun(from!"std.datetime".SysTime time)
+{
+  import std.stdio;
+  ...
+}
+```
 There you have it, the Scherkl-Nielsen self-important lookup.
 
 In order to fully understand what's going on, you may need to learn some D-isms. Let's break it down.
@@ -74,133 +71,114 @@ In order to fully understand what's going on, you may need to learn some D-isms.
  	
   2. [Eponymous templates](https://dlang.org/spec/template.html#implicit_template_properties). The declaration of a template looks like this:
 
-    
-    template y() {
-        int x;
-    }
-
-
+```d
+template y() {
+    int x;
+}
+```
 With that, you have to type `y!().x` in order to reach the int. Oh, ze horror! Is that a smiley? Give me `x` already! That's exactly what eponymous templates accomplish:
 
-    
-    template x() {
-        int x;
-    }
-
-
+```d
+template x() {
+    int x;
+}
+```
 Now that the template and its only member have the same name, `x!().x` can be shortened to simply `x`.
 
  	
   3. [Renamed imports](https://dlang.org/spec/module.html#renamed_imports) allow accessing an imported module via a user-specified namespace. Here, `std.stdio` is imported normally:
 
-    
-    void printSomething(string s) {
-        import std.stdio;
-        writeln(s);           // The normal way
-        std.stdio.writeln(s)  // An alternative using the fully qualified 
-                              // symbol name, for disambiguation
-    }
-
-
+```d
+void printSomething(string s) {
+    import std.stdio;
+    writeln(s);           // The normal way
+    std.stdio.writeln(s)  // An alternative using the fully qualified 
+                          // symbol name, for disambiguation
+}
+```
 Now it's imported and renamed as `io`:
 
-    
-    void printSomething(string s) {
-        import io = std.stdio;
-        io.writeln(s);         // Must be accessed like this.
-        writeln(s);            // Error
-        std.stdio.writeln(s);  // Error
-    }
-
-
+```d
+void printSomething(string s) {
+    import io = std.stdio;
+    io.writeln(s);         // Must be accessed like this.
+    writeln(s);            // Error
+    std.stdio.writeln(s);  // Error
+}
+```
 Combining what we have so far:
 
-    
-    template dt() {
-        import dt = std.datetime; 
-    }
-    void fun(dt!().SysTime time) {}
-
-
+```d
+template dt() {
+    import dt = std.datetime; 
+}
+void fun(dt!().SysTime time) {}
+```
 It works perfectly fine. The only thing which remains is to make it generic.
 
  	
   4. String concatenation is achieved with the `~` operator.
 
-    
     string hey = "Hello," ~ " World!";
     assert(hey == "Hello, World!");
-
-
-
-
- 	
   5. [String mixins](https://dlang.org/mixin.html) put the power of a compiler writer at your fingertips. Let's generate code at compile time, then compile it. This is typically used for domain-specific languages (see [Pegged](https://github.com/PhilippeSigaud/Pegged) for one prominent use of a DSL in D), but in our simple case we only need to generate one single statement based on the name of the module we want to import. Putting it all together, we get the final form, allowing us to import any symbol from any module inline:
 
-    
-    template from(string moduleName)
-    {
-      mixin("import from = " ~ moduleName ~ ";");
-    }
-
-
-
-
-
+```d
+template from(string moduleName)
+{
+  mixin("import from = " ~ moduleName ~ ";");
+}
+```
 In the end, is it all really worth the effort? Using one comparison made by Jack Stouffer:
 
-    
-    import std.datetime;
-    import std.traits;
-    
-    void func(T)(SysTime a, T value) if (isIntegral!T)
-    {
-        import std.stdio : writeln;
-        writeln(a, value);
-    }
+```d
+import std.datetime;
+import std.traits;
 
-
+void func(T)(SysTime a, T value) if (isIntegral!T)
+{
+    import std.stdio : writeln;
+    writeln(a, value);
+}
+```
 Versus:
 
-    
-    void func(T)(from!"std.datetime".SysTime a, T value)
-        if (from!"std.traits".isIntegral!T)
-    {
-        import std.stdio : writeln;
-        writeln(a, value);
-    }
-
-
+```d
+void func(T)(from!"std.datetime".SysTime a, T value)
+    if (from!"std.traits".isIntegral!T)
+{
+    import std.stdio : writeln;
+    writeln(a, value);
+}
+```
 In this particular case, the total compilation time dropped to ~30% of the original, while the binary size dropped to ~41% of the original.
 
 What about the linker, I hear you cry? Sure, it can remove unused code. But it's not always as easy as it sounds, in particular due to module constructors (think `__attribute__((constructor))`). In either case, it's always more efficient to avoid generating unused code in the first place rather than removing it afterwards.
 
 So this combination of D features was waiting there to be used, but somehow no one had stumbled on it before. I agreed with the need Andrei identified for Dependency-Carrying Declarations, yet I wanted even more. I wanted Dependency-Carrying _Expressions_. My primary motivation comes from being exposed to way too much legacy C89 code.
 
-    
-    void foo(void)
-    {
-    #ifdef XXX /* needed to silence unused variable warnings */
-      int x;
-    #endif
-    ... lots of code ...
-    #ifdef XXX
-      x = bar();
-    #endif
-    }
-
-
+```c
+void foo(void)
+{
+#ifdef XXX /* needed to silence unused variable warnings */
+  int x;
+#endif
+... lots of code ...
+#ifdef XXX
+  x = bar();
+#endif
+}
+```
 Variables or modules, in the end they're all just symbols. For the same reason C99 allowed declaring variables in the middle of functions, one should be allowed to import modules where they are first used. D already allows importing anywhere in a scope, but not in declarations or expressions. It was with this mindset that I saw [Dominikus Dittes Scherkl's snippet](http://forum.dlang.org/thread/tzqzmqhankrkbrfsrmbo@forum.dlang.org?page=1):
 
-    
-    fun.ST fun()
-    {
-       import someModule.SomeType;
-       alias ST = SomeType;
-       ...
-    }
-
-
+```d
+fun.ST fun()
+{
+   import someModule.SomeType;
+   alias ST = SomeType;
+   ...
+}
+```
 Clever, yet for one thing it doesn't adhere to the DRY principle. Still, it was that tiny dot in `fun.ST` which caused the spark. There it was again, the Dependency-Carrying Expression of my dreams.
 
 Criteria:
@@ -231,6 +209,6 @@ Now then, is this the only solution? No. As a challenge to the reader, try to fi
         mixin("import opDispatch = std." ~ moduleName ~ ";");
       }
     }
-
-
-
+    
+    
+    

@@ -61,15 +61,11 @@ It is worth noting that the mathematics functions used in D were pulled from C's
 
 
 
-    
-    $ ldc2 -O --boundscheck=off --ffast-math --mcpu=native --boundscheck=off mathdemo.d && ./mathdemo
-    Time taken for c log: 0.324789 seconds.
-    Time taken for d log: 2.30737 seconds.
-
-
-
-
-
+```bash
+$ ldc2 -O --boundscheck=off --ffast-math --mcpu=native --boundscheck=off mathdemo.d && ./mathdemo
+Time taken for c log: 0.324789 seconds.
+Time taken for d log: 2.30737 seconds.
+```
 The `Matrix` object used in the D benchmark was implemented specifically because the use of modules outside standard language libraries was disallowed. To make sure that this implementation is competitive, i.e., it does not unfairly represent D's performance, it is compared to Mir's ndslice library written in D. The chart below shows matrix implementation times minus ndslice times; negative means that ndslice is slower, indicating that the implementation used here does not negatively represent D's performance.
 
 
@@ -89,36 +85,32 @@ The code was run on a computer with an Ubuntu 20.04 OS, 32 GB memory, and an Int
 
 
 
-    
-    $ julia --version
-    julia version 1.4.1
-
-
-
-
-    
-    $ dmd --version
-    DMD64 D Compiler v2.090.1
-
-
-
-
-    
-    ldc2 --version
-    LDC - the LLVM D compiler (1.18.0):
-      based on DMD v2.088.1 and LLVM 9.0.0
-
-
-
-
-    
-    $ chpl --version
-    chpl version 1.22.0
+```bash
+$ julia --version
+julia version 1.4.1
 
 
 
 
 
+$ dmd --version
+DMD64 D Compiler v2.090.1
+
+
+
+
+
+ldc2 --version
+LDC - the LLVM D compiler (1.18.0):
+  based on DMD v2.088.1 and LLVM 9.0.0
+
+
+
+
+
+$ chpl --version
+chpl version 1.22.0
+```
 ### Compilation
 
 
@@ -130,37 +122,21 @@ Chapel:
 
 
 
-    
     chpl script.chpl kernelmatrix.chpl --fast && ./script
-
-
-
-
-
 D:
 
 
 
 
-    
-    ldc2 script.d kernelmatrix.d arrays.d -O5 --boundscheck=off --ffast-math -mcpu=native && ./script
-
-
-
-
-
+```bash
+ldc2 script.d kernelmatrix.d arrays.d -O5 --boundscheck=off --ffast-math -mcpu=native && ./script
+```
 Julia (no compilation required but can be run from the command line):
 
 
 
 
-    
     julia script.jl
-
-
-
-
-
 ## Implementations
 
 
@@ -198,29 +174,25 @@ Chapel uses a `forall` loop to parallelize over threads. Also, C pointers to eac
 
 
 
-    
-    proc calculateKernelMatrix(K, data: [?D] ?T)
-    {
-      var n = D.dim(0).last;
-      var p = D.dim(1).last;
-      var E: domain(2) = {D.dim(0), D.dim(0)};
-      var mat: [E] T;
-      var rowPointers: [1..n] c_ptr(T) =
-        forall i in 1..n do c_ptrTo(data[i, 1]);
-    
-      forall j in guided(1..n by -1) {
-        for i in j..n {
-          mat[i, j] = K.kernel(rowPointers[i], rowPointers[j], p);
-          mat[j, i] = mat[i, j];
-        }
-      }
-      return mat;
+```d
+proc calculateKernelMatrix(K, data: [?D] ?T)
+{
+  var n = D.dim(0).last;
+  var p = D.dim(1).last;
+  var E: domain(2) = {D.dim(0), D.dim(0)};
+  var mat: [E] T;
+  var rowPointers: [1..n] c_ptr(T) =
+    forall i in 1..n do c_ptrTo(data[i, 1]);
+
+  forall j in guided(1..n by -1) {
+    for i in j..n {
+      mat[i, j] = K.kernel(rowPointers[i], rowPointers[j], p);
+      mat[j, i] = mat[i, j];
     }
-
-
-
-
-
+  }
+  return mat;
+}
+```
 Chapel code was the most difficult to optimize for performance and required the highest number of code changes.
 
 
@@ -238,28 +210,24 @@ D uses a `taskPool` of threads from its `std.parallel` package to parallelize co
 
 
 
-    
-    auto calculateKernelMatrix(alias K, T)(K!(T) kernel, Matrix!(T) data)
+```d
+auto calculateKernelMatrix(alias K, T)(K!(T) kernel, Matrix!(T) data)
+{
+  long n = data.ncol;
+  auto mat = Matrix!(T)(n, n);
+
+  foreach(j; taskPool.parallel(iota(n)))
+  {
+    auto arrj = data.refColumnSelect(j).array;
+    foreach(long i; j..n)
     {
-      long n = data.ncol;
-      auto mat = Matrix!(T)(n, n);
-    
-      foreach(j; taskPool.parallel(iota(n)))
-      {
-        auto arrj = data.refColumnSelect(j).array;
-        foreach(long i; j..n)
-        {
-          mat[i, j] = kernel(data.refColumnSelect(i).array, arrj);
-          mat[j, i] = mat[i, j];
-        }
-      }
-      return mat;
+      mat[i, j] = kernel(data.refColumnSelect(i).array, arrj);
+      mat[j, i] = mat[i, j];
     }
-
-
-
-
-
+  }
+  return mat;
+}
+```
 ### Julia
 
 
@@ -277,42 +245,34 @@ The `Symmetric` type saves the small bit of extra work needed for allocating to 
 
 
 
-    
-    function calculateKernelMatrix(Kernel::K, data::Array{T}) where {K <: AbstractKernel,T <: AbstractFloat}
-      n = size(data)[2]
-      mat = zeros(T, n, n)
-      @threads for j in 1:n
-          @views for i in j:n
-              mat[i,j] = kernel(Kernel, data[:, i], data[:, j])
-          end
+```python
+function calculateKernelMatrix(Kernel::K, data::Array{T}) where {K <: AbstractKernel,T <: AbstractFloat}
+  n = size(data)[2]
+  mat = zeros(T, n, n)
+  @threads for j in 1:n
+      @views for i in j:n
+          mat[i,j] = kernel(Kernel, data[:, i], data[:, j])
       end
-      return Symmetric(mat, :L)
-    end
-
-
-
-
-
+  end
+  return Symmetric(mat, :L)
+end
+```
 The `@bounds` and `@simd` macros in the kernel functions were used to turn bounds checking off and apply SIMD optimization to the calculations:
 
 
 
 
-    
-    struct DotProduct <: AbstractKernel end
-    @inline function kernel(K::DotProduct, x::AbstractArray{T, N}, y::AbstractArray{T, N}) where {T,N}
-      ret = zero(T)
-      m = length(x)
-      @inbounds @simd for k in 1:m
-          ret += x[k] * y[k]
-      end
-      return ret
-    end
-
-
-
-
-
+```python
+struct DotProduct <: AbstractKernel end
+@inline function kernel(K::DotProduct, x::AbstractArray{T, N}, y::AbstractArray{T, N}) where {T,N}
+  ret = zero(T)
+  m = length(x)
+  @inbounds @simd for k in 1:m
+      ret += x[k] * y[k]
+  end
+  return ret
+end
+```
 These optimizations are quite visible but very easy to apply.
 
 
@@ -336,7 +296,6 @@ Chapel took the longest total time but consumed the least amount of memory (near
 
 
 
-    
     Command being timed: "./script"
     	User time (seconds): 113190.32
     	System time (seconds): 6.57
@@ -360,17 +319,11 @@ Chapel took the longest total time but consumed the least amount of memory (near
     	Signals delivered: 0
     	Page size (bytes): 4096
     	Exit status: 0
-
-
-
-
-
 D consumed the highest amount of memory (around 20GB RAM peak memory) but took less total time than Chapel to execute:
 
 
 
 
-    
     Command being timed: "./script"
     	User time (seconds): 106065.71
     	System time (seconds): 58.56
@@ -394,17 +347,11 @@ D consumed the highest amount of memory (around 20GB RAM peak memory) but took l
     	Signals delivered: 0
     	Page size (bytes): 4096
     	Exit status: 0
-
-
-
-
-
 Julia consumed a moderate amount of memory (around 7.5 GB peak memory) but ran the quickest--probably because its random number generator is the fastest:
 
 
 
 
-    
     Command being timed: "julia script.jl"
     	User time (seconds): 49794.85
     	System time (seconds): 30.58
@@ -428,11 +375,6 @@ Julia consumed a moderate amount of memory (around 7.5 GB peak memory) but ran t
     	Signals delivered: 0
     	Page size (bytes): 4096
     	Exit status: 0
-
-
-
-
-
 ## Performance optimization
 
 
@@ -509,29 +451,17 @@ Programmers want a fast code/compile/result loop during development to quickly o
 
 
 
-    
     real	0m0.545s
     user	0m0.447s
     sys	0m0.101s
-
-
-
-
-
 Compared with Chapel:
 
 
 
 
-    
     real	0m5.980s
     user	0m5.787s
     sys	0m0.206s
-
-
-
-
-
 That’s a large actual and _psychological_ difference, it can make programmers reluctant to check their work and delay the development loop if they have to wait for outputs, especially when source code increases in volume and compilation times become significant.
 
 
@@ -690,138 +620,101 @@ All three languages have convenient places where users can ask questions. For Ch
 
 
 <tr >
-	        
-	 Chapel  
-	 D         
-	 Julia 
+     Chapel  
+     D         
+     Julia 
 </tr>
 
 
 <tbody >
 <tr >
-	
 <td > Compilation/Interactivty 
 </td>
-	
 <td style="text-align:center" > Slow   
 </td>
-	
 <td style="text-align:center" > Fast        
 </td>
-	
 <td style="text-align:right" > Best  
 </td>
 </tr>
 <tr >
-	
 <td > Documentation & Examples 
 </td>
-	
 <td style="text-align:center" > Detailed  
 </td>
-	
 <td style="text-align:center" > Patchy        
 </td>
-	
 <td style="text-align:right" > Best  
 </td>
 </tr>
 <tr >
-	
 <td > Multi-dimensional Arrays 
 </td>
-	
 <td style="text-align:center" > Yes   
 </td>
-	
 <td style="text-align:center" > Native Only   
 (library support) 
 </td>
-	
 <td style="text-align:right" > Yes  
 </td>
 </tr>
 <tr >
-	
 <td > Language Power    
 </td>
-	
 <td style="text-align:center" > Good   
 </td>
-	
 <td style="text-align:center" > Great        
 </td>
-	
 <td style="text-align:right" > Best  
 </td>
 </tr>
 <tr >
-	
 <td > Concurrency & Parallelism 
 </td>
-	
 <td style="text-align:center" > Great   
 </td>
-	
 <td style="text-align:center" > Great        
 </td>
-	
 <td style="text-align:right" > Good  
 </td>
 </tr>
 <tr >
-	
 <td > Standard Library   
 </td>
-	
 <td style="text-align:center" > Good   
 </td>
-	
 <td style="text-align:center" > Great        
 </td>
-	
 <td style="text-align:right" > Great 
 </td>
 </tr>
 <tr >
-	
 <td > Package Manager & Ecosystem 
 </td>
-	
 <td style="text-align:center" > Nascent  
 </td>
-	
 <td style="text-align:center" > Best        
 </td>
-	
 <td style="text-align:right" > Great 
 </td>
 </tr>
 <tr >
-	
 <td > C Integration    
 </td>
-	
 <td style="text-align:center" > Great   
 </td>
-	
 <td style="text-align:center" > Great        
 </td>
-	
 <td style="text-align:right" > Great 
 </td>
 </tr>
 <tr >
-	
 <td > Community     
 </td>
-	
 <td style="text-align:center" > Small   
 </td>
-	
 <td style="text-align:center" > Vibrant        
 </td>
-	
 <td style="text-align:right" > Largest 
 </td>
 </tr>

@@ -79,28 +79,24 @@ Obviously, I was having fun. But more importantly, I was demonstrating that the 
 
 At this time, I was able to automatically translate the following trivial example:
 
-    
-    program hello(output);
-    
-    begin
-        writeln('Hello D''s "World"!');
-    end.
+```d
+program hello(output);
 
-
+begin
+    writeln('Hello D''s "World"!');
+end.
+```
 into D:
 
-    
-    import std.stdio;
-    
-    // Program name: hello
-    void main(string[] args)
-    {
-        writeln("Hello D's \"World\"!");
-    }
+```d
+import std.stdio;
 
-
-
-
+// Program name: hello
+void main(string[] args)
+{
+    writeln("Hello D's \"World\"!");
+}
+```
 # Language competition
 
 
@@ -375,52 +371,50 @@ In short, my experience is that if a feature is not present in the language, D i
 
 Below follows another example that currently translates automatically and executes identically. It iterates over a fixed length array running from `2` to `20` inclusive, fills it with values, prints the memory footprint and writes it to binary file:
 
-    
-    program arraybase(input,output);
-    
-    type t = array[2..20] of integer;
-    var a : t;
-        n : integer;
-        f : bindable file of t;
-    
+```d
+program arraybase(input,output);
+
+type t = array[2..20] of integer;
+var a : t;
+    n : integer;
+    f : bindable file of t;
+
+begin
+  for n := 2 to 20 do
+    a[n] := n;
+  writeln('Size of t in bytes is ',sizeof(a):1); { 76 }
+  if openwrite(f,'array.dat') then
     begin
-      for n := 2 to 20 do
-        a[n] := n;
-      writeln('Size of t in bytes is ',sizeof(a):1); { 76 }
-      if openwrite(f,'array.dat') then
-        begin
-          write(f,a);
-          close(f);
-        end;
-    end.
-
-
+      write(f,a);
+      close(f);
+    end;
+end.
+```
 Transpiled to D (or should I say Dascal?) and [post-processed by dfmt](https://code.dlang.org/packages/dfmt) to fix up formatting:
 
-    
-    import epcompat;
-    import std.stdio;
-    
-    // Program name: arraybase
-    alias t = StaticArray!(int, 2, 20);
-    
-    t a;
-    int n;
-    Bindable!t f;
-    
-    void main(string[] args)
+```d
+import epcompat;
+import std.stdio;
+
+// Program name: arraybase
+alias t = StaticArray!(int, 2, 20);
+
+t a;
+int n;
+Bindable!t f;
+
+void main(string[] args)
+{
+    for (n = 2; n <= 20; n++)
+        a[n] = n;
+    writeln("Size of t in bytes is ", a.sizeof); // 76
+    if (openwrite(f, "array.dat"))
     {
-        for (n = 2; n <= 20; n++)
-            a[n] = n;
-        writeln("Size of t in bytes is ", a.sizeof); // 76
-        if (openwrite(f, "array.dat"))
-        {
-            epcompat.write(f, a);
-            close(f);
-        }
+        epcompat.write(f, a);
+        close(f);
     }
-
-
+}
+```
 Of course this is by no means idiomatic D, but the fact that it is recognizable and readable is nice, especially for my colleagues who will have to go through an unusual transition. By the way, did you notice that code comments are preserved?
 
 One _very-nice-to-have_ feature is binary file compatibility; In fact it may have been the killer feature, without which D might not have been so victorious. The case is that whenever a persistent data structure is extended in our software, we make sure that we can still read and convert that structure from its prior format. That way, if a client pulls out an old design from its archives and runs it through our current software, it will still work without the user even being aware that conversion occurs, possibly in multiple steps. Not having to give up that ability is very attractive.
@@ -433,13 +427,10 @@ But it wasn’t easy to get there. The main difficulty is the difference in how 
 
 In Prospero Extended Pascal, strings are implemented as a schema type, which is a parameterized type that can be used in the following ways:
 
-    
     type string80 = string(80);
     var str1 : string80;
         str2 : string(60);
     procedure foo(s : string);
-
-
 This defines `string80` to be an alias for a string type discriminated to have a capacity of 80 characters. Discriminated string variables, like `str1` and `str2`, can be passed to functions and procedures that take undiscriminated strings as arguments, like `foo`, which thereby work on strings of any capacity. In memory, `str1` is laid out as a sequence of 80 `char`s, followed by a `ushort` that encodes the length of the string. I say _encodes_ because a shorter string is padded with `\0`s up to the capacity and the `ushort` actually contains the length of that padding. This way, when a pointer to the string is passed to a C function and the contents of the string occupy its full capacity, the `0` in the padding length doubles as the terminating `\0` of the C string.
 
 My first thought was to mimic this data representation with a D template. But that would require procedures like `foo` to be turned into templates as well, which would escalate horribly into template bloat, a problem with multiple string arguments and argument ordering, and would complicate translation. Besides, schema types can also be discriminated at run time, which does not translate to a template.
@@ -448,29 +439,24 @@ Could some sort of inheritance scheme be the solution? Not really, because insta
 
 But binary layout is actually only relevant in files, and in a stroke of insight I realized that this must be why [user-defined attributes, or UDAs,](https://dlang.org/spec/attribute.html#uda) exist. If I annotate the string with the correct capacity for file I/O, then I can just use native D `string`s everywhere, which genuinely must be the best possible translation and solves the function argument issue. Annotation can be done with an instance of a `struct` like
 
-    
-    struct EPString
-    {
-        ushort capacity;
-    }
-
-
+```d
+struct EPString
+{
+    ushort capacity;
+}
+```
 The above Pascal snippet then translates to D like so:
 
-    
-    @EPString(80) struct string80 { string _; alias _ this; }
-    string80 str1;
-    @EPString(60) string str2;
-    void foo(string s);
-
-
+```d
+@EPString(80) struct string80 { string _; alias _ this; }
+string80 str1;
+@EPString(60) string str2;
+void foo(string s);
+```
 Notice how the `string80` alias is translated into the slightly convoluted `struct` instead of a normal D `alias`, which would have looked like
 
-    
     @EPString(80) alias string80 = string;
     </code>
-
-
 Although that compiles, there is no way to retrieve the UDA in that case because plain `alias` does not introduce a symbol. Then `hasUDA!(typeof(str1), EPString)` would have been equivalent to `hasUDA!(string, EPString)` which evaluates to `false`. By using the `struct`, `string80` is a symbol so `typeof(str1)` gives `string80`, and `hasUDA!(string80, EPString)` evaluates to `true` in this example.
 
 There is one side effect that we will have to learn to accept, and that is that taking a slice of a string does not produce the same result in D as it does in Extended Pascal. That is because string indices start at 1 in Extended Pascal and at 0 in D. My strategy is to eliminate slices from the source and replace them with a call to the standard `substr` function, which I can implement with index correction. Finding all string slices can be accomplished with a switch in the transpiler that makes it insert a `static if` to test if the slice is being taken on a `string`, and abort compilation if it is. (`Array`s are transpiled into a custom array type that handles slices and indices compatibly with Extended Pascal.)
@@ -481,43 +467,41 @@ There is one side effect that we will have to learn to accept, and that is that 
 
 Now, to write `struct`s to file and handle any embedded `@EPString()`-annotated strings specially, we can use compile-time introspection in an overload to `toFile` that acts on `struct`s as shown below. I have left out handling of aliased strings for clarity, as well as `shortstring`, which is a legacy string type with yet a different binary format.
 
-    
-    void toFile(S)(S s, File f) if (is(S == struct))
-    {
-        import std.traits;
-        static if (!hasIndirections!S)
-            f.lockingBinaryWriter.put(s);
-        else
-            // TODO unions
-            foreach(field; FieldNameTuple!S)
+```d
+void toFile(S)(S s, File f) if (is(S == struct))
+{
+    import std.traits;
+    static if (!hasIndirections!S)
+        f.lockingBinaryWriter.put(s);
+    else
+        // TODO unions
+        foreach(field; FieldNameTuple!S)
+        {
+            // If the member has itself a toFile method, call it.
+            static if (hasMember!(typeof(__traits(getMember, s, field)), "toFile") &&
+                       __traits(compiles, __traits(getMember, s, field).toFile(f)))
+                __traits(getMember, s, field).toFile(f);
+            // If the member is a struct, recurse.
+            else static if (is(typeof(__traits(getMember, s, field)) == struct))
+                toFile(__traits(getMember, s, field), f);
+            // Treat strings specially.
+            else static if (is(typeof(__traits(getMember, s, field)) == string))
             {
-                // If the member has itself a toFile method, call it.
-                static if (hasMember!(typeof(__traits(getMember, s, field)), "toFile") &&
-                           __traits(compiles, __traits(getMember, s, field).toFile(f)))
-                    __traits(getMember, s, field).toFile(f);
-                // If the member is a struct, recurse.
-                else static if (is(typeof(__traits(getMember, s, field)) == struct))
-                    toFile(__traits(getMember, s, field), f);
-                // Treat strings specially.
-                else static if (is(typeof(__traits(getMember, s, field)) == string))
+                // Look for a UDA on the member string.
+                static if (hasUDA!(__traits(getMember, s, field), EPString))
                 {
-                    // Look for a UDA on the member string.
-                    static if (hasUDA!(__traits(getMember, s, field), EPString))
-                    {
-                        enum capacity = getUDAs!(__traits(getMember, s, field), EPString)[0].capacity;
-                        static assert(capacity > 0);
-                        writeAsEPString(__traits(getMember, s, field), capacity, f);
-                    }
-                    else static assert(false, `Need an @EPString(n) in front of ` ~ fullyQualifiedName!S ~ `.` ~ field );
+                    enum capacity = getUDAs!(__traits(getMember, s, field), EPString)[0].capacity;
+                    static assert(capacity > 0);
+                    writeAsEPString(__traits(getMember, s, field), capacity, f);
                 }
-                // Just write other data members.
-                else static if(!isFunction!(__traits(getMember, s, field)))
-                    f.lockingBinaryWriter.put(__traits(getMember, s, field));
+                else static assert(false, `Need an @EPString(n) in front of ` ~ fullyQualifiedName!S ~ `.` ~ field );
             }
-    }
-    
-
-
+            // Just write other data members.
+            else static if(!isFunction!(__traits(getMember, s, field)))
+                f.lockingBinaryWriter.put(__traits(getMember, s, field));
+        }
+}
+```
 At the time of writing, I still have work to do for `union`s, which are used in the translation of variant records (including considering the use of one of the seven existing library solutions [1](https://dlang.org/phobos/std_variant.html#.Algebraic), [2](https://code.dlang.org/packages/tag), [3](https://code.dlang.org/packages/tagged_union), [4](https://code.dlang.org/packages/taggedalgebraic), [5](https://github.com/nordlow/phobos-next/blob/master/src/vary.d#L30), [6](https://code.dlang.org/packages/minivariant), [7](https://code.dlang.org/packages/sumtype)).
 
 Currently, [detecting `union`s is a bit involved ](https://forum.dlang.org/post/zwpctoccawmkwfoqkoyf@forum.dlang.org). Also, there is a complication in the determination of the size of a union when the largest variant contains strings: the D version of that variant may _not_ be the largest because D `string`s are just slices. I’ll probably work around this by adding a dummy variant that is a fixed size array of bytes to force the size of the `union` to be compatible with Extended Pascal. This is the reason why D scored a mere `0` in file format compatibility. It is amazing what D allows you to do though, so I may be able to do all of that automatically and award D a perfect score retroactively. On the other hand, it is probably easiest to just add the dummy variant in the Pascal source at the few places where it matters and be done with it.

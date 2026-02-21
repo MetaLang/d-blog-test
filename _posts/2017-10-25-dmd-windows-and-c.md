@@ -29,26 +29,24 @@ First, assume we have the following two source files in the same directory.
 
 **cfoo.c**
 
-    
-    #include <stdio.h>
-    
-    void say_hello(void) 
-    {
-        puts("Hello!");
-    }
+```c
+#include <stdio.h>
 
-
+void say_hello(void) 
+{
+    puts("Hello!");
+}
+```
 **dfoo.d**
 
-    
-    extern(C) void say_hello();
-    
-    void main() 
-    {
-        say_hello();
-    }
+```d
+extern(C) void say_hello();
 
-
+void main() 
+{
+    say_hello();
+}
+```
 Now let’s see how to get the two working together.
 
 
@@ -69,29 +67,22 @@ The DMC package (version 8.57 as I write) can be [downloaded from digitalmars.co
 
 For example, both come with Digital Mars `make` and Optlink, which is named `link.exe`. The former might conflict with Cygwin, or a MinGW distribution that’s independent of MSYS2 (if `mingw32-make` has been renamed), and the latter with Microsoft’s linker (which generally shouldn’t be on the global path anyway). Some may prefer just to keep it all off the global path. In that case, it’s simple to configure a command prompt shortcut that sets the PATH when it launches. For example, create a batch file, that looks like this:
 
-    
     echo Welcome to your Digital Mars environment.
     @set PATH=C:\D\dmd2\windows\bin;C:\D\dm\bin;%PATH%
-
-
 Save it as `C:\D\dmenv.bat`. Right click an empty spot on the desktop and, from the popup menu, select `New->Shortcut`. In the location field, enter the following:
 
-    
     C:\System\Win32\cmd.exe /k C:\d\dmenv.bat
-
-
 Now you have a shortcut that, when double clicked, will launch a command prompt that has both `dmd` and `dmc` on the path.
 
 Once installed, documentation on the command-line switches for the tools is available at the Digital Mars site. The most relevant are the docs for [DMC](http://www.digitalmars.com/ctg/sc.html), [Optlink](http://www.digitalmars.com/ctg/optlink.html), and [Librarian](http://www.digitalmars.com/ctg/lib.html) (`lib.exe`). The latter two will come in handy even when doing pure D development with vanilla DMD, as those are the tools needed to when manually manipulating its object file output.
 
 That’s all there is to it. As long as both `dmc.exe` and `dmd.exe` are on the path in any given command prompt, both compilers will find the tools they need via the default settings in their configuration files. For knocking together quick tests with both C and D on Windows, it’s a quick thing to launch a command prompt, compile & link, and execute:
 
-    
-    dmc -c cfoo.c
-    dmd dfoo.d cfoo.obj
-    dfoo
-
-
+```bash
+dmc -c cfoo.c
+dmd dfoo.d cfoo.obj
+dfoo
+```
 Easy peasy. Now let’s look at the other option.
 
 
@@ -106,12 +97,11 @@ It’s a bit of an annoyance to launch Visual Studio for simple tests between C 
 
 From the VS-enabled 64-bit environment, we can run the following commands to compile our two files.
 
-    
-    cl /c cfoo.c
-    dmd -m64 dfoo.d cfoo.obj
-    dfoo
-
-
+```bash
+cl /c cfoo.c
+dmd -m64 dfoo.d cfoo.obj
+dfoo
+```
 In a 32-bit VS environment, replace `-m64` with `-m32mscoff`.
 
 

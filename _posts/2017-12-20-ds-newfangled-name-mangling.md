@@ -36,31 +36,23 @@ D embraces the separate compilation model that compiles D source code to object 
 
 In an object file, a symbol name is assigned to each function or global variable, both when it is defined and when it is used via a call or access. The linker uses these names to connect references to definitions of the same name with only very bare knowledge about the symbol. For example, the symbol for this C function declaration,
 
-    
-    extern(C) const(char)* find(int ch, const(char)* str);
-
-
+```d
+extern(C) const(char)* find(int ch, const(char)* str);
+```
 does not tell the linker anything about function arguments or return type, as the C language uses the plain function name `find` as the symbol name (some platforms prepend a `_` to the symbol). If you later change the order of the arguments to
 
-    
-    extern(C) const(char)* find(const(char)* str, int ch);
-
-
+```d
+extern(C) const(char)* find(const(char)* str, int ch);
+```
 but fail to update and recompile all source files that use the new declarartion, the linker will happily bind the resulting object files. In that case, the program is likely to crash, since a character passed to the function will be interpreted as a string pointer and vice versa.
 
 D and C++ avoid this problem by adding more information to the symbol name, i.e. they encode into a symbol name the scope in which the symbol is defined, the function argument types, and the return type. Even if the linker does not interpret this information, linking fails with an _undefined symbol error_ if the definitions used to build the object files don’t match. For example, the D function declaration
 
-    
     module test;
     extern(D) const(char)* find(int ch, const(char)* str);
-
-
 has a symbol name `_D4test4findFiPxaZPxa`, where `_D` is a prefix to identify the symbol as being generated from a D source symbol, `4test4find` encodes the “fully qualified name” `find` in module `test`, and `FiPxaZPxa` describes the function type with an integer argument (designated by `i`) and the C-style string pointer type `Pxa` by just concatenating the encodings for argument types. `Z` terminates the function argument list and is followed by the encoding for the return type, again `Pxa` for a C-style string pointer. In contrast,
 
-    
     extern(D) const(char)* find(const(char)* str, int ch);
-
-
 is encoded as `_D4test4findFPxaiZPxa`, making it a different symbol with the argument types reversed. The encoding ensures a normalized representation of types and scopes while also providing shorter symbols than minimal source code. This encoding is called “name mangling”.
 
 _Ed: Note that `extern(C)` and `extern(D)` are [linkage attributes](https://dlang.org/spec/attribute.html#linkage). When a function is declared in D without an explicit linkage attribute, `extern(D)` is the default._
@@ -71,24 +63,15 @@ Please note that even though name mangling can detect some mismatches in the bin
 
 The mangled name of a symbol is also available during compilation using the `.mangleof` property. This used to be exploited to provide type reflection of the symbol at compile time. This should no longer be necessary due to the introduction of new [`__traits`](https://dlang.org/spec/traits.html) that make this information accessible faster and more convenient, for example,
 
-    
     __traits(getLinkage,symbol);
-
-
 or
 
-    
     __traits(getFunctionAttributes, symbol);
-
-
 Thus, usage of `.mangleof` is not recommended except for debugging purposes.
 
 When reversing the mangling process in the “demangler”, all the encoded information is kept to make it available to the user, but that does not always yield correct D syntax. The first definition above demangles as
 
-    
     const(char)* test.find(int, const(char)*)
-
-
 i.e. the module name `test` is added to the function name.
 
 
@@ -101,56 +84,50 @@ This becomes even more obvious when considering templates that usually instantia
 
 Consider expression templates, a common example of meta programming used for delayed evaluation of expressions:
 
-    
-    module expr;
-    struct Mul(X,Y)
-    {
-        X x;
-        Y y;
-    }
-    struct Add(X,Y)
-    {
-        X x;
-        Y y;
-    }
-    
-    auto mul(X,Y)(X x, Y y) { return Mul!(X,Y)(x, y); }
-    auto add(X,Y)(X x, Y y) { return Add!(X,Y)(x, y); }
+```d
+module expr;
+struct Mul(X,Y)
+{
+    X x;
+    Y y;
+}
+struct Add(X,Y)
+{
+    X x;
+    Y y;
+}
 
-
+auto mul(X,Y)(X x, Y y) { return Mul!(X,Y)(x, y); }
+auto add(X,Y)(X x, Y y) { return Add!(X,Y)(x, y); }
+```
 A function template is lowered by the compiler to [an eponymous template](https://dlang.org/spec/template.html#implicit_template_properties):
 
-    
-    template mul(X, Y)
-    {
-        auto mul(X x, Y y) { return Mul!(X,Y)(x, y); }
-    }
-
-
+```d
+template mul(X, Y)
+{
+    auto mul(X x, Y y) { return Mul!(X,Y)(x, y); }
+}
+```
 The template name is part of the qualified function name, `expr.mul!(X,Y).mul`, and the auto return type is inferred to be `Mul!(X,Y)`. This causes the symbol to reference the types `X` and `Y` three times. The demangled mangled name of an instantiation with types `double` and `float` of this template is
 
-    
     expr.Mul!(double,float) expr.mul!(double,float).mul(double,float)
-
-
 The mangling process of DMD before version 2.077 walks the abstract syntax tree of the declaration and emits the mangled representation of the types whenever it is hit. Now consider stacking operations, e.g.
 
-    
-    auto square(X)(X x) { return mul(x, x); }
-    
-    auto len = square("var");
-    pragma(msg, len.square.mangleof);
-    // S4expr66__T3MulTS4expr16__T3MulTAyaTAyaZ3MulTS4expr16__T3MulTAyaTAyaZ3MulZ3Mul
-    
-    pragma(msg, typeof(len).mangleof.length);
-    pragma(msg, len.square.mangleof.length);
-    pragma(msg, len.square.square.mangleof.length);
-    pragma(msg, len.square.square.square.mangleof.length);
-    pragma(msg, len.square.square.square.square.mangleof.length);
-    pragma(msg, len.square.square.square.square.square.mangleof.length);
-    pragma(msg, len.square.square.square.square.square.square.mangleof.length);
+```d
+auto square(X)(X x) { return mul(x, x); }
 
+auto len = square("var");
+pragma(msg, len.square.mangleof);
+// S4expr66__T3MulTS4expr16__T3MulTAyaTAyaZ3MulTS4expr16__T3MulTAyaTAyaZ3MulZ3Mul
 
+pragma(msg, typeof(len).mangleof.length);
+pragma(msg, len.square.mangleof.length);
+pragma(msg, len.square.square.mangleof.length);
+pragma(msg, len.square.square.square.mangleof.length);
+pragma(msg, len.square.square.square.square.mangleof.length);
+pragma(msg, len.square.square.square.square.square.mangleof.length);
+pragma(msg, len.square.square.square.square.square.square.mangleof.length);
+```
 With DMD 2.076 or earlier, this displays `28u, 78u, 179u, 381u, 785u, 1594u, 3212u`, showing exponential growth of the mangled symbol name length even though the expression in the source code just grows linearly. This happens because types like `Mul!(Mul!(string, string), Mul!(string, string))` are combined and the mangling repeats their full representation every time they are referenced.
 
 Create a chain of 12 calls to `square` above and the symbol length increases to 207,114. Even worse, the resulting object file for COFF/64-bit is larger than 15 MB and the time to compile increases from 0.1 seconds to about 1 minute. Most of that time is spent generating code for functions only used at compile time.
@@ -270,7 +247,6 @@ Here are some details about the new mangling:
 
 For example, the expression template type shown above now mangles as
 
-    
     pragma(msg, len.square.mangleof);
     // S4expr__T3MulTSQo__TQlTAyaTQeZQvTQtZQBb
     //                ^^   ^^     ^^ ^^ ^^ ^^^ decode to:
@@ -281,9 +257,6 @@ For example, the expression template type shown above now mangles as
     //                |    |      +---------- Aya
     //                |    +----------------- 3Mul
     //                +---------------------- 4expr
-    
-
-
 with a length of 39 instead of 78 without back references. The resulting sizes are 23, 39, 57, 76, 95, 114, 133 showing linear growth. The chain of 12 calls to `square` shrinks from 207,114 characters to 247, i.e. by a factor of more than 800.
 
 Implementing `mangleFunc` mentioned above for the mangling with back referencing identifiers still is not obvious; while the fully qualified name is not supposed to contain any types (e.g. as a struct template argument) identifiers in the mangled name can appear again in the function type. This was solved by extending the demangler to use [“Design by Introspection” (DbI)](https://dconf.org/2017/talks/alexandrescu.pdf) (as coined by Andrei Alexandrescu):
@@ -293,75 +266,61 @@ Implementing `mangleFunc` mentioned above for the mangling with back referencing
  	
   * make the `Demangle` struct a template that parameterizes on a struct that supplies a couple of hooks
 
-    
-    struct NoHooks {}  // supports: static bool parseLName(ref Demangle); ...
-    private struct Demangle(Hooks = NoHooks)
+```d
+struct NoHooks {}  // supports: static bool parseLName(ref Demangle); ...
+private struct Demangle(Hooks = NoHooks)
+{
+Hooks hooks;
+    // ...
+    void parseLName()
     {
-    Hooks hooks;
-        // ...
-        void parseLName()
-        {
-            static if(__traits(hasMember, Hooks, "parseLName"))
-                if (hooks.parseLName(this))
-                    return;
-                // normal decode...
-        }
+        static if(__traits(hasMember, Hooks, "parseLName"))
+            if (hooks.parseLName(this))
+                return;
+            // normal decode...
     }
-
-
-
-
- 	
+}
+```
   * create a hook that replaces a reoccurring identifier with the appropriate back reference
 
-    
-    struct RemangleHooks
+```d
+struct RemangleHooks
+{
+    char[] result;
+    size_t[const(char)[]] idpos;
+    // ...
+    bool parseLName(ref Demangler!RemangleHooks d)
     {
-        char[] result;
-        size_t[const(char)[]] idpos;
-        // ...
-        bool parseLName(ref Demangler!RemangleHooks d)
+        // flush input so far to result[]
+        if (d.front == 'Q')
         {
-            // flush input so far to result[]
-            if (d.front == 'Q')
-            {
-                // re-encode back reference...
-            }
-            else if (auto ppos = currentIdentifier in idpos)
-            {
-                // encode back reference to identifier at *ppos
-            }
-            else
-            {
-                idpos[currentIdentifier] = currentPos;
-            }
-            return true;
+            // re-encode back reference...
         }
+        else if (auto ppos = currentIdentifier in idpos)
+        {
+            // encode back reference to identifier at *ppos
+        }
+        else
+        {
+            idpos[currentIdentifier] = currentPos;
+        }
+        return true;
     }
-
-
-
-
- 	
+}
+```
   * combine the qualified name and the type as before (`core.demangle` is still capable of decoding it) and run it through the hooked demangler
 
-    
-    char[] mangleFunc(FuncType)(const(char)[] qualifiedName)
-    {
-        const(char)mangledQualifiedName = encodeLNames(qualifiedName);
-        const(char)mangled = mangledQualifiedName ~ FuncType.mangleof;
-        auto d = Demangle!RemangleHooks(mangled, null);
-        d.mute = true; // no demangled output
-        d.parseMangledName();
-        return d.hooks.result;
-    }
-
-
-
-
-
-
-
+```d
+char[] mangleFunc(FuncType)(const(char)[] qualifiedName)
+{
+    const(char)mangledQualifiedName = encodeLNames(qualifiedName);
+    const(char)mangled = mangledQualifiedName ~ FuncType.mangleof;
+    auto d = Demangle!RemangleHooks(mangled, null);
+    d.mute = true; // no demangled output
+    d.parseMangledName();
+    return d.hooks.result;
+}
+```
 ### Is the new mangling sound?
 
 

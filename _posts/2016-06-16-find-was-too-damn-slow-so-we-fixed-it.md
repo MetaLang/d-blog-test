@@ -49,29 +49,25 @@ How? Did the original code have any stupid mistakes? How else could you fix a pe
 
 One trick could be to use D's meta programming. The code was generic, but in certain cases we could use a more efficient version. D has `static-if`, which means we could switch between the versions at compile time without any runtime overhead.
 
-    
-    static if (isRandomAccessRange!Needle) {
-       // new optimized algorithm
-    } else {
-       // old algorithm
-    }
-
-
+```d
+static if (isRandomAccessRange!Needle) {
+   // new optimized algorithm
+} else {
+   // old algorithm
+}
+```
 The main difference from the old algorithm was that we could avoid creating a temporary slice to use `startsWith` on. Instead, a simple for-loop was enough. The requirement was that the needle must be a random access range.
 
 When I had a good version, the time was ripe for [a pull request](https://github.com/dlang/phobos/pull/4362). Of course, I had to fix issues like style guide formatting before the pull request was acceptable. The D community wants high-quality code, so the [autotester ](https://auto-tester.puremagic.com/)checked my pull request by running tests on different platforms. Reviewers checked it manually.
 
 Meanwhile in the forum, others chimed in. [Chris ](http://forum.dlang.org/post/atzzjgujnmbcquhdnucw@forum.dlang.org)and [Andrei ](http://forum.dlang.org/post/nic41v$jb4$1@digitalmars.com)proposed more algorithms. Since we had a benchmark now, it was easy to include them. Here are some numbers:
 
-    
     DMD:                       LDC:
     std find:    178 ±32       std find:    156 ±33
     manual find: 140 ±28       manual find: 117 ±24
     qznc find:   102 ±4        qznc find:   114 ±14
     Chris find:  165 ±31       Chris find:  136 ±25
     Andrei find: 130 ±25       Andrei find: 112 ±26
-
-
 You see the five mentioned algorithms. The first number is the mean slowdown compared to the fastest one on each single run. The annotated ± number is the [mean absolute deviation](https://en.wikipedia.org/wiki/Average_absolute_deviation). I considered LDC's performance more relevant than DMD's. You see **manual**, **qznc**, and **Andrei find** report nearly the same slowdown (117, 114, 112), and the deviation was much larger than the differences. This meant they all had roughly the same speed. Which algorithm would you choose?
 
 We certainly needed to pick one of the three top algorithms and we had to base the decision on this benchmark. Since the numbers were not clear, we needed to improve the benchmark. When we ran it on different computers (usually an Intel i5 or i7) the numbers changed a lot.
@@ -111,38 +107,37 @@ What did this new algorithm look like? It used the same nested loop design as An
 
 Here is the final winning algorithm. The version in Phobos is only slightly more generic.
 
-    
-    T[] find(T)(T[] haystack, T[] needle) {
-      if (needle.length == 0) return haystack;
-      immutable lastIndex = needle.length - 1;
-      auto last = needle[lastIndex];
-      size_t j = lastIndex, skip = 0;
-      while (j < haystack.length) {
-        if (haystack[j] != last) {
-          ++j;
-          continue;
-        }
-        immutable k = j - lastIndex;
-        // last elements match, check rest of needle
-        for (size_t i = 0; ; ++i) {
-          if (i == lastIndex)
-            return haystack[k..$]; // needle found
-          if (needle[i] != haystack[k + i])
-            break;
-        }
-        if (skip == 0) { // compute skip length
-          skip = 1;
-          while (skip < needle.length &&
-                 needle[$-1-skip] != needle[$-1]) {
-            ++skip;
-          }
-        }
-        j += skip;
-      }
-      return haystack[$ .. $];
+```d
+T[] find(T)(T[] haystack, T[] needle) {
+  if (needle.length == 0) return haystack;
+  immutable lastIndex = needle.length - 1;
+  auto last = needle[lastIndex];
+  size_t j = lastIndex, skip = 0;
+  while (j < haystack.length) {
+    if (haystack[j] != last) {
+      ++j;
+      continue;
     }
-
-
+    immutable k = j - lastIndex;
+    // last elements match, check rest of needle
+    for (size_t i = 0; ; ++i) {
+      if (i == lastIndex)
+        return haystack[k..$]; // needle found
+      if (needle[i] != haystack[k + i])
+        break;
+    }
+    if (skip == 0) { // compute skip length
+      skip = 1;
+      while (skip < needle.length &&
+             needle[$-1-skip] != needle[$-1]) {
+        ++skip;
+      }
+    }
+    j += skip;
+  }
+  return haystack[$ .. $];
+}
+```
 Now you might want to run the benchmark yourself on your specific architecture. [Get it from Github](https://github.com/qznc/find-is-too-slow) and run it with `make dmd` or `make ldc`. We are still interested in results from a wide range of architectures.
 
 For me personally, this was my biggest contribution to D's standard library so far. I'm pleased with the community. I deserved all criticism and it was professionally expressed. Now we can celebrate a faster find and fix the next issue. If you want to help, the D community will welcome you!

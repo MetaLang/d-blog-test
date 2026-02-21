@@ -28,67 +28,60 @@ The simplest allocation strategy in D is the same as it is in C: avoid the heap 
 
 Static array declarations in D require the length to be known at compile-time.
 
-    
     // OK
     int[10] nums;
     
     // Error: variable x cannot be read at compile time
     int x = 10;
     int[x] err;
-
-
 Unlike dynamic arrays, static arrays can be initialized with array literals with no allocation taking place on the GC heap. The lengths must match, otherwise the compiler will emit an error.
 
-    
-    @nogc void main() {
-        int[3] nums = [1, 2, 3];
-    }
-
-
+```d
+@nogc void main() {
+    int[3] nums = [1, 2, 3];
+}
+```
 Static arrays are automatically sliced when passed to any function taking a slice as a parameter, making them interchangeable with dynamic arrays.
 
-    
-    void printNums(int[] nums) {
-        import std.stdio : writeln;
-        writeln(nums);
-    }
-    
-    void main() {
-        int[]  dnums = [0, 1, 2];
-        int[3] snums = [0, 1, 2];
-        printNums(dnums);
-        printNums(snums);
-    }
+```d
+void printNums(int[] nums) {
+    import std.stdio : writeln;
+    writeln(nums);
+}
 
-
+void main() {
+    int[]  dnums = [0, 1, 2];
+    int[3] snums = [0, 1, 2];
+    printNums(dnums);
+    printNums(snums);
+}
+```
 When compiling with `-vgc` to find the potential GC allocations in a program and eliminate them where possible, this is an easy win. Just be wary of situations like the following:
 
-    
-    int[] foo() {
-        auto nums = [0, 1, 2];
-    
-        // Do work with nums...
-    
-        return nums;
-    }
+```d
+int[] foo() {
+    auto nums = [0, 1, 2];
 
+    // Do work with nums...
 
+    return nums;
+}
+```
 Converting `nums` in this example to a static array would be a mistake. The return statement in that case would be returning a slice to stack-allocated memory, which is a programming error. Luckily, doing so will generate a compiler error.
 
 On the other hand, if the return is conditional, it may be desirable to heap-allocate the array only when absolutely necessary rather than every time the function is called. In that scenario, a static array can be declared locally and a dynamic copy made on return. Enter the `.dup` property:
 
+```d
+int[] foo() {
+    int[3] nums = [0, 1, 2];
     
-    int[] foo() {
-        int[3] nums = [0, 1, 2];
-        
-        // Let x = the result of some work with nums
-        bool condtion = x;
-    
-        if(condition) return nums.dup;
-        else return [];
-    }
+    // Let x = the result of some work with nums
+    bool condtion = x;
 
-
+    if(condition) return nums.dup;
+    else return [];
+}
+```
 This function still uses the GC via `.dup`, but only allocates if it needs to and avoids allocation when it doesn't. Note that `[]` is equivalent to `null` in this case, a slice (or dynamic array) with a `.length` of `0` and a `.ptr` of `null`.
 
 
@@ -97,52 +90,47 @@ This function still uses the GC via `.dup`, but only allocates if it needs to an
 
 Struct instances in D are allocated on the stack by default, but can be allocated on the heap when desired. Stack-allocated structs have deterministic destruction, with their destructors called as soon as the enclosing scope exits.
 
-    
-    struct Foo {
-        int x;
-        ~this() {
-            import std.stdio;
-            writefln("#%s says bye!", x);
-        }
+```d
+struct Foo {
+    int x;
+    ~this() {
+        import std.stdio;
+        writefln("#%s says bye!", x);
     }
-    void main() {
-        Foo f1 = Foo(1);
-        Foo f2 = Foo(2);
-        Foo f3 = Foo(3);
-    }
-
-
+}
+void main() {
+    Foo f1 = Foo(1);
+    Foo f2 = Foo(2);
+    Foo f3 = Foo(3);
+}
+```
 As expected, this prints:
 
-    
     #3 says bye!
     #2 says bye!
     #1 says bye!
-
-
 Classes, being reference types, are almost always allocated on the heap. Usually, that's the GC heap via `new`, though it could also be the non-GC heap through a custom allocator. But there's no rule saying they can't be allocated on the stack. The standard library template [`std.typecons.scoped` ](https://dlang.org/phobos/std_typecons.html#.scoped)allows us to easily do so.
 
-    
-    class Foo {
-        int x;
-    
-        this(int x) { 
-            this.x = x; 
-        }
-        
-        ~this() {
-            import std.stdio;
-            writefln("#%s says bye!", x);
-        }
-    }
-    void main() {
-        import std.typecons : scoped;
-        auto f1 = scoped!Foo(1);
-        auto f2 = scoped!Foo(2);
-        auto f3 = scoped!Foo(3);
-    }
+```d
+class Foo {
+    int x;
 
-
+    this(int x) { 
+        this.x = x; 
+    }
+    
+    ~this() {
+        import std.stdio;
+        writefln("#%s says bye!", x);
+    }
+}
+void main() {
+    import std.typecons : scoped;
+    auto f1 = scoped!Foo(1);
+    auto f2 = scoped!Foo(2);
+    auto f3 = scoped!Foo(3);
+}
+```
 Functionally, this is identical to the `struct` example above; it prints the same results. Deterministic destruction is achieved via the `core.object.destroy` function, which allows destructors to be called outside of GC collections.
 
 Note that neither `scoped` nor `destroy` are currently usable in `@nogc` functions. This isn't necessarily a problem, as a function doesn't have to be annotated such to avoid the GC, but it can be a headache if you are trying to fit everything into a `@nogc` call tree. In future posts, we'll look at some of the design issues that crop up when using `@nogc` and how to avoid them.
@@ -155,18 +143,17 @@ Generally, when implementing custom types in D, the choice between `struct` and 
 
 Given that D makes `alloca` available, it is also an option for stack allocation. This is a candidate especially for arrays when you want to avoid or eliminate a local GC allocation, but the array size is only known at run time. The following example allocates a dynamic array with a runtime size on the stack.
 
-    
-    import core.stdc.stdlib : alloca;
-    
-    void main() {
-        size_t size = 10;
-        void* mem = alloca(size);
-    
-        // Slice the memory block
-        int[] arr = cast(int[])mem[0 .. size];
-    }
+```d
+import core.stdc.stdlib : alloca;
 
+void main() {
+    size_t size = 10;
+    void* mem = alloca(size);
 
+    // Slice the memory block
+    int[] arr = cast(int[])mem[0 .. size];
+}
+```
 The same caution about using `alloca` in C applies here: be careful not to blow up the stack. And as with local static arrays, don't return a slice of `arr`. Return `arr.dup` instead.
 
 
@@ -177,91 +164,84 @@ Consider an implementation of a `Queue` data type. An idiomatic implementation i
 
 D's arrays are an obvious choice as the backing store for a `Queue` implementation. Moreover, there's an opportunity to make the backing store a static array when a queue is intended to be bounded with a fixed size. Since it's already a templated type, an additional parameter, a [template value parameter](http://dlang.org/spec/template.html#TemplateValueParameter) with a default value can easily be added to decide at compile time if the array should be static or not and, if so, how much space it should require.
 
-    
-    // A default Size of 0 means to use a dynamic array for the
-    // backing store; non-zero indicates a static array.
-    struct Queue(T, size_t Size = 0) 
+```d
+// A default Size of 0 means to use a dynamic array for the
+// backing store; non-zero indicates a static array.
+struct Queue(T, size_t Size = 0) 
+{
+    // This constant will be inferred as a boolean. By making it
+    // public, a DbI template outside of this module can determine
+    // whether or not the Queue might grow. 
+    enum isFixedSize = Size > 0;
+
+    void enqueue(T item) 
     {
-        // This constant will be inferred as a boolean. By making it
-        // public, a DbI template outside of this module can determine
-        // whether or not the Queue might grow. 
-        enum isFixedSize = Size > 0;
-    
-        void enqueue(T item) 
-        {
-            static if(isFixedSize) {
-                assert(_itemCount < _items.length);
-            }
-            else {
-                ensureCapacity();
-            }
-            push(item);
-        }
-    
-        T dequeue() {
-            assert(_itemCount != 0);
-            static if(isFixedSize) {
-                return pop();
-            }
-            else {
-                auto ret = pop();
-                ensurePacked();
-                return ret;
-            }
-        }
-    
-        // Only available on a growable array
-        static if(!isFixedSize) {
-            void reserve(size_t capacity) { /* Allocate space for new items */ }
-        }
-    
-    private:   
         static if(isFixedSize) {
-            T[Size] _items;     
+            assert(_itemCount < _items.length);
         }
-        else T[] _items;
-        size_t _head, _tail;
-        size_t _itemCount;
-    
-        void push(T item) { 
-            /* Add item, update _head and _tail */
-            static if(isFixedSize) { ... }
-            else { ... }
+        else {
+            ensureCapacity();
         }
-    
-        T pop() { 
-            /* Remove item, update _head and _tail */ 
-            static if(isFixedSize) { ... }
-            else { ... }
+        push(item);
+    }
+
+    T dequeue() {
+        assert(_itemCount != 0);
+        static if(isFixedSize) {
+            return pop();
         }
-    
-        // These are only available on a growable array
-        static if(!isFixedSize) {
-            void ensureCapacity() { /* Alloc memory if needed */ }
-            void ensurePacked() { /* Shrink the array if needed */}
+        else {
+            auto ret = pop();
+            ensurePacked();
+            return ret;
         }
     }
 
+    // Only available on a growable array
+    static if(!isFixedSize) {
+        void reserve(size_t capacity) { /* Allocate space for new items */ }
+    }
 
-With this, the client can declare instances like so:
+private:   
+    static if(isFixedSize) {
+        T[Size] _items;     
+    }
+    else T[] _items;
+    size_t _head, _tail;
+    size_t _itemCount;
 
-    
-    Queue!Foo qUnbounded;
-    Queue!(Foo, 128) qBounded;
-
-
-`qBounded` requires no heap allocations. What happens with `qUnbounded` depends on the implementation. Moreover, compile-time introspection can be used to test if an instance is a fixed size or not. The `isFixedSize` constant is a convenience for that. Clients could alternatively use the built-in `__traits(hasMember, T, "reserve")` or the standard library function `std.traits.hasMember!T("reserve")` in one compile-time construct or another ([__traits](https://dlang.org/spec/traits.html) and [`std.traits`](https://dlang.org/phobos/std_traits.html) are great for DbI, and the latter should be preferred when it provides similar functionality), but including the constant in the type is more convenient.
-
-    
-    void doSomethingWithQueueInterface(T)(T queue)
-    {
-        static if(T.isFixedSize) { ... }
+    void push(T item) { 
+        /* Add item, update _head and _tail */
+        static if(isFixedSize) { ... }
         else { ... }
     }
 
+    T pop() { 
+        /* Remove item, update _head and _tail */ 
+        static if(isFixedSize) { ... }
+        else { ... }
+    }
 
+    // These are only available on a growable array
+    static if(!isFixedSize) {
+        void ensureCapacity() { /* Alloc memory if needed */ }
+        void ensurePacked() { /* Shrink the array if needed */}
+    }
+}
+```
+With this, the client can declare instances like so:
 
+    Queue!Foo qUnbounded;
+    Queue!(Foo, 128) qBounded;
+`qBounded` requires no heap allocations. What happens with `qUnbounded` depends on the implementation. Moreover, compile-time introspection can be used to test if an instance is a fixed size or not. The `isFixedSize` constant is a convenience for that. Clients could alternatively use the built-in `__traits(hasMember, T, "reserve")` or the standard library function `std.traits.hasMember!T("reserve")` in one compile-time construct or another ([__traits](https://dlang.org/spec/traits.html) and [`std.traits`](https://dlang.org/phobos/std_traits.html) are great for DbI, and the latter should be preferred when it provides similar functionality), but including the constant in the type is more convenient.
 
+```d
+void doSomethingWithQueueInterface(T)(T queue)
+{
+    static if(T.isFixedSize) { ... }
+    else { ... }
+}
+```
 #### Conclusion
 
 

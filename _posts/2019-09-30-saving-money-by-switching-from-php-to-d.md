@@ -25,7 +25,6 @@ The job turned out to be easier than we had imagined. We implemented a small D b
 
 Writing code in this way is quite simple. Let’s say we want to build a blog page. We start from a simple HTML file like this:
 
-    
     <!DOCTYPE html>
     <html lang="en">
       <head><title>Test page</title></head>
@@ -66,189 +65,171 @@ Writing code in this way is quite simple. Let’s say we want to build a blog pa
     
       </body>
     </html>
-    
-
-
 This is a valid HTML5 file that can be edited by anyone who knows HTML. Now we have to fill this template with real data from a database, which we can represent as an array in this example for the sake of simplicity:
 
-    
-    // A blog post
-    struct SimplePost
-    {
-      string heading;
-      string subheading;
-      string text;
-      string uri;
-    }
-    
-    SimplePost[] posts = [
-      SimplePost("D is awesome!", "This is a real subheading", "Original content was replaced", "http://dlang.org"),
-      SimplePost("Example post #1", "Example subheading #1", "Random text #1"),
-      SimplePost("Example post #2", "Example subheading #2", "Random text #2"),
-      SimplePost("Example post #3", "Example subheading #3", "This will never be shown")
-    ];
+```d
+// A blog post
+struct SimplePost
+{
+  string heading;
+  string subheading;
+  string text;
+  string uri;
+}
 
-
+SimplePost[] posts = [
+  SimplePost("D is awesome!", "This is a real subheading", "Original content was replaced", "http://dlang.org"),
+  SimplePost("Example post #1", "Example subheading #1", "Random text #1"),
+  SimplePost("Example post #2", "Example subheading #2", "Random text #2"),
+  SimplePost("Example post #3", "Example subheading #3", "This will never be shown")
+];
+```
 First, we must read our HTML template just as it is and parse it [using our html5 library](https://github.com/2night/arrogant):
 
-    
-      auto page = readText("html/test.html");
-    
-      // Parse the source
-      auto dom = parser.parse(page);
+```d
+  auto page = readText("html/test.html");
 
-
+  // Parse the source
+  auto dom = parser.parse(page);
+```
 Then we replace the content of the main article with data from the first element of our array. We use the tag name in order to select the correct HTML element:
 
-    
-      // Take the first element from our data source
-      auto mainPost = posts.front;
-    
-      // Update rendered data of main post
-      dom.byTagName("h1").front.innerText = mainPost.heading;
-      dom.byTagName("p").front.innerText = mainPost.text;
-      dom.byTagName("a").front["href"] = mainPost.uri;
+```d
+  // Take the first element from our data source
+  auto mainPost = posts.front;
 
-
+  // Update rendered data of main post
+  dom.byTagName("h1").front.innerText = mainPost.heading;
+  dom.byTagName("p").front.innerText = mainPost.text;
+  dom.byTagName("a").front["href"] = mainPost.uri;
+```
 We want to check if our article has a subtitle. If it doesn’t we’re going to remove the related tag.
 
-    
       // If we have a subtitle we show it. If not, we remove the node from our page
       if (mainPost.subheading.empty) dom.byTagName("h2").front.detach();
       else dom.byTagName("h2").front.innerText = mainPost.subheading;
-
-
 If you wanted to get the same result with a template language, you'd probably need to mess up the HTML with something like this:
 
-    
     <!-- We don't like this! -->
     <? if(!post.subheading.isEmpty) ?>
     <h2><?= post.subheading ?></h2>
     <? endif ?>
-    
-
-
 This mixes logic inside the view and it disrupts the whole HTML file. Anyone who works on the HTML frontend is supposed to know what `post` is, the logic behind this object, and the template language itself. Last but not least, many HTML editors would probably be driven crazy by any custom syntax. And this is still a simple case!
 
 Going back to our example, to fill the last part of our page we must get the container from the DOM. All we need is to perform a search by ID on the DOM:
 
-    
-    auto container = dom.byId("others").front;
-
-
+```d
+auto container = dom.byId("others").front;
+```
 Now we use the first element inside the container as a template. So we clone it and we empty the container itself:
 
-    
-      // Use the first children as template
-      auto containerItems = container.byCssSelector(`div[id="others"] > div`);
-      auto otherPostTemplate = containerItems.front.clone();
-    
-      // Remove all existing children from container
-      containerItems.each!(item => item.detach);
+```d
+  // Use the first children as template
+  auto containerItems = container.byCssSelector(`div[id="others"] > div`);
+  auto otherPostTemplate = containerItems.front.clone();
 
-
+  // Remove all existing children from container
+  containerItems.each!(item => item.detach);
+```
 Finally we add a new child to the container for each post in our data source:
 
-    
-      // Take 2 more posts from list. We drop the first, it's the main one.
-      foreach(post; posts.drop(1).take(2))
-      {
-        // Clone our html template
-        auto newOtherPost = otherPostTemplate.clone();
-    
-        // Update it with our data
-        newOtherPost.byTagName("h4").front.innerText = post.heading;
-        newOtherPost.byTagName("p").front.innerText = post.text;
-    
-        // Add it to html container
-        container.appendChild(newOtherPost);
-      }
+```d
+  // Take 2 more posts from list. We drop the first, it's the main one.
+  foreach(post; posts.drop(1).take(2))
+  {
+    // Clone our html template
+    auto newOtherPost = otherPostTemplate.clone();
 
+    // Update it with our data
+    newOtherPost.byTagName("h4").front.innerText = post.heading;
+    newOtherPost.byTagName("p").front.innerText = post.text;
 
+    // Add it to html container
+    container.appendChild(newOtherPost);
+  }
+```
 Putting it all together:
 
-    
-    import std;
-    import arrogant;
-    
-    // Init
-    auto parser = Arrogant();
-    
-    // A blog post
-    struct SimplePost
-    {
-      string heading;
-      string subheading;
-      string text;
-      string uri;
-    }
-    
-    /*
-      Of course real data should come from a db query.
-      We're using an array for simplicity
-    */
-    SimplePost[] posts = [
-      SimplePost("D is awesome!", "This is a real subheading", "Original content was replaced", "http://dlang.org"),
-      SimplePost("Example post #1", "Example subheading #1", "Random text #1"),
-      SimplePost("Example post #2", "Example subheading #2", "Random text #2"),
-      SimplePost("Example post #3", "Example subheading #3", "This will never be shown")
-    ];
-    
-    void main()
-    {
-      // Our template from disk
-      auto page = readText("html/test.html");
-    
-      // Parse the source
-        auto dom = parser.parse(page);
-    
-      // Take the first element from our data source
-      auto mainPost = posts.front;
-    
-      // Update rendered data of main post
-      dom.byTagName("h1").front.innerText = mainPost.heading;
-      dom.byTagName("p").front.innerText = mainPost.text;
-      dom.byTagName("a").front["href"] = mainPost.uri;
-    
-      // If we have a subtitle we show it. If not, we remove the node from our page
-      if (mainPost.subheading.empty) dom.byTagName("h2").front.detach();
-      else dom.byTagName("h2").front.innerText = mainPost.subheading;
-    
-      // -----
-      // Other articles
-      // -----
-    
-      // Get the container
-      auto container = dom.byId("others").front;
-    
-      // Use the first children as template
-      auto containerItems = container.byCssSelector(`div[id="others"] > div`);
-      auto otherPostTemplate = containerItems.front.clone();
-    
-      containerItems.each!(item => item.detach);
-    
-      // Take 2 more posts from list. We drop the first, it's the main one.
-      foreach(post; posts.drop(1).take(2))
-      {
-        // Clone our html template
-        auto newOtherPost = otherPostTemplate.clone();
-    
-        // Update it with our data
-        newOtherPost.byTagName("h4").front.innerText = post.heading;
-        newOtherPost.byTagName("p").front.innerText = post.text;
-    
-        // Add it to html container
-        container.appendChild(newOtherPost);
-      }
-    
-      writeln(dom.document);
-    
-    }
+```d
+import std;
+import arrogant;
 
+// Init
+auto parser = Arrogant();
 
+// A blog post
+struct SimplePost
+{
+  string heading;
+  string subheading;
+  string text;
+  string uri;
+}
+
+/*
+  Of course real data should come from a db query.
+  We're using an array for simplicity
+*/
+SimplePost[] posts = [
+  SimplePost("D is awesome!", "This is a real subheading", "Original content was replaced", "http://dlang.org"),
+  SimplePost("Example post #1", "Example subheading #1", "Random text #1"),
+  SimplePost("Example post #2", "Example subheading #2", "Random text #2"),
+  SimplePost("Example post #3", "Example subheading #3", "This will never be shown")
+];
+
+void main()
+{
+  // Our template from disk
+  auto page = readText("html/test.html");
+
+  // Parse the source
+    auto dom = parser.parse(page);
+
+  // Take the first element from our data source
+  auto mainPost = posts.front;
+
+  // Update rendered data of main post
+  dom.byTagName("h1").front.innerText = mainPost.heading;
+  dom.byTagName("p").front.innerText = mainPost.text;
+  dom.byTagName("a").front["href"] = mainPost.uri;
+
+  // If we have a subtitle we show it. If not, we remove the node from our page
+  if (mainPost.subheading.empty) dom.byTagName("h2").front.detach();
+  else dom.byTagName("h2").front.innerText = mainPost.subheading;
+
+  // -----
+  // Other articles
+  // -----
+
+  // Get the container
+  auto container = dom.byId("others").front;
+
+  // Use the first children as template
+  auto containerItems = container.byCssSelector(`div[id="others"] > div`);
+  auto otherPostTemplate = containerItems.front.clone();
+
+  containerItems.each!(item => item.detach);
+
+  // Take 2 more posts from list. We drop the first, it's the main one.
+  foreach(post; posts.drop(1).take(2))
+  {
+    // Clone our html template
+    auto newOtherPost = otherPostTemplate.clone();
+
+    // Update it with our data
+    newOtherPost.byTagName("h4").front.innerText = post.heading;
+    newOtherPost.byTagName("p").front.innerText = post.text;
+
+    // Add it to html container
+    container.appendChild(newOtherPost);
+  }
+
+  writeln(dom.document);
+
+}
+```
 This program will output a new valid HTML5 page like this:
 
-    
     <!DOCTYPE html>
     <html lang="en">
       <head><title>Test page</title></head>
@@ -270,9 +251,6 @@ This program will output a new valid HTML5 page like this:
         </div>
       </body>
     </html>
-    
-
-
 Of course, the same results could be achieved in many other ways and in other languages too. Our library is just a wrapper over [a plain C library named Modest](https://github.com/lexborisov/Modest). But what really makes the difference is how easy it is to write and read code thanks to D’s powerful and easy-to-understand syntax. The code shown above can be easily understood by anyone has some programming experience. I’ve received pull requests for our project from colleagues who had never heard of D at all.
 
 That’s only one part of the big picture since we’re using many different libraries for different purposes.

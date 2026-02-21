@@ -45,33 +45,31 @@ There are two basic rules for automatic destruction:
 With these two rules in mind, we can examine the following example and accurately predict its output.
 
 
-    
-    import std.stdio;
-    struct Predictable
+```d
+import std.stdio;
+struct Predictable
+{
+    int number;
+    this(int n)
     {
-        int number;
-        this(int n)
-        {
-            writeln("Constructor #", n);
-            number = n;
-        }
-        ~this()
-        {
-            writeln("Destructor #", number);
-        }
+        writeln("Constructor #", n);
+        number = n;
     }
-    
-    void main()
+    ~this()
     {
-        Predictable s0 = Predictable(0);
-        {
-            Predictable s1 = Predictable(1);
-        }
-        Predictable s2 = Predictable(2);
+        writeln("Destructor #", number);
     }
+}
 
-
-
+void main()
+{
+    Predictable s0 = Predictable(0);
+    {
+        Predictable s1 = Predictable(1);
+    }
+    Predictable s2 = Predictable(2);
+}
+```
 We see that both `s0` and `s2` are directly within the scope of the `main` function, so their destructors will run when `main` exits. Given that the declaration of `s2` comes after that of `s0`, the destructor of `s2` will run before that of `s0`.
 
 We also see that `s1` is declared in an anonymous inner scope between the declarations of `s0` and `s2`. This scope exits before `s2` is constructed, so the destructor of `s1` will execute before the constructor of `s2`.
@@ -79,16 +77,14 @@ We also see that `s1` is declared in an anonymous inner scope between the declar
 With that, we can expect the following output:
 
 
-    
-    Constructor #0      // declaration of s0
-    Constructor #1      // declaration of s1
-    Destructor #1       // anonymous scope exits, s1 destroyed
-    Constructor #2      // declaration of s2
-    Destructor #2       // main exits, s2 then s0 destroyed
-    Destructor #0
-
-
-
+```d
+Constructor #0      // declaration of s0
+Constructor #1      // declaration of s1
+Destructor #1       // anonymous scope exits, s1 destroyed
+Constructor #2      // declaration of s2
+Destructor #2       // main exits, s2 then s0 destroyed
+Destructor #0
+```
 Compiling and executing the example proves us accurate seers.
 
 The programmer can implement deterministic destruction manually, as is necessary when destroying instances allocated on the non-GC heap, e.g., with `malloc` or `std.experimental.allocator`. In an earlier post, [Go Your Own Way (Part Two: The Heap)](https://dlang.org/blog/2017/09/25/go-your-own-way-part-two-the-heap/), I covered how to use `std.conv.emplace` to allocate instances on the non-GC heap and briefly mentioned that [destructors can be invoked manually via `destroy`](https://dlang.org/phobos/object.html#.destroy). That's a function template declared in the automatically imported `object` module so that it's always available. We won't retread the allocation discussion, but an example of manual destruction isn't out of bounds for this post.
@@ -96,43 +92,41 @@ The programmer can implement deterministic destruction manually, as is necessary
 In the following example, we'll reuse the definition of the `Predictable` struct and a `destroyPredictable` function to manually invoke the destructors. For completeness, I've included functions for allocating and deallocating `Predictable` instances from the non-GC heap: `allocatePredictable` and `deallocatePredictable`. If it isn't clear to you what these two functions are doing, please read [the blog post I mentioned above](https://dlang.org/blog/2017/09/25/go-your-own-way-part-two-the-heap/).
 
 
-    
-    void main()
+```d
+void main()
+{
+    Predictable* s0 = allocatePredictable(0);
+    scope(exit) { destroyPredictable(s0); }
     {
-        Predictable* s0 = allocatePredictable(0);
-        scope(exit) { destroyPredictable(s0); }
-        {
-            Predictable* s1 = allocatePredictable(1);
-            scope(exit) { destroyPredictable(s1); }
-        }
-        Predictable* s2 = allocatePredictable(2);
-        scope(exit) { destroyPredictable(s2); }
+        Predictable* s1 = allocatePredictable(1);
+        scope(exit) { destroyPredictable(s1); }
     }
-    
-    void destroyPredictable(Predictable* p)
-    {
-        if(p) {
-            destroy(*p);
-            deallocatePredictable(p);
-        }
-    }
-    
-    Predictable* allocatePredictable(int n)
-    {
-        import core.stdc.stdlib : malloc;
-        import std.conv : emplace;
-        auto p = cast(Predictable*)malloc(Predictable.sizeof);
-        return emplace!Predictable(p, n);
-    }
-    
-    void deallocatePredictable(Predictable* p)
-    {
-        import core.stdc.stdlib : free;
-        free(p);
-    }
+    Predictable* s2 = allocatePredictable(2);
+    scope(exit) { destroyPredictable(s2); }
+}
 
+void destroyPredictable(Predictable* p)
+{
+    if(p) {
+        destroy(*p);
+        deallocatePredictable(p);
+    }
+}
 
+Predictable* allocatePredictable(int n)
+{
+    import core.stdc.stdlib : malloc;
+    import std.conv : emplace;
+    auto p = cast(Predictable*)malloc(Predictable.sizeof);
+    return emplace!Predictable(p, n);
+}
 
+void deallocatePredictable(Predictable* p)
+{
+    import core.stdc.stdlib : free;
+    free(p);
+}
+```
 Running this program will result in precisely the same output as the previous example. In the `destroyPredictable` function, we dereference the struct pointer when calling `destroy` because there is no overload that takes a pointer. There are specializations for classes, interfaces, and structs passed by reference and a general catch-all that takes all other types by reference. Destructors are invoked on types that have them. Before exiting, the function sets the argument to its default `.init` value through the reference.
 
 Note that if we were to give `destroy` a pointer without first dereferencing it, the code would still compile. The pointer would be accepted by reference and simply set to `null`, the default `.init` value for pointers, but the struct's destructor would not be invoked (i.e., the pointer is "destroyed", not the struct instance).
@@ -140,11 +134,7 @@ Note that if we were to give `destroy` a pointer without first dereferencing it,
 Inserting `writeln(*p)` immediately after `destroy(*p)` should print
 
 
-    
     Predictable(0)
-
-
-
 for each destroyed instance. (The default `.init` state for a struct in D is the aggregate of the `.init` property of each of its members; in this case, the sole member, being of type `int`, has an `.init` property of `0`, so the struct's default `.init` state is `Predictable(0)`. This [can be changed in the struct definition](https://dlang.org/spec/struct.html#default_struct_init), e.g., `struct Predictable { int id = 1; }`.)
 
 `destroy` is not restricted to instances allocated on the non-GC heap. Any aggregate type instance (`struct`, `class`, or `interface`) is a valid argument no matter where it was allocated.
@@ -184,46 +174,40 @@ Unlike structs, classes in D are reference types by default. Some consequences: 
 As an experiment, let's change the definition of `struct Predictable` in our first example to `class Unpredictable` and use `new` to allocate the instances like so:
 
 
-    
-    import std.stdio;
-    class Unpredictable
+```d
+import std.stdio;
+class Unpredictable
+{
+    int number;
+    this(int n)
     {
-        int number;
-        this(int n)
-        {
-            writeln("Constructor #", n);
-            number = n;
-        }
-        ~this()
-        {
-            writeln("Destructor #", number);
-        }
+        writeln("Constructor #", n);
+        number = n;
     }
-    
-    void main()
+    ~this()
     {
-        Unpredictable s0 = new Unpredictable(0);
-        {
-            Unpredictable s1 = new Unpredictable(1);
-        }
-        Unpredictable s2 = new Unpredictable(2);
+        writeln("Destructor #", number);
     }
+}
 
-
-
+void main()
+{
+    Unpredictable s0 = new Unpredictable(0);
+    {
+        Unpredictable s1 = new Unpredictable(1);
+    }
+    Unpredictable s2 = new Unpredictable(2);
+}
+```
 We'll see that the output is drastically different:
 
 
-    
     Constructor #0
     Constructor #1
     Constructor #2
     Destructor #0
     Destructor #1
     Destructor #2
-
-
-
 Anyone familiar with the characteristics of the default DRuntime constructor can predict for this very simple program that all the destructors will be run when the GC's cleanup function is executed as the D runtime shuts down, and that they will be executed in the order in which they were declared (an implementation detail; and note that destruction at shut down [can be disabled via a command line argument](https://dlang.org/spec/garbage.html#gc_config)). But in a more complex program, this ability to predict breaks down. Destructors can be invoked by the GC at _almost_ any time and in any order.
 
 To be clear, the GC will only perform its cleanup duties if and when it finds more memory is needed to fulfill a specific allocation request. In other words, it isn't constantly running in the background, marking objects unreachable and calling destructors willy nilly. To that extent, we can predict when the GC has the _possibility_ to perform its duties. Beyond that, all bets are off. We cannot predict with accuracy if any destructors will be invoked during any given allocation request or the order in which they will be invoked. This uncertainty has ramifications for how one implements destructors for any GC-managed type.

@@ -47,53 +47,39 @@ The drivers wrap the C API, providing a clean and consistent interface that’s 
 
 OpenCL’s `clGet*Info` functions are the way to access properties of the class hidden behind the `void*`. A typical call looks like
 
-    
     enum CL_FOO_REFERENCE_COUNT = 0x1234;
     cl_foo* foo = ...; 
     cl_int refCount;
     clGetFooInfo(foo, CL_FOO_REFERENCE_COUNT, refCount.sizeof, &refCount,null);
-    
-
-
 And that’s not even one for which you have to call, to figure out how much memory you need to allocate, then call again with the allocated buffer (and $DEITY help you if you want to get a `cl_program`’s binaries).
 
 Using D, I have been able to turn that into this:
 
-    
-    struct Foo
+```d
+struct Foo
+{
+    void* raw;
+    static struct Info
     {
-        void* raw;
-        static struct Info
-        {
-            @(0x1234) int referenceCount;
-            ...
-        }
-        mixin(generateGetInfo!(Info, clGetFooInfo));
+        @(0x1234) int referenceCount;
+        ...
     }
-    
-    Foo foo  = ...;
-    int refCount = foo.referenceCount;
-    
+    mixin(generateGetInfo!(Info, clGetFooInfo));
+}
 
-
+Foo foo  = ...;
+int refCount = foo.referenceCount;
+```
 All the magic is in [`generateGetInfo`](https://github.com/libmir/dcompute/blob/master/source/dcompute/driver/ocl/util.d) to generate a property for each member in `Foo.Info`, enabling much better scalability and bonus documentation.
 
 CUDA also has properties exposed in a similar manner, however they are not essential (unlike OpenCL) for getting things done so their development has been deferred.
 
 Launching a kernel is a large point of pain when dealing with the C API of both OpenCL and (only marginally less horrible) CUDA, due to the complete lack of type safety and having to use the `&` operator into a `void*` far too much. In DCompute this incantation simply becomes
 
-    
     Event e = q.enqueue!(saxpy)([N])(b_res, alpha, b_x, b_y, N);
-    
-
-
 for OpenCL (1D with N work items), and
 
-    
     q.enqueue!(saxpy)([N, 1, 1], [1 ,1 ,1])(b_res, alpha, b_x, b_y, N);
-    
-
-
 for CUDA (equivalent to `saxpy<<<N,1,0,q>>>(b_res,alpha,b_x,b_y, N);`)
 
 Where `q` is a queue, `N` is the length of buffers (`b_res`, `b_x` & `b_y`) and `saxpy` (single-precision _a x plus y_) is the kernel in this example. A full example may be found [here](https://github.com/libmir/dcompute/blob/master/source/dcompute/tests/main.d), along with the magic that drives the [OpenCL](https://github.com/libmir/dcompute/blob/4182fb8e1b2532adee2c6af3859856cc45cad85e/source/dcompute/driver/ocl/queue.d#L79) and [CUDA](https://github.com/libmir/dcompute/blob/4182fb8e1b2532adee2c6af3859856cc45cad85e/source/dcompute/driver/cuda/queue.d#L60) enqueue functions.

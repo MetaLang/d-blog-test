@@ -51,55 +51,43 @@ The tool used today to get a head-mutable version of a type [is `std.traits.Unqu
 
 
 
-    
-    struct S(T) {
-        T[] arr;
-    }
-
-
-
-
-
+```d
+struct S(T) {
+    T[] arr;
+}
+```
 With `Unqual`, this code fails to compile:
 
 
 
 
-    
-    void foo(T)(T a) {
-        Unqual!T b = a; // cannot implicitly convert immutable(S!int) to S!int
-    }
-    
-    unittest {
-        immutable s = S!int([1,2,3]);
-        foo(s);
-    }
+```d
+void foo(T)(T a) {
+    Unqual!T b = a; // cannot implicitly convert immutable(S!int) to S!int
+}
 
-
-
-
-
+unittest {
+    immutable s = S!int([1,2,3]);
+    foo(s);
+}
+```
 A programmer who sees that message hopefully finds a different way to achieve the same goal. However, the error message says that the conversion failed, indicating that a conversion is possible, perhaps even without issue. An inexperienced programmer, or one who knows that doing so is safe _right now_, could use a cast to shut the compiler up:
 
 
 
 
-    
-    void bar(T)(T a) {
-        Unqual!T b = cast(Unqual!T)a;
-        b.arr[0] = 4;
-    }
-    
-    unittest {
-        immutable s = S!int([1,2,3]);
-        bar(s);
-        assert(s.arr[0] == 1); // Fails, since bar() changed it.
-    }
+```d
+void bar(T)(T a) {
+    Unqual!T b = cast(Unqual!T)a;
+    b.arr[0] = 4;
+}
 
-
-
-
-
+unittest {
+    immutable s = S!int([1,2,3]);
+    bar(s);
+    assert(s.arr[0] == 1); // Fails, since bar() changed it.
+}
+```
 If, instead of `S!int`, the programmer had used `int[]`, the first example would have compiled, and the cast in the second example would have never seen the light of day. However, since `S!int` is a user-defined type, we are forced to write a templated function that either fails to compile for some types it really should support or gives undesirable behavior at run time.
 
 
@@ -117,100 +105,84 @@ Clearly, we should be able to do better than `Unqual`, and in fact we can. D has
 
 
 
-    
-    struct S {
-        void foo(this T)() {
-            import std.stdio : writeln;
-            writeln(T.stringof);
-        }
+```d
+struct S {
+    void foo(this T)() {
+        import std.stdio : writeln;
+        writeln(T.stringof);
     }
-    unittest {
-        S s1;
-        const S s2;
-        s1.foo(); // Prints "S".
-        s2.foo(); // Prints "const(S)".
-    }
-
-
-
-
-
+}
+unittest {
+    S s1;
+    const S s2;
+    s1.foo(); // Prints "S".
+    s2.foo(); // Prints "const(S)".
+}
+```
 This way, the type has the necessary knowledge of which type qualifiers a head-mutable version needs. We can now define a method that uses this information to create the correct head-mutable type:
 
 
 
 
-    
-    struct S(T) {
-        T[] arr;
-        auto headMutable(this This)() const {
-            import std.traits : CopyTypeQualifiers;
-            return S!(CopyTypeQualifiers!(This, T))(arr);
-        }
+```d
+struct S(T) {
+    T[] arr;
+    auto headMutable(this This)() const {
+        import std.traits : CopyTypeQualifiers;
+        return S!(CopyTypeQualifiers!(This, T))(arr);
     }
-    unittest {
-        const a = S!int([1,2,3]);
-        auto b = a.headMutable();
-        assert(is(typeof(b) == S!(const int))); // The correct part of the type is now const.
-        assert(a.arr is b.arr); // It's the same array, no copying has taken place.
-        b.arr[0] = 3; // Correctly fails to compile: cannot modify const expression.
-    }
-
-
-
-
-
+}
+unittest {
+    const a = S!int([1,2,3]);
+    auto b = a.headMutable();
+    assert(is(typeof(b) == S!(const int))); // The correct part of the type is now const.
+    assert(a.arr is b.arr); // It's the same array, no copying has taken place.
+    b.arr[0] = 3; // Correctly fails to compile: cannot modify const expression.
+}
+```
 Thanks to the magic of [Uniform Function Call Syntax](https://tour.dlang.org/tour/en/gems/uniform-function-call-syntax-ufcs), we can also define `headMutable()` for built-in types:
 
 
 
 
-    
-    auto headMutable(T)(T value) {
-        import std.traits;
-        import std.typecons : rebindable;
-        static if (isPointer!T) {
-            // T is a pointer and decays naturally.
-            return value;
-        } else static if (isDynamicArray!T) {
-            // T is a dynamic array and decays naturally.
-            return value;
-        } else static if (!hasAliasing!(Unqual!T)) {
-            // T is a POD datatype - either a built-in type, or a struct with only POD members.
-            return cast(Unqual!T)value;
-        } else static if (is(T == class)) {
-            // Classes are reference types, so only the reference may be made head-mutable.
-            return rebindable(value);
-        } else static if (isAssociativeArray!T) {
-            // AAs are reference types, so only the reference may be made head-mutable.
-            return rebindable(value);
-        } else {
-            static assert(false, "Type "~T.stringof~" cannot be made head-mutable.");
-        }
+```d
+auto headMutable(T)(T value) {
+    import std.traits;
+    import std.typecons : rebindable;
+    static if (isPointer!T) {
+        // T is a pointer and decays naturally.
+        return value;
+    } else static if (isDynamicArray!T) {
+        // T is a dynamic array and decays naturally.
+        return value;
+    } else static if (!hasAliasing!(Unqual!T)) {
+        // T is a POD datatype - either a built-in type, or a struct with only POD members.
+        return cast(Unqual!T)value;
+    } else static if (is(T == class)) {
+        // Classes are reference types, so only the reference may be made head-mutable.
+        return rebindable(value);
+    } else static if (isAssociativeArray!T) {
+        // AAs are reference types, so only the reference may be made head-mutable.
+        return rebindable(value);
+    } else {
+        static assert(false, "Type "~T.stringof~" cannot be made head-mutable.");
     }
-    unittest {
-        const(int*[3]) a = [null, null, null];
-        auto b = a.headMutable();
-        assert(is(typeof(b) == const(int)*[3]));
-    }
-
-
-
-
-
+}
+unittest {
+    const(int*[3]) a = [null, null, null];
+    auto b = a.headMutable();
+    assert(is(typeof(b) == const(int)*[3]));
+}
+```
 Now, whenever we need a head-mutable variable to point to tail-const data, we can simply call `headMutable()` on the value we need to store. Unlike the ham-fisted approach of casting to `Unqual!T`, which may throw away important type information and also silences any error messages that may inform you of the foolishness of your actions, attempting to call `headMutable()` on a type that doesn't support it will give an error message explaining what you tried to do and why it didn't work ("Type T cannot be made head-mutable."). The only thing missing now is a way to get the head-mutable type. Since `headMutable()` returns a value of that type, and is defined for all types we can convert to head-mutable, that's a template one-liner:
 
 
 
 
-    
-    import std.traits : ReturnType;
-    alias HeadMutable(T) = ReturnType!((T t) => t.headMutable());
-
-
-
-
-
+```d
+import std.traits : ReturnType;
+alias HeadMutable(T) = ReturnType!((T t) => t.headMutable());
+```
 Where `Unqual` returns a type with potentially the wrong semantics and only gives an error once you try assigning to it, `HeadMutable` disallows creating the type in the first place. The programmer will have to deal with that before casting or otherwise coercing a value into the variable. Since `HeadMutable` uses `headMutable()` to figure out the type, it also gives the same informative error message when it fails.
 
 
@@ -222,14 +194,10 @@ Lastly, since one common use case requires us to preserve the tail-const or tail
 
 
 
-    
-    import std.traits : CopyTypeQualifiers;
-    alias HeadMutable(T, ConstSource) = HeadMutable!(CopyTypeQualifiers!(ConstSource, T));
-
-
-
-
-
+```d
+import std.traits : CopyTypeQualifiers;
+alias HeadMutable(T, ConstSource) = HeadMutable!(CopyTypeQualifiers!(ConstSource, T));
+```
 This way, `immutable(MyStruct!int)` can become `MyStruct!(immutable int)`, while the const version would propagate constness instead of immutability.
 
 
@@ -247,112 +215,107 @@ Since the pattern for range functions in Phobos is to have a constructor functio
 
 
 
+```d
+import std.range;
+
+// Note that we check not if R is a range, but if HeadMutable!R is
+auto map(alias Fn, R)(R range) if (isInputRange!(HeadMutable!R)) {
+    // Using HeadMutable!R and range.headMutable() here.
+    // This is basically the extent to which code that uses head-mutable data types will need to change.
+    return MapResult!(Fn, HeadMutable!R)(range.headMutable());
+}
+
+struct MapResult(alias Fn, R) {
+    R range;
     
-    
-    import std.range;
-    
-    // Note that we check not if R is a range, but if HeadMutable!R is
-    auto map(alias Fn, R)(R range) if (isInputRange!(HeadMutable!R)) {
-        // Using HeadMutable!R and range.headMutable() here.
-        // This is basically the extent to which code that uses head-mutable data types will need to change.
-        return MapResult!(Fn, HeadMutable!R)(range.headMutable());
+    this(R _range) {
+        range = _range;
     }
     
-    struct MapResult(alias Fn, R) {
-        R range;
-        
-        this(R _range) {
-            range = _range;
-        }
-        
-        void popFront() {
-            range.popFront();
-        }
-        
+    void popFront() {
+        range.popFront();
+    }
+    
+    @property
+    auto ref front() {
+        return Fn(range.front);
+    }
+    
+    @property
+    bool empty() {
+        return range.empty;
+    }
+    
+    static if (isBidirectionalRange!R) {
         @property
-        auto ref front() {
-            return Fn(range.front);
+        auto ref back() {
+            return Fn(range.back);
         }
-        
+
+        void popBack() {
+            range.popBack();
+        }
+    }
+
+    static if (hasLength!R) {
         @property
-        bool empty() {
-            return range.empty;
+        auto length() {
+            return range.length;
         }
-        
-        static if (isBidirectionalRange!R) {
-            @property
-            auto ref back() {
-                return Fn(range.back);
-            }
-    
-            void popBack() {
-                range.popBack();
-            }
+        alias opDollar = length;
+    }
+
+    static if (isRandomAccessRange!R) {
+        auto ref opIndex(size_t idx) {
+            return Fn(range[idx]);
         }
-    
-        static if (hasLength!R) {
-            @property
-            auto length() {
-                return range.length;
-            }
-            alias opDollar = length;
-        }
-    
-        static if (isRandomAccessRange!R) {
-            auto ref opIndex(size_t idx) {
-                return Fn(range[idx]);
-            }
-        }
-    
-        static if (isForwardRange!R) {
-            @property
-            auto save() {
-                return MapResult(range.save);
-            }
-        }
-        
-        static if (hasSlicing!R) {
-            auto opSlice(size_t from, size_t to) {
-                return MapResult(range[from..to]);
-            }
-        }
-        
-        // All the above is as you would normally write it.
-        // We also need to implement headMutable().
-        // Generally, headMutable() will look very much like this - instantiate the same
-        // type template that defines typeof(this), use HeadMutable!(T, ConstSource) to make
-        // the right parts const or immutable, and call headMutable() on fields as we pass
-        // them to the head-mutable type.
-        auto headMutable(this This)() const {
-            alias HeadMutableMapResult = MapResult!(Fn, HeadMutable!(R, This));
-            return HeadMutableMapResult(range.headMutable());
+    }
+
+    static if (isForwardRange!R) {
+        @property
+        auto save() {
+            return MapResult(range.save);
         }
     }
     
-    auto equal(R1, R2)(R1 r1, R2 r2) if (isInputRange!(HeadMutable!R1) && isInputRange!(HeadMutable!R2)) {
-        // Need to get head-mutable version of the parameters to iterate over them.
-        auto _r1 = r1.headMutable();
-        auto _r2 = r2.headMutable();
-        while (!_r1.empty && !_r2.empty) {
-            if (_r1.front != _r2.front) return false;
-            _r1.popFront();
-            _r2.popFront();
+    static if (hasSlicing!R) {
+        auto opSlice(size_t from, size_t to) {
+            return MapResult(range[from..to]);
         }
-        return _r1.empty && _r2.empty;
     }
     
-    unittest {
-        // User code does not use headMutable at all:
-        const arr = [1,2,3];
-        const squares = arr.map!(a => a*a);
-        const squaresPlusTwo = squares.map!(a => a+2);
-        assert(equal(squaresPlusTwo, [3, 6, 11]));
+    // All the above is as you would normally write it.
+    // We also need to implement headMutable().
+    // Generally, headMutable() will look very much like this - instantiate the same
+    // type template that defines typeof(this), use HeadMutable!(T, ConstSource) to make
+    // the right parts const or immutable, and call headMutable() on fields as we pass
+    // them to the head-mutable type.
+    auto headMutable(this This)() const {
+        alias HeadMutableMapResult = MapResult!(Fn, HeadMutable!(R, This));
+        return HeadMutableMapResult(range.headMutable());
     }
+}
 
+auto equal(R1, R2)(R1 r1, R2 r2) if (isInputRange!(HeadMutable!R1) && isInputRange!(HeadMutable!R2)) {
+    // Need to get head-mutable version of the parameters to iterate over them.
+    auto _r1 = r1.headMutable();
+    auto _r2 = r2.headMutable();
+    while (!_r1.empty && !_r2.empty) {
+        if (_r1.front != _r2.front) return false;
+        _r1.popFront();
+        _r2.popFront();
+    }
+    return _r1.empty && _r2.empty;
+}
 
-
-
-
+unittest {
+    // User code does not use headMutable at all:
+    const arr = [1,2,3];
+    const squares = arr.map!(a => a*a);
+    const squaresPlusTwo = squares.map!(a => a+2);
+    assert(equal(squaresPlusTwo, [3, 6, 11]));
+}
+```
 (Note that these implementations are [simplified slightly from Phobos code](https://github.com/dlang/phobos/blob/master/std/algorithm/iteration.d#L482) to better showcase the use of `headMutable`)
 
 

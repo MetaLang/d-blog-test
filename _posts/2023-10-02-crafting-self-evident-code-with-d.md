@@ -25,60 +25,55 @@ To let you know what you’re fightin’ for, allow me to introduce this little 
 
 
 
-    
-    #include <stdio.h>
-    #define O1O printf
-    #define OlO putchar
-    #define O10 exit
-    #define Ol0 strlen
-    #define QLQ fopen
-    #define OlQ fgetc
-    #define O1Q abs
-    #define QO0 for
-    typedef char lOL;
-    
-    lOL*QI[] = {"Use:\012\011dump file\012","Unable to open file '\x25s'\012",
-      "\012","   ",""};
-    
-    main(I,Il)
-    lOL*Il[];
-    {       FILE *L;
-             unsigned lO;
-             int Q,OL[' '^'0'],llO = EOF,
-    
-             O=1,l=0,lll=O+O+O+l,OQ=056;
-             lOL*llL="%2x ";
-             (I != 1<<1&&(O1O(QI[0]),O10(1011-1010))),
-             ((L = QLQ(Il[O],"r"))==0&&(O1O(QI[O],Il[O]),O10(O)));
-             lO = I-(O<<l<<O);
-             while (L-l,1)
-             {       QO0(Q = 0L;((Q &~(0x10-O))== l);
-                             OL[Q++] = OlQ(L));
-                     if (OL[0]==llO) break;
-                     O1O("\0454x: ",lO);
-                     if (I == (1<<1))
-                     {       QO0(Q=Ol0(QI[O<<O<<1]);Q<Ol0(QI[0]);
-                             Q++)O1O((OL[Q]!=llO)?llL:QI[lll],OL[Q]);/*"
-                             O10(QI[1O])*/
-                             O1O(QI[lll]);{}
-                     }
-                     QO0 (Q=0L;Q<1<<1<<1<<1<<1;Q+=Q<0100)
-                     {       (OL[Q]!=llO)? /* 0010 10lOQ 000LQL */
-                             ((D(OL[Q])==0&&(*(OL+O1Q(Q-l))=OQ)),
-                             OlO(OL[Q])):
-                             OlO(1<<(1<<1<<1)<<1);
-                     }
-                     O1O(QI[01^10^9]);
-                     lO+=Q+0+l;}
-             }
-             D(l) { return l>=' '&&l<='\~';
-    }
-    
+```c
+#include <stdio.h>
+#define O1O printf
+#define OlO putchar
+#define O10 exit
+#define Ol0 strlen
+#define QLQ fopen
+#define OlQ fgetc
+#define O1Q abs
+#define QO0 for
+typedef char lOL;
 
+lOL*QI[] = {"Use:\012\011dump file\012","Unable to open file '\x25s'\012",
+  "\012","   ",""};
 
+main(I,Il)
+lOL*Il[];
+{       FILE *L;
+         unsigned lO;
+         int Q,OL[' '^'0'],llO = EOF,
 
-
-
+         O=1,l=0,lll=O+O+O+l,OQ=056;
+         lOL*llL="%2x ";
+         (I != 1<<1&&(O1O(QI[0]),O10(1011-1010))),
+         ((L = QLQ(Il[O],"r"))==0&&(O1O(QI[O],Il[O]),O10(O)));
+         lO = I-(O<<l<<O);
+         while (L-l,1)
+         {       QO0(Q = 0L;((Q &~(0x10-O))== l);
+                         OL[Q++] = OlQ(L));
+                 if (OL[0]==llO) break;
+                 O1O("\0454x: ",lO);
+                 if (I == (1<<1))
+                 {       QO0(Q=Ol0(QI[O<<O<<1]);Q<Ol0(QI[0]);
+                         Q++)O1O((OL[Q]!=llO)?llL:QI[lll],OL[Q]);/*"
+                         O10(QI[1O])*/
+                         O1O(QI[lll]);{}
+                 }
+                 QO0 (Q=0L;Q<1<<1<<1<<1<<1;Q+=Q<0100)
+                 {       (OL[Q]!=llO)? /* 0010 10lOQ 000LQL */
+                         ((D(OL[Q])==0&&(*(OL+O1Q(Q-l))=OQ)),
+                         OlO(OL[Q])):
+                         OlO(1<<(1<<1<<1)<<1);
+                 }
+                 O1O(QI[01^10^9]);
+                 lO+=Q+0+l;}
+         }
+         D(l) { return l>=' '&&l<='\~';
+}
+```
 Yes, this is how we wrote C code back then. I even [won an award](https://www.ioccc.org/winners.html) for it!
 
 
@@ -177,14 +172,10 @@ Diving in…
 
 
 
-    
-    #define BEGIN {
-    #define END   }
-
-
-
-
-
+```c
+#define BEGIN {
+#define END   }
+```
 Believe it or not, this was common C practice back in the 1980s. It falls into the category of "Don’t try to make your new language look like your previous language". This problem appears in multiple guises. I still tend to name variables in Fortran style from back when the oceans hadn’t yet formed. Before moving to D, I realized that using C macros to invent a personal custom language on top of C was an abomination. Removing it and replacing it with ordinary C code was a big improvement in clarity.
 
 
@@ -235,25 +226,17 @@ And that this makes code unequivocally worse:
 
 
 
-    
-    enum { No, Yes };
-
-
-
-
-
+```d
+enum { No, Yes };
+```
 Just use `false` and `true`. Done. And BTW,
 
 
 
 
-    
-    enum { Yes, No };
-
-
-
-
-
+```d
+enum { Yes, No };
+```
 is just an automatic "no hire" decision, as `if (Yes)` will thoroughly confuse everyone. If you've done this, run and fix it before someone curses your entire ancestry.
 
 
@@ -361,59 +344,37 @@ Code should flow from left to right, and top to bottom. Just like how this artic
 
 
 
-    
     f() + g() // which executes first?
-
-
-
-
-
 Fortunately, D guarantees a left-to-right ordering (C does not). But what about:
 
 
 
 
-    
     g(f(e(d(c(b(a))),3)));
-
-
-
-
-
 That executes inside out! Quick, which function call does the `3` get passed to? D’s Universal Function Call Syntax to the rescue:
 
 
 
 
-    
     a.b.c.d(3).e.f.g;
-
-
-
-
-
 That's the equivalent, but execution flows clearly left-to-right. Is this an extreme example, or the norm?
 
 
 
 
-    
-    import std.stdio;
-    import std.array;
-    import std.algorithm;
-    
-    void main() {
-         stdin.byLine(KeepTerminator.yes).
-         map!(a => a.idup).
-         array.
-         sort.
-         copy(stdout.lockingTextWriter());
-    }
+```d
+import std.stdio;
+import std.array;
+import std.algorithm;
 
-
-
-
-
+void main() {
+     stdin.byLine(KeepTerminator.yes).
+     map!(a => a.idup).
+     array.
+     sort.
+     copy(stdout.lockingTextWriter());
+}
+```
 This code reads from `stdin` by lines, puts the lines in an array, sorts the array, and writes the sorted result to `stdout`. It doesn’t quite meet our "stupid simple" criteria, but it is pretty close. All with a nice flow from left to right and top to bottom.
 
 
@@ -451,31 +412,19 @@ I submit that:
 
 
 
-    
     version (X)
          doX();
     doY();
     if (Z)
          doZ();
-
-
-
-
-
 is less comprehensible than:
 
 
 
 
-    
     doX();
     doY();
     doZ();
-
-
-
-
-
 What happened to the conditional expressions? Move them to the interiors of `doX()` and `doZ()`.
 
 
@@ -551,25 +500,13 @@ Skilled communicators avoid negation. Savvy programmers do, too. How many times 
 
 
 
-    
     if (!noWay)
-
-
-
-
-
 is inevitably perceived as:
 
 
 
 
-    
     if (noWay)
-
-
-
-
-
 I mentioned this discovery to my good friend Andrei Alexandrescu. He didn’t buy it. He said I needed research to back it up. I didn’t have any research, but didn’t change my mind (i.e., hubris). Eventually, I did run across a paper that did do such research and came to the same conclusion as my assumption. I excitedly sent it to Andrei, and to his great credit, he conceded defeat, which is why Andrei is an exceptional man (rare is the person who ever concedes defeat!).
 
 
@@ -581,13 +518,7 @@ The lesson here is to avoid using negation in identifiers if at all possible.
 
 
 
-    
     if (way)
-
-
-
-
-
 Isn't that better?
 
 
@@ -652,71 +583,53 @@ This leads us to the D `version` conditional.
 
 
 
-    
     version ( Identifier )
-
-
-
-
-
 _Identifier_ is usually predefined by the compiler or the command line. Only an identifier is allowed--no negation, AND, OR, or XOR. (Collectively call that _version algebra_.) Our users often chafe at this restriction, and I get that it's difficult to accept the rationale at first. It’s not impossible to do version algebra:
 
 
 
 
-    
-    version (A) { } else {
-        // !A
-    }
-    
-    version (A) version (B) {
-        // A && B
-    }
-    
-    version (A) version = AorB;
-    version (B) version = AorB;
-    version (AorB) {
-         // A || B
-    }
+```d
+version (A) { } else {
+    // !A
+}
 
+version (A) version (B) {
+    // A && B
+}
 
-
-
-
+version (A) version = AorB;
+version (B) version = AorB;
+version (AorB) {
+     // A || B
+}
+```
 and so forth. But it’s clumsy and unattractive _on purpose_. Why would D do such a thing? It’s meant to encourage thinking about versions in a positive manner. Suppose a project has a Windows and an OSX build:
 
 
 
 
-    
-    version (Windows) {
-         ...
-    }
-    else version (OSX) {
-         ...
-    }
-    else
-         static assert(0, "unsupported operating system");
-
-
-
-
-
+```d
+version (Windows) {
+     ...
+}
+else version (OSX) {
+     ...
+}
+else
+     static assert(0, "unsupported operating system");
+```
 Isn’t that better than this:
 
 
 
 
-    
-    ...
-    version (!Windows){
-    ...
-    }
-
-
-
-
-
+```d
+...
+version (!Windows){
+...
+}
+```
 I’ve seen an awful lot of that style in C. It makes it pointlessly difficult to add support for a new operating system. After all, what the heck is the "not Windows" operating system? That really narrows things down! The former snippet makes it so much easier.
 
 
@@ -728,28 +641,15 @@ Taking this a step further:
 
 
 
-    
     if (A && B && C && D)
     
     if (A || B || C || D)
-
-
-
-
-
 are easy for a human to parse. Encountering:
 
 
 
 
-    
-    
     if (A && (!B || C))
-
-
-
-
-
 is always like transitioning from smooth asphalt to a cobblestone road. Ugh. I've made mistakes with such constructions all the time. Not only is it hard to even see the `!`, but it’s still hard to satisfy yourself that it is correct.
 
 
@@ -761,14 +661,8 @@ Fortunately, De Morgan’s Theorem can sometimes come to the rescue:
 
 
 
-    
     (!A && !B) => !(A || B)
     (!A || !B) => !(A && B)
-
-
-
-
-
 It gets rid of one negation. Repeated application can often transform it into a much more easily understood equation while being equally correct.
 
 
@@ -786,15 +680,7 @@ To sum up this section, here’s a shameful snippet from Ubuntu’s unistd.h:
 
 
 
-    
     #if defined __USE_BSD || (defined __USE_XOPEN && !defined __USE_UNIX98)
-
-
-
-
-
-
-
 > 
 > Prof Marvel: I can’t bring it back, I don’t know how it works!
 > 
@@ -828,15 +714,7 @@ Pull Request: [remove some dyncast calls](https://github.com/dlang/dmd/pull/1548
 
 
 
-    
     char* xyzzy(char* p)
-
-
-
-
-
-
-
   * Does `p` modify what it points to?
 
 
@@ -860,15 +738,9 @@ These crucial bits of information are rarely noted in the documentation for the 
 
 
 
-    
-    const char* xyzzy(return scope const char* p)
-
-
-
-
-
-
-
+```d
+const char* xyzzy(return scope const char* p)
+```
   * `p` doesn’t modify what it points to
 
 
@@ -940,18 +812,14 @@ The auld way (extracted from the DMD source code):
 
 
 
-    
-    import dmd.errors;
-    void gendocfile(Module m) {
-         ...
-         if (!success)
-             error("expansion limit");
-    }
-
-
-
-
-
+```d
+import dmd.errors;
+void gendocfile(Module m) {
+     ...
+     if (!success)
+         error("expansion limit");
+}
+```
 `error()` is a function that error messages are sent to. This is a typical formulation seen in conventional code. The error message is going out through the side door. The caller of `gendocfile()` has no say in what's done with the error message, and the fact that it even generates error messages is usually omitted by the documentation. Worse, the error message emission makes it impractical to properly unit test the function.
 
 
@@ -963,19 +831,14 @@ A better way is to pass an abstract interface "sink" as a parameter and send the
 
 
 
-    
-    import dmd.errorsink;
-    void gendocfile(Module m, ErrorSink eSink) {
-         ...
-         if (!success)
-             eSink.error("expansion limit");
-    }
-    
-
-
-
-
-
+```d
+import dmd.errorsink;
+void gendocfile(Module m, ErrorSink eSink) {
+     ...
+     if (!success)
+         eSink.error("expansion limit");
+}
+```
 Now the caller has total control of what happens to the error messages, and it is implicitly documented. A unit tester can provide a special implementation of the interface to suit testing convenience.
 
 
@@ -1005,20 +868,16 @@ Typical code I've written, where the file names are passed to a function to read
 
 
 
-    
-    void gendocfile(Module m, const(char)*[] docfiles) {
-         OutBuffer mbuf;
-         foreach (file; ddocfiles) {
-             auto buffer = readFile(file.toDString());
-             mbuf.write(buffer.data);
-         }
-         ...
-    }
-
-
-
-
-
+```d
+void gendocfile(Module m, const(char)*[] docfiles) {
+     OutBuffer mbuf;
+     foreach (file; ddocfiles) {
+         auto buffer = readFile(file.toDString());
+         mbuf.write(buffer.data);
+     }
+     ...
+}
+```
 This kind of code is a nuisance to unit test, as adding file I/O to the unit tester is very clumsy, and, as a result, no unit tests get written. Doing file I/O is usually irrelevant to the function, anyway. It just needs the _data_ to operate on.
 
 
@@ -1030,15 +889,11 @@ The fix is to pass the contents of the file in an array:
 
 
 
-    
-    void gendocfile(Module m, const char[] ddoctext) {
-         ...
-    }
-
-
-
-
-
+```d
+void gendocfile(Module m, const char[] ddoctext) {
+     ...
+}
+```
 The PR: [move ddoc file reads out of doc.d](https://github.com/dlang/dmd/pull/15525)
 
 
@@ -1056,31 +911,23 @@ A typical function that processes data and writes the result to a file:
 
 
 
-    
-    void gendocfile(Module m) {
-         OutBuffer buf;
-         ... fill buf ...
-         writeFile(m.loc, m.docfile.toString(), buf[ ]);
-    }
-
-
-
-
-
+```d
+void gendocfile(Module m) {
+     OutBuffer buf;
+     ... fill buf ...
+     writeFile(m.loc, m.docfile.toString(), buf[ ]);
+}
+```
 By now, you know that the caller should write the file:
 
 
 
 
-    
-    void gendocfile(Module m, ref OutBuffer outbuf) {
-         ... fill outbuf ...
-    }
-
-
-
-
-
+```d
+void gendocfile(Module m, ref OutBuffer outbuf) {
+     ... fill outbuf ...
+}
+```
 And the PR:
 [doc.d: move file writes to caller](https://github.com/dlang/dmd/pull/15535)
 
@@ -1099,17 +946,13 @@ Here’s a function that obtains input from the environment:
 
 
 
-    
-    void gendocfile(Module m) {
-         char* p = getenv("DDOCFILE");
-         if (p)
-             global.params.ddoc.files.shift(p);
-    }
-
-
-
-
-
+```d
+void gendocfile(Module m) {
+     char* p = getenv("DDOCFILE");
+     if (p)
+         global.params.ddoc.files.shift(p);
+}
+```
 It should be pretty obvious by now what is wrong with that. PR to move the environment read to the caller and then pass the info through the front door:
 
 
@@ -1139,33 +982,25 @@ It finally occurred to me that the caller could just pass a function pointer as 
 
 
 
-    
-    import dmd.doc;
-    bool expand(...) {
-         if (isIDStart(p))
-             ...
-    }
-
-
-
-
-
+```d
+import dmd.doc;
+bool expand(...) {
+     if (isIDStart(p))
+         ...
+}
+```
 became:
 
 
 
 
-    
-    alias fp_t = bool function(const(char)* p);
-    bool expand(..., fp_t isIDStart) {
-         if (isIDStart(p))
-             ...
-    }
-
-
-
-
-
+```d
+alias fp_t = bool function(const(char)* p);
+bool expand(..., fp_t isIDStart) {
+     if (isIDStart(p))
+         ...
+}
+```
 Notice how the import just went away, improving the encapsulation and comprehensibility of the function. The function pointer could also be a template parameter, whichever is more convenient for the application. The more moats one can erect around a function, the easier it is to understand.
 
 
@@ -1229,19 +1064,15 @@ Source code formatters are great. But I don’t use them. Oof! Here’s why:
 
 
 
-    
-    final switch (of)
-    {
-         case elf:   lib = LibElf_factory();    break;
-         case macho: lib = LibMach_factory();   break;
-         case coff:  lib = LibMSCoff_factory(); break;
-         case omf:   lib = LibOMF_factory();    break;
-    }
-
-
-
-
-
+```d
+final switch (of)
+{
+     case elf:   lib = LibElf_factory();    break;
+     case macho: lib = LibMach_factory();   break;
+     case coff:  lib = LibMSCoff_factory(); break;
+     case omf:   lib = LibOMF_factory();    break;
+}
+```
 It turns out your brain is incredibly good at pattern recognition. By lining things up, a pattern is created. Any deviation from that pattern is likely a bug, and your eyes will be drawn to the anomaly like a stink bug to rotting fruit.
 
 

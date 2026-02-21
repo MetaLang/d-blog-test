@@ -49,34 +49,32 @@ To write kernels in D, we need to pass `-mdcompute-targets=<targets>` to LDC, wh
 
 The `vector add` kernel in D is:
 
-    
-    @compute(CompileFor.deviceOnly) module example;
-    import ldc.dcompute;
-    import dcompute.std.index;
-    
-    alias gf = GlobalPointer!float;
-    
-    @kernel void vadd(gf a, gf b, gf c) 
-    {
-    	auto x = GlobalIndex.x;
-    	a[x] = b[x]+c[x];
-    }
+```d
+@compute(CompileFor.deviceOnly) module example;
+import ldc.dcompute;
+import dcompute.std.index;
 
+alias gf = GlobalPointer!float;
 
+@kernel void vadd(gf a, gf b, gf c) 
+{
+	auto x = GlobalIndex.x;
+	a[x] = b[x]+c[x];
+}
+```
 Modules marked with the `@compute` attribute are compiled for each of the command line targets, `@kernel` makes a function a kernel, and `GlobalPointer` is the equivalent of the `__global` qualifier in OpenCL.
 
 Kernels are not restricted to just functions -- lambdas & tamplates also work:
 
-    
-    @kernel void map(alias F)(KernelArgs!F args)
-    {
-        F(args);
-    }
-    //In host code
-    AutoBuffer!float x,y,z; // y & z initialised with data
-    q.enqueue!(map!((a,b,c) => a=b+c))(x.length)(x, y, z);
-
-
+```d
+@kernel void map(alias F)(KernelArgs!F args)
+{
+    F(args);
+}
+//In host code
+AutoBuffer!float x,y,z; // y & z initialised with data
+q.enqueue!(map!((a,b,c) => a=b+c))(x.length)(x, y, z);
+```
 Where `KernelArgs` translates host types to device types (e.g. buffers to pointers or, as in this example, AutoBuffers to [AutoIndexed Pointers](https://github.com/libmir/dcompute/blob/master/source/dcompute/std/index.d#L298)) so that we encapsulate the differences in the host and device types.
 
 The last line is the expected syntax for launching kernels, `q.enqueue!kernel(dimensions)(args)`, akin to CUDA’s `kernel<<<dimensions,queue>>>(args)`. The libraries for launching kernels are in development.

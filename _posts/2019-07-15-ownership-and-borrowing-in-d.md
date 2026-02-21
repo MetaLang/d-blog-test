@@ -55,43 +55,37 @@ The solution to who owns the memory object is ridiculously simple—there is onl
 
 It also follows that pointers are not copied, they are moved:
 
-    
     T* f();
     void g(T*);
     T* p = f();
     T* q = p; // value of p is moved to q, not copied
     g(p);     // error, p has invalid value
-
-
 Moving a pointer out of a data structure is not allowed:
 
-    
-    struct S { T* p; }
-    S* f();
-    S* s = f();
-    T* q = s.p; // error, can't have two pointers to s.p
-
-
+```d
+struct S { T* p; }
+S* f();
+S* s = f();
+T* q = s.p; // error, can't have two pointers to s.p
+```
 Why not just mark `s.p` as being invalid? The trouble there is one would need to do so with a runtime mark, and this is supposed to be a compile-time solution, so attempting it is simply flagged as an error.
 
 Having an owning pointer fall out of scope is also an error:
 
-    
-    void h() {
-      T* p = f();
-    } // error, forgot to release p?
-
-
+```d
+void h() {
+  T* p = f();
+} // error, forgot to release p?
+```
 It’s necessary to move the pointer somewhere else:
 
-    
-    void g(T*);
-    void h() {
-      T* p = f();
-      g(p);  // move to g(), it's now g()'s problem
-    }
-
-
+```d
+void g(T*);
+void h() {
+  T* p = f();
+  g(p);  // move to g(), it's now g()'s problem
+}
+```
 This neatly solves memory leaks and use-after-free problems. (Hint: to make it clearer, replace `f()` with `malloc()`, and `g()` with `free()`.)
 
 This can all be tracked at compile time through a function by using [Data Flow Analysis (DFA)](https://en.wikipedia.org/wiki/Data-flow_analysis) techniques, like those used to compute [Common Subexpressions](https://en.wikipedia.org/wiki/Common_subexpression_elimination). DFA can unravel whatever rat’s nest of `goto`s happen to be there.
@@ -102,14 +96,13 @@ This can all be tracked at compile time through a function by using [Data Flow A
 
 The ownership system described above is sound, but it is a little too restrictive. Consider:
 
-    
-    struct S { void car(); void bar(); }
-    struct S* f();
-    S* s = f();
-    s.car();  // s is moved to car()
-    s.bar();  // error, s is now invalid
-
-
+```d
+struct S { void car(); void bar(); }
+struct S* f();
+S* s = f();
+s.car();  // s is moved to car()
+s.bar();  // error, s is now invalid
+```
 To make it work, `s.car()` would have to have some way of moving the pointer value back into `s` when `s.car()` returns.
 
 In a way, this is how borrowing works. `s.car()` borrows a copy of `s` for the duration of the execution of `s.car()`. `s` is invalid during that execution and becomes valid again when `s.car()` returns.
@@ -118,14 +111,13 @@ In D, struct member functions take the `this` by reference, so we can accommodat
 
 D also supports scope pointers, which are also a natural fit for borrowing:
 
-    
-    void g(scope T*);
-    T* f();
-    T* p = f();
-    g(p);      // g() borrows p
-    g(p);      // we can use p again after g() returns
-
-
+```d
+void g(scope T*);
+T* f();
+T* p = f();
+g(p);      // g() borrows p
+g(p);      // we can use p again after g() returns
+```
 (When functions take arguments by ref, or pointers by scope, they are not allowed to escape the ref or the pointer. This fits right in with borrow semantics.)
 
 Borrowing in this way fulfills the promise that only one pointer to the memory object exists at any one time, so it works.
@@ -134,20 +126,17 @@ Borrowing can be enhanced further with a little insight that the ownership syste
 
 For example:
 
-    
-    T* f();
-    void g(T*);
-    T* p = f();  // p becomes owner
-    {
-      scope const T* q = p; // borrow const pointer
-      scope const T* r = p; // borrow another one
-      g(p); // error, p is invalid while q and r are in scope
-    }
-    g(p); // ok
-
-
-
-
+```d
+T* f();
+void g(T*);
+T* p = f();  // p becomes owner
+{
+  scope const T* q = p; // borrow const pointer
+  scope const T* r = p; // borrow another one
+  g(p); // error, p is invalid while q and r are in scope
+}
+g(p); // ok
+```
 ## Principles
 
 

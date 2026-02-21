@@ -30,70 +30,68 @@ I use Ubuntu 18.10 as my development environment for this application. Additiona
 
 My vibe.d application is a very simple REST server. You can call the `/hello` endpoint (with an optional name parameter) and you get back a friendly message in JSON format. The second endpoint, `/healthz`, is intended as a health check and simply returns the string `"OK"`. You can clone my source repository at [https://github.com/redstar/vibed-docker/](https://github.com/redstar/vibed-docker/) to get the source code. Here is the application:
 
-    
-    import vibe.d;
-    import std.conv : to;
-    import std.process : environment;
-    import std.typecons : Nullable;
-    
-    shared static this()
+```d
+import vibe.d;
+import std.conv : to;
+import std.process : environment;
+import std.typecons : Nullable;
+
+shared static this()
+{
+    logInfo("Environment dump");
+    auto env = environment.toAA;
+    foreach(k, v; env)
+        logInfo("%s = %s", k, v);
+
+    auto host = environment.get("HELLO_HOST", "0.0.0.0");
+    auto port = to!ushort(environment.get("HELLO_PORT", "17890"));
+
+    auto router = new URLRouter;
+    router.registerRestInterface(new HelloImpl());
+
+    auto settings = new HTTPServerSettings;
+    settings.port = port;
+    settings.bindAddresses = [host];
+
+    listenHTTP(settings, router);
+
+    logInfo("Please open http://%s:%d/hello in your browser.", host, port);
+}
+
+interface Hello
+{
+    @method(HTTPMethod.GET)
+    @path("hello")
+    @queryParam("name", "name")
+    Msg hello(Nullable!string name);
+
+    @method(HTTPMethod.GET)
+    @path("healthz")
+    string healthz();
+}
+
+class HelloImpl : Hello
+{
+    Msg hello(Nullable!string name) @safe
     {
-        logInfo("Environment dump");
-        auto env = environment.toAA;
-        foreach(k, v; env)
-            logInfo("%s = %s", k, v);
-    
-        auto host = environment.get("HELLO_HOST", "0.0.0.0");
-        auto port = to!ushort(environment.get("HELLO_PORT", "17890"));
-    
-        auto router = new URLRouter;
-        router.registerRestInterface(new HelloImpl());
-    
-        auto settings = new HTTPServerSettings;
-        settings.port = port;
-        settings.bindAddresses = [host];
-    
-        listenHTTP(settings, router);
-    
-        logInfo("Please open http://%s:%d/hello in your browser.", host, port);
-    }
-    
-    interface Hello
-    {
-        @method(HTTPMethod.GET)
-        @path("hello")
-        @queryParam("name", "name")
-        Msg hello(Nullable!string name);
-    
-        @method(HTTPMethod.GET)
-        @path("healthz")
-        string healthz();
-    }
-    
-    class HelloImpl : Hello
-    {
-        Msg hello(Nullable!string name) @safe
-        {
-            logInfo("hello called");
-            return Msg(format("Hello %s", name.isNull ? "visitor" : name));
-        }
-    
-        string healthz() @safe
-        {
-            logInfo("healthz called");
-            return "OK";
-        }
-    }
-    
-    struct Msg
-    {
-        string msg;
+        logInfo("hello called");
+        return Msg(format("Hello %s", name.isNull ? "visitor" : name));
     }
 
+    string healthz() @safe
+    {
+        logInfo("healthz called");
+        return "OK";
+    }
+}
 
+struct Msg
+{
+    string msg;
+}
+```
 And this is the `dub.sdl` file to compile the application:
 
-    
     name "hellorest"
     description "A minimal REST server."
     authors "Kai Nacke"
@@ -103,8 +101,6 @@ And this is the `dub.sdl` file to compile the application:
     dependency "vibe-d:tls" version="*"
     subConfiguration "vibe-d:tls" "openssl-1.1"
     versions "VibeDefaultMain"
-
-
 Compile and run the application with `dub`. Then open the URL `http://127.0.0.1:17890/hello` to check that you get a JSON result.
 
 A cloud-native application should follow the twelve-factor app methodology. You can read about the twelve-factor app at [https://12factor.net/](https://12factor.net/). In this post I only highlight two of the factors: [III. Config](https://12factor.net/config) and [XI. Logs](https://12factor.net/logs).
@@ -119,7 +115,6 @@ The application writes log entries on startup and when a url endpoint is called.
 
 A Docker container is specified with a Dockerfile. Here is the Dockerfile for the application:
 
-    
     FROM ubuntu:cosmic
     
     RUN \
@@ -132,22 +127,14 @@ A Docker container is specified with a Dockerfile. Here is the Dockerfile for th
     USER nobody
     
     ENTRYPOINT ["/hellorest"]
-
-
 A Docker container is a stack of read-only layers. With the first line, `FROM ubuntu:cosmic`, I specify that I want to use this specific Ubuntu version as the base layer of my container. During the first build, this layer is downloaded from Docker Hub. Every other line in the Dockerfile creates a new layer. The RUN line is executed at build time. I use it to install dependent libraries which are needed for the application. The `COPY` command copies the executable into the root directory inside the container. And last, `CMD` specifies the command which the container will run.
 
 Run the Docker command
 
-    
     docker build -t vibed-docker/hello:v1 .
-
-
 to build the Docker container. After the container is built successfully, you can run it with
 
-    
     docker run -p 17890:17890 vibed-docker/hello:v1
-
-
 Now open again the URL `http://127.0.0.1:17890/hello`. You should get the same result as before. Congratulations! Your vibe.d application is now running in a container!
 
 
@@ -158,7 +145,6 @@ The binary `hellorest` was compiled outside the container. This creates difficul
 
 The solution is to use a multi-stage build. In the first stage, the application is build. The second stage contains only the runtime dependencies and application binary built in the first stage. This is possible because Docker allows the copying of files between stages. Here is the multi-stage Dockerfile:
 
-    
     FROM ubuntu:cosmic AS build
     
     RUN \
@@ -184,14 +170,9 @@ The solution is to use a multi-stage build. In the first stage, the application 
     USER nobody
     
     ENTRYPOINT ["/hellorest"]
-
-
 In my repository I called this file `Dockerfile.multi`. Therefore, you have to specify the file on the command line:
 
-    
     docker build -f Dockerfile.multi -t vibed-docker/hello:v1 .
-
-
 Building the container now requires much more time because a clean build of the application is included. The advantage is that your build environment is now independent of your host environment.
 
 
