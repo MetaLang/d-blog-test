@@ -22,43 +22,42 @@ After reading [“Beating C With 80 Lines Of Haskell: Wc”](https://chrispenner
 
 It consists of one file and has 34 lines and 712 characters.
 
-    
-    import std.stdio : writefln, File;
-    import std.algorithm : map, fold, splitter;
-    import std.range : walkLength;
-    import std.typecons : Yes;
-    import std.uni : byCodePoint;
-    
-    struct Line {
-    	size_t chars;
-    	size_t words;
-    }
-    
-    struct Output {
-    	size_t lines;
-    	size_t words;
-    	size_t chars;
-    }
-    
-    Output combine(Output a, Line b) pure nothrow {
-    	return Output(a.lines + 1, a.words + b.words, a.chars + b.chars);
-    }
-    
-    Line toLine(char[] l) pure {
-    	return Line(l.byCodePoint.walkLength, l.splitter.walkLength);
-    }
-    
-    void main(string[] args) {
-    	auto f = File(args[1]);
-    	Output o = f
-    		.byLine(Yes.keepTerminator)
-    		.map!(l => toLine(l))
-    		.fold!(combine)(Output(0, 0, 0));
-    
-    	writefln!"%u %u %u %s"(o.lines, o.words, o.chars, args[1]);
-    }
+```d
+import std.stdio : writefln, File;
+import std.algorithm : map, fold, splitter;
+import std.range : walkLength;
+import std.typecons : Yes;
+import std.uni : byCodePoint;
 
+struct Line {
+	size_t chars;
+	size_t words;
+}
 
+struct Output {
+	size_t lines;
+	size_t words;
+	size_t chars;
+}
+
+Output combine(Output a, Line b) pure nothrow {
+	return Output(a.lines + 1, a.words + b.words, a.chars + b.chars);
+}
+
+Line toLine(char[] l) pure {
+	return Line(l.byCodePoint.walkLength, l.splitter.walkLength);
+}
+
+void main(string[] args) {
+	auto f = File(args[1]);
+	Output o = f
+		.byLine(Yes.keepTerminator)
+		.map!(l => toLine(l))
+		.fold!(combine)(Output(0, 0, 0));
+
+	writefln!"%u %u %u %s"(o.lines, o.words, o.chars, args[1]);
+}
+```
 Sure, it is using [Phobos, D’s standard library](https://dlang.org/phobos/index.html), but then why wouldn’t it? Phobos is awesome and ships with every D compiler. The program itself does not contain a single `if` statement. The Haskell `wc` implementation has several `if` statements. The D program, apart from the `main` function, contains three tiny functions. I could have easily put all the functionally in one range chain, but then it probably would have exceeded 80 characters per line. That’s a major code-smell.
 
 
@@ -239,66 +238,56 @@ I’ll not claim that one language is faster than another. If you spend a chunk 
 
 ![Digital Mars D logo](http://dlang.org/blog/wp-content/uploads/2016/08/d6.png)A range is an abstraction that you can consume through iteration without consuming the underlying collection (if there is one). Technically, a range can be a struct or a class that adheres to one of a handful of `Range` interfaces. The most basic form, [the `InputRange`](https://dlang.org/phobos/std_range_primitives.html#isInputRange), requires the function
 
-    
     void popFront();
-
-
 and two members or properties:
 
-    
     T front;
     bool empty;
-
-
 `T` is the generic type of the elements the range iterates.
 
 In D, ranges are special in a way that other objects are not. When a range is given to a `foreach` statement, the compiler does a little rewrite.
 
-    
-    foreach (e; range) { ... }
-
-
+```d
+foreach (e; range) { ... }
+```
 is rewritten to
 
-    
-    for (auto __r = range; !__r.empty; __r.popFront()) {
-        auto e = __r.front;
-        ...
-    }
-
-
+```d
+for (auto __r = range; !__r.empty; __r.popFront()) {
+    auto e = __r.front;
+    ...
+}
+```
 `auto e =` infers the type and is equivalent to `T e =`.
 
 Given this knowledge, building a range that can be used by `foreach` is easy.
 
-    
-    struct Iota {
-    	int front;
-    	int end;
-    
-    	@property bool empty() const {
-    		return this.front == this.end;
-    	}
-    
-    	void popFront() {
-    		++this.front;
-    	}
-    }
-    
-    unittest {
-    	import std.stdio;
-    	foreach(it; Iota(0, 10)) {
-    		writeln(it);
-    	}
-    }
+```d
+struct Iota {
+	int front;
+	int end;
 
+	@property bool empty() const {
+		return this.front == this.end;
+	}
 
+	void popFront() {
+		++this.front;
+	}
+}
+
+unittest {
+	import std.stdio;
+	foreach(it; Iota(0, 10)) {
+		writeln(it);
+	}
+}
+```
 `Iota` is a very simple range. It functions as a generator, having no underlying collection. It iterates integers from front to end in steps of one. This snippet introduces a little bit of D syntax.
 
-    
-    @property bool empty() const {
-
-
+```d
+@property bool empty() const {
+```
 The `@property` attribute allows us to use the function `empty` the same way as a member variable (calling the function without the parenthesis). The trailing `const` means that we don’t modify any data of the instance we call `empty` on. The built-in unit test prints the numbers `0` to `10`.
 
 Another small feature is the lack of an explicit constructor. The struct `Iota` has two member variables of type `int`. In the `foreach` statement in the test, we create an `Iota` instance as if it had a constructor that takes two `int`s. This is [a struct literal](https://dlang.org/spec/struct.html#struct-literal). When the D compiler sees this, and the struct has no matching constructor, the `int`s will be assigned to the struct’s member variables from top to bottom in the order of declaration.
@@ -316,78 +305,75 @@ The relation between the three members is really simple. If `empty` is `false`, 
 
 Now, using `foreach` statements, or loops in general, is not really functional in my book. Lets say we want to filter all uneven numbers of the `Iota` range. We could put an `if` inside the `foreach` block, but that would only make it worse. It would be nicer if we had a range that takes a range and a predicate that can decide if an element is okay to pass along or not.
 
-    
-    struct Filter {
-    	Iota input;
-    	bool function(int) predicate;
-    
-    	this(Iota input, bool function(int) predicate) {
-    		this.input = input;
-    		this.predicate = predicate;
-    		this.testAndIterate();
-    	}
-    
-    	void testAndIterate() {
-    		while(!this.input.empty
-    				&& !this.predicate(this.input.front))
-    		{
-    			this.input.popFront();
-    		}
-    	}
-    
-    	void popFront() {
-    		this.input.popFront();
-    		this.testAndIterate();
-    	}
-    
-    	@property int front() {
-    		return this.input.front;
-    	}
-    
-    	@property bool empty() const {
-    		return this.input.empty;
-    	}
-    }
-    
-    bool isEven(int a) {
-    	return a % 2 == 0;
-    }
-    
-    unittest {
-    	foreach(it; Filter(Iota(0,10), &isEven)) {
-    		writeln(it);
-    	}
-    }
+```d
+struct Filter {
+	Iota input;
+	bool function(int) predicate;
 
+	this(Iota input, bool function(int) predicate) {
+		this.input = input;
+		this.predicate = predicate;
+		this.testAndIterate();
+	}
 
+	void testAndIterate() {
+		while(!this.input.empty
+				&& !this.predicate(this.input.front))
+		{
+			this.input.popFront();
+		}
+	}
+
+	void popFront() {
+		this.input.popFront();
+		this.testAndIterate();
+	}
+
+	@property int front() {
+		return this.input.front;
+	}
+
+	@property bool empty() const {
+		return this.input.empty;
+	}
+}
+
+bool isEven(int a) {
+	return a % 2 == 0;
+}
+
+unittest {
+	foreach(it; Filter(Iota(0,10), &isEven)) {
+		writeln(it);
+	}
+}
+```
 `Filter` is again really simple: it takes one `Iota` and a function pointer. On construction of `Filter`, we call `testAndIterate`, which pops elements from `Iota` until it is either empty or the predicate returns `false`. The idea is that the passed predicate decides what to filter out and what to keep. The properties `front` and `empty` just forward to `Iota`. The only thing that actually does any work is `popFront`. It pops the current element and calls `testAndIterate`. That’s it. That’s an implementation of filter.
 
 Sure, there is a new `while` loop in `testAndIterate`, but rewriting that with recursion is just silly, in my opinion. What makes D great is that you can use the right tool for the job. Functional programming is fine and dandy a lot of the time, but sometimes it’s not. If a bit of inline assembly would be necessary or nicer, use that.
 
 The call to `Filter` still does not look very nice. Assuming, you are used to reading from left to right, `Filter` comes before `Iota`, even though it is executed after `Iota`. D has no pipe operator, but it does have [Uniform Function Call Syntax (UFCS)](https://tour.dlang.org/tour/en/gems/uniform-function-call-syntax-ufcs). If an expression can be implicitly converted to the first parameter of a function, the function can be called like it is a member function of the type of the expression. That's a lot of words, I know. An example helps:
 
-    
-    string foo(string a) {
-    	return a ~ "World";
-    }
-    
-    unittest {
-    	string a = foo("Hello ");
-    	string b = "Hello ".foo();
-    	assert(a == b);
-    }
+```d
+string foo(string a) {
+	return a ~ "World";
+}
 
-
+unittest {
+	string a = foo("Hello ");
+	string b = "Hello ".foo();
+	assert(a == b);
+}
+```
 The above example shows two calls to the function `foo`. As the `assert` indicates, both calls are equivalent. What does that mean for our Iota Filter example? UFCS allows us to rewrite the unit test to:
 
-    
-    unittest {
-    	foreach(it; Iota(1,10).Filter(&isEven)) {
-    		writeln(it);
-    	}
-    }
-
-
+```d
+unittest {
+	foreach(it; Iota(1,10).Filter(&isEven)) {
+		writeln(it);
+	}
+}
+```
 Implementing a map/transform range should now be possible for every reader. Sure, `Filter` can be made more abstract through [the use of templates](https://dlang.org/spec/template.html), but that’s just work, nothing conceptually new.
 
 Of course, there are different kinds of ranges, [like a bidirectional range](https://dlang.org/phobos/std_range_primitives.html#isBidirectionalRange). Guess what that allows you to do. A small tip: a bidirectional range has two new primitives called `back` and `popBack`. There are other range types as well, but after you understand the input range demonstrated twice above, you pretty much know them all.

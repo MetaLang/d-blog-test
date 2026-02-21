@@ -39,69 +39,65 @@ Open methods are just like virtual functions, except that they are declared outs
 
 Here is an example of a virtual function:
 
-    
-    interface Animal
-    {
-      string kick();
-    }
-    
-    class Dog : Animal
-    {
-      string kick() { return "bark"; }
-    }
-    
-    class Pitbull : Dog
-    {
-      override string kick() { return super.kick() ~ " and bite"; }
-    }
-    
-    void main()
-    {
-      import std.stdio : writeln;
-      Animal snoopy = new Dog, hector = new Pitbull;
-      writeln("snoopy.kick(): ", snoopy.kick()); // bark
-      writeln("hector.kick(): ", hector.kick()); // bark and bite
-    }
-    
+```d
+interface Animal
+{
+  string kick();
+}
 
+class Dog : Animal
+{
+  string kick() { return "bark"; }
+}
 
+class Pitbull : Dog
+{
+  override string kick() { return super.kick() ~ " and bite"; }
+}
+
+void main()
+{
+  import std.stdio : writeln;
+  Animal snoopy = new Dog, hector = new Pitbull;
+  writeln("snoopy.kick(): ", snoopy.kick()); // bark
+  writeln("hector.kick(): ", hector.kick()); // bark and bite
+}
+```
 The direct equivalent, translated to open methods, reads like this:
 
-    
-    import openmethods;
-    mixin(registerMethods);
-    
-    interface Animal
-    {
-    }
-    
-    class Dog : Animal
-    {
-    }
-    
-    class Pitbull : Dog
-    {
-    }
-    
-    string kick(virtual!Animal);
-    
-    @method
-    string _kick(Dog dog) { return "bark"; }
-    
-    @method
-    string _kick(Pitbull dog) { return next!kick(dog) ~ " and bite"; }
-    
-    void main()
-    {
-      updateMethods();
-      import std.stdio : writeln;
-      Animal snoopy = new Dog, hector = new Pitbull;
-      writeln("snoopy.kick(): ", snoopy.kick()); // bark
-      writeln("hector.kick(): ", hector.kick()); // bark an dbite
-    }
-    
+```d
+import openmethods;
+mixin(registerMethods);
 
+interface Animal
+{
+}
 
+class Dog : Animal
+{
+}
+
+class Pitbull : Dog
+{
+}
+
+string kick(virtual!Animal);
+
+@method
+string _kick(Dog dog) { return "bark"; }
+
+@method
+string _kick(Pitbull dog) { return next!kick(dog) ~ " and bite"; }
+
+void main()
+{
+  updateMethods();
+  import std.stdio : writeln;
+  Animal snoopy = new Dog, hector = new Pitbull;
+  writeln("snoopy.kick(): ", snoopy.kick()); // bark
+  writeln("hector.kick(): ", hector.kick()); // bark an dbite
+}
+```
 Let’s break it down.
 
 
@@ -114,17 +110,12 @@ Let’s break it down.
 
  	
     * the override is preceded by the `@method` attribute
-
- 	
+    
+     	
     * the function name is prefixed with an underscore
-
- 	
+    
+     	
     * the implicit `this` argument is explicitly named: `Dog dog`
-
-
-
-
- 	
   * The same thing happens to the override in `class Pitbull`, with an extra twist: `super.kick()` becomes `next!kick(dog)`
 
  	
@@ -156,35 +147,31 @@ Now the application programmer will have to write his `print` and `persist` func
 
 Open methods solve this problem more neatly:
 
-    
-    void print(virtual!Matrix m);
-    
-    @method
-    void _print(Matrix m)
-    {
-      const int nr = m.rows;
-      const int nc = m.cols;
-      for (int i = 0; i < nr; ++i) {
-        for (int j = 0; j < nc; ++j) {
-          writef("%3g", m.at(i, j));
-        }
-        writeln();
-      }
+```d
+void print(virtual!Matrix m);
+
+@method
+void _print(Matrix m)
+{
+  const int nr = m.rows;
+  const int nc = m.cols;
+  for (int i = 0; i < nr; ++i) {
+    for (int j = 0; j < nc; ++j) {
+      writef("%3g", m.at(i, j));
     }
-    
-    @method
-    void _print(DiagonalMatrix m)
-    {
-      import std.algorithm;
-      import std.format;
-      import std.array;
-      writeln("diag(", m.elems.map!(x => format("%g", x)).join(", "), ")");
-    }
-    
+    writeln();
+  }
+}
 
-
-
-
+@method
+void _print(DiagonalMatrix m)
+{
+  import std.algorithm;
+  import std.format;
+  import std.array;
+  writeln("diag(", m.elems.map!(x => format("%g", x)).join(", "), ")");
+}
+```
 ### [Accept No Visitors](https://www.youtube.com/watch?v=QhJguzpZOrk) (c) Yuriy Solodkyy
 
 
@@ -194,86 +181,80 @@ In truth, Visitor is more an anti-pattern than a pattern, because the base class
 
 Here it is anyway:
 
-    
-    import std.stdio;
-    
-    interface Matrix
-    {
-      interface Visitor
-      {
-        void visit(DenseMatrix m);
-        void visit(DiagonalMatrix m);
-      }
-    
-      void accept(Visitor v);
-    }
-    
-    class DenseMatrix : Matrix
-    {
-      void accept(Visitor v) { v.visit(this); }
-    }
-    
-    class DiagonalMatrix : Matrix
-    {
-      void accept(Visitor v) { v.visit(this); }
-    }
-    
-    class PrintVisitor : Matrix.Visitor
-    {
-      this(File of) { this.of = of; }
-    
-      void visit(DenseMatrix m) { of.writeln("print a DenseMatrix"); }
-      void visit(DiagonalMatrix m) { of.writeln("print a DiagonalMatrix"); }
-    
-      File of;
-    }
-    
-    void main()
-    {
-      Matrix dense = new DenseMatrix, diagonal = new DiagonalMatrix;
-      auto printer = new PrintVisitor(stdout);
-      dense.accept(printer);
-      diagonal.accept(printer);
-    }
-    
+```d
+import std.stdio;
 
+interface Matrix
+{
+  interface Visitor
+  {
+    void visit(DenseMatrix m);
+    void visit(DiagonalMatrix m);
+  }
 
+  void accept(Visitor v);
+}
+
+class DenseMatrix : Matrix
+{
+  void accept(Visitor v) { v.visit(this); }
+}
+
+class DiagonalMatrix : Matrix
+{
+  void accept(Visitor v) { v.visit(this); }
+}
+
+class PrintVisitor : Matrix.Visitor
+{
+  this(File of) { this.of = of; }
+
+  void visit(DenseMatrix m) { of.writeln("print a DenseMatrix"); }
+  void visit(DiagonalMatrix m) { of.writeln("print a DiagonalMatrix"); }
+
+  File of;
+}
+
+void main()
+{
+  Matrix dense = new DenseMatrix, diagonal = new DiagonalMatrix;
+  auto printer = new PrintVisitor(stdout);
+  dense.accept(printer);
+  diagonal.accept(printer);
+}
+```
 This approach is more verbose than using an open method, and it has a more fatal flaw: it is not extensible. Suppose that the user of your matrix library wants to add matrices of his own design. For example, a `SparseMatrix`. The Visitor will be of no help here. With open methods, on the other hand, the solution is available, simple, and elegant:
 
-    
-    // from library
-    
-    void print(virtual!Matrix m, File of);
-    
-    @method
-    void _print(DenseMatrix m, File of)
-    {
-      of.writeln("print a DenseMatrix");
-    }
-    
-    @method
-    void _print(DiagonalMatrix m, File of)
-    {
-      of.writeln("print a DiagonalMatrix");
-    }
-    
-    // extend library
-    
-    class SparseMatrix : Matrix
-    {
-      // ...
-    }
-    
-    @method
-    void _print(SparseMatrix m, File of)
-    {
-      of.writeln("print a SparseMatrix");
-    }
-    
+```d
+// from library
 
+void print(virtual!Matrix m, File of);
 
+@method
+void _print(DenseMatrix m, File of)
+{
+  of.writeln("print a DenseMatrix");
+}
 
+@method
+void _print(DiagonalMatrix m, File of)
+{
+  of.writeln("print a DiagonalMatrix");
+}
 
+// extend library
+
+class SparseMatrix : Matrix
+{
+  // ...
+}
+
+@method
+void _print(SparseMatrix m, File of)
+{
+  of.writeln("print a SparseMatrix");
+}
+```
 ### Multiple Dispatch
 
 
@@ -285,68 +266,61 @@ Continuing the matrix library example, you probably want to provide binary opera
 
 With open _multi_-methods, there is no problem at all:
 
-    
-    module matrix;
-    
-    Matrix plus(virtual!Matrix, virtual!Matrix);
-    
-    module densematrix;
-    
-    @method
-    Matrix _plus(Matrix a, Matrix b)
-    {
-      // fallback: add all elements, fetched via interface
-      // return a DenseMatrix
-    }
-    
-    @method
-    Matrix _plus(DenseMatrix a, DenseMatrix b)
-    {
-      // add all elements, access representation directly
-      // return a DenseMatrix
-    }
-    
-    module diagonalmatrix;
-    
-    @method
-    Matrix _plus(DiagonalMatrix a, DiagonalMatrix b)
-    {
-      // just add the elements on diagonals
-      // return a DiagonalMatrix
-    }
-    
+```d
+module matrix;
 
+Matrix plus(virtual!Matrix, virtual!Matrix);
 
+module densematrix;
+
+@method
+Matrix _plus(Matrix a, Matrix b)
+{
+  // fallback: add all elements, fetched via interface
+  // return a DenseMatrix
+}
+
+@method
+Matrix _plus(DenseMatrix a, DenseMatrix b)
+{
+  // add all elements, access representation directly
+  // return a DenseMatrix
+}
+
+module diagonalmatrix;
+
+@method
+Matrix _plus(DiagonalMatrix a, DiagonalMatrix b)
+{
+  // just add the elements on diagonals
+  // return a DiagonalMatrix
+}
+```
 Once again, open methods make the library extensible. It is trivial to plug new types in:
 
-    
-    module mymatrices;
-    
-    @method
-    Matrix _plus(SparseMatrix a, SparseMatrix b)
-    {
-      // just add the non-zero elements
-      // return a SparseMatrix
-    }
-    
-    @method
-    Matrix _plus(SparseMatrix a, DiagonalMatrix b)
-    {
-      // still don't add all the zeroes
-      // return a SparseMatrix
-    }
-    
-    @method
-    Matrix _plus(DiagonalMatrix a, SparseMatrix b)
-    {
-      return plus(b, a); // matrix addition is commutative
-    }
-    
-    
+```d
+module mymatrices;
 
+@method
+Matrix _plus(SparseMatrix a, SparseMatrix b)
+{
+  // just add the non-zero elements
+  // return a SparseMatrix
+}
 
+@method
+Matrix _plus(SparseMatrix a, DiagonalMatrix b)
+{
+  // still don't add all the zeroes
+  // return a SparseMatrix
+}
 
-
+@method
+Matrix _plus(DiagonalMatrix a, SparseMatrix b)
+{
+  return plus(b, a); // matrix addition is commutative
+}
+```
 ### Implementation Notes and Performance
 
 

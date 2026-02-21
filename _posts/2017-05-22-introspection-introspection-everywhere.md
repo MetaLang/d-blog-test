@@ -30,16 +30,12 @@ First, Liran gives me an overview of their system—a large-scale distributed st
 
 We now need to hop to my first stop of the tour—Tel Aviv University. Liran accompanies me, partly to see his alma mater after twenty years. Small, intimate audience; it's the regular meeting of their programming languages research group. A few graduate students, a postdoc, and a couple of professors. The talk goes over smoothly. We get to spend five whole minutes on an oddball—what's the role of the two semicolons in here?
 
-    
     mixin(op ~ "payload;");
-
-
 It's tricky. mixin is a statement so it needs a terminator, hence the semicolon at the very end. In turn, mixin takes a string (the concatenation of variable op, which in this case happens to be either "++" or "--", and "payload;") and passes it to the compiler as a statement. Mix this string in the code, so to say. It follows that the string ultimately compiled is "++payload;" or "--payload;". The trick is the generated statement needs _its own_ semicolon. However, within an expression context, mixin is an expression so no more need for the additional semicolon:
 
-    
-    auto x = mixin(op ~ "payload"); // mixin is an expression here, no semicolon!
-
-
+```d
+auto x = mixin(op ~ "payload"); // mixin is an expression here, no semicolon!
+```
 This seems to leave one researcher a bit unhappy, but I point out that all macro systems have their oddities. He agrees and the meeting ends on a cordial note.
 
 The evening ends with dinner and beers with engineers at Weka. The place is called "Truck Deluxe" and it features an actual food truck parked inside the restaurant. We discuss a million things. I am so galvanized I can only sleep for four hours.
@@ -52,10 +48,7 @@ Omg omg OMG. The alarm clock rings at 6:50 AM, and then again at 7 and 7:10, in 
 
 Small meeting again; we start with a handful of folks, but word goes on the grapevine and a few more join during the act. Nice! I pity Liran—he knows the talk by heart by now, including my jokes. I try to make a couple new ones to entertain him a bit, too. It all goes over nicely, and I get great questions. One that keeps on coming is: how do you debug all that compile-time code? To which I quip: "Ever heard of printf-based debugging? Yeah, I thought so. That's pretty much what you get to do now, in the following form:"
 
-    
     pragma(msg, string_expression);
-
-
 The expression is evaluated and printed if and only if the compiler actually "goes through" that line, i.e. you can use it to tell which branch in a static if was taken. It is becoming clear, however, that to scale up Design by Introspection more tooling support would be needed.
 
 Back at Weka, as soon as I get parked by a visitor desk, folks simply start showing up to talk with me, one by one or in small groups. Their simple phonetic names—Eyal, Orem, Tomer, Shachar, Maory, Or, ...—are a welcome cognitive offload for yours socially inept truly. They suggest improvements to the language, ask me about better ways to do this or that, and show me code that doesn't work the way it should.

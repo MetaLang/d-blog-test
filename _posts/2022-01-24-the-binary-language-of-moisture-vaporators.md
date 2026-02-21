@@ -26,33 +26,25 @@ One would think that the way to do this would be to have the compiler generate t
 For example, for the file `vaporator.d`:
 
 
-    
-    int demo(int x)
-    {
-         return x * x;
-    }
-
-
-
+```d
+int demo(int x)
+{
+     return x * x;
+}
+```
 Compiling with:
 
 
-    
-    dmd vaporator.d -c -vasm
-
-
-
+```bash
+dmd vaporator.d -c -vasm
+```
 prints:
 
 
-    
     _D9vaporator4demoFiZi:
     0000:   89 F8                   mov     EAX,EDI
     0002:   0F AF C0                imul    EAX,EAX
     0005:   C3                      ret
-
-
-
 and we see the mangled name of the function, the code offsets, the code binary, and the mnemonic representation for those learning binary.
 
 I am not aware of any other compiler that does this in the same way. This is probably because most programmers are not particularly interested in how the sausages are made. But I find it fascinating and fun. I've opined before that programmers who don't know the assembler their code is transformed into are not likely to be Alpha programmers. With the `-vasm` switch, it's so easy to look at the output, why not do it? It works as a great way to learn assembler code, too!

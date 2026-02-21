@@ -29,22 +29,18 @@ Every DMD release brings with it a number of bug fixes, changes, and enhancement
 
 Anyone who does a lot of work with D's ranges will likely have encountered this little annoyance that arises from the built-in `.sort` property of arrays.
 
-    
-    void main()
-    {
-        import std.algorithm : remove, sort;
-        import std.array : array;
-        int[] nums = [5, 3, 1, 2, 4];
-        nums = nums.sort.remove(2).array;
-    }
-
-
+```d
+void main()
+{
+    import std.algorithm : remove, sort;
+    import std.array : array;
+    int[] nums = [5, 3, 1, 2, 4];
+    nums = nums.sort.remove(2).array;
+}
+```
 The `.sort` property has been deprecated for ages, so the above would result in the following error:
 
-    
     sorted.d(6): Deprecation: use std.algorithm.sort instead of .sort property
-
-
 The workaround would be to add an empty set of parentheses to the sort call. With DMD 2.075.0, this is no longer necessary and the above will compile. Both the `.sort` and `.reverse` array properties [have finally been removed](http://dlang.org/changelog/2.075.0.html#removeArrayProps) from the language.
 
 For the uninitiated, D has two features that have proven convenient in the functional pipeline programming style typically used with ranges. One is that parentheses on a function call are optional when there are no parameters. The other is [Universal Function Call Syntax (UFCS)](https://tour.dlang.org/tour/en/gems/uniform-function-call-syntax-ufcs), which allows a function call to be made using the dot notation on the first argument, so that a function `int add(int a, int b)` can be called as: `10.add(5)`.

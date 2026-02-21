@@ -45,97 +45,89 @@ When I was introducing attributes to controllers to avoid manual mapping of acti
 
 To demonstrate, `Controller` subclasses could originally be declared like so:
 
-    
-    class MyController(TView) : Controller!TView
-    {
-        ...
-    }
-
-
+```d
+class MyController(TView) : Controller!TView
+{
+    ...
+}
+```
 After he initially added attributes, the refactoring required the base class template to know the derived type at compile time in order to reflect on its attributes. His initial solution required that subclasses specify their own types as an additional template parameter to the `Controller` template in the class declaration.
 
-    
-    class MyController(TView) : Controller!(TView, MyController!TView)
-    {
-        ...
-    }
-
-
+```d
+class MyController(TView) : Controller!(TView, MyController!TView)
+{
+    ...
+}
+```
 He didn’t like it, but it was the only way he could see to make the base class aware of the derived type. Then he discovered D’s [template this parameters](https://dlang.org/spec/template.html#TemplateThisParameter).
 
 _Template this_ parameters allow any templated member function to know at compile time the static, i.e. declared, type of the instance on which the function is being called.
 
-    
-    module base;
-    class Base 
+```d
+module base;
+class Base 
+{
+    void printType(this T)() 
     {
-        void printType(this T)() 
-        {
-            import std.stdio;
-            writeln(typeid(T));
-        }
+        import std.stdio;
+        writeln(typeid(T));
     }
-    
-    class Derived : Base {}
-    
-    void main()
-    {
-        Derived d1 = new Derived;
-        auto d2 = new Derived;
-        Base b1 = new Derived;
-    
-        d1.printType();
-        d2.printType();
-        b1.printType();
-    }
+}
 
+class Derived : Base {}
 
+void main()
+{
+    Derived d1 = new Derived;
+    auto d2 = new Derived;
+    Base b1 = new Derived;
+
+    d1.printType();
+    d2.printType();
+    b1.printType();
+}
+```
 And this prints (in `modulename.TypeName` format):
 
-    
     base.Derived
     base.Derived
     base.Base
-
-
 In Diamond, this is used in the `Controller` constructor in order to parse the UDAs ([User Defined Attributes](https://dlang.org/spec/attribute.html#UserDefinedAttribute)) attached to the derived type at compile time:
 
-    
-    class Controller(TView) : BaseController
+```d
+class Controller(TView) : BaseController
+{
+    ...
+    this(this TController)(TView view)
     {
         ...
-        this(this TController)(TView view)
+
+        static if (hasUDA!(TController, HttpAuthentication))
         {
             ...
-    
-            static if (hasUDA!(TController, HttpAuthentication))
-            {
-                ...
-            }
-    
-            static if (hasUDA!(TController, HttpVersion))
-            {
-                ...
-            }
+        }
+
+        static if (hasUDA!(TController, HttpVersion))
+        {
             ...
         }
+        ...
     }
-
-
+}
+```
 The caveat, and the price Jacob is willing to pay for the increased convenience to users, is that instances of derived types should never be declared to have the type of the base class. When working with templated types in D, it’s idiomatic to use type inference anyway:
 
-    
-    // This won't pick up the MyController attributes, as the declared
-    // type is that of the base class
-    Controller!ViewImpl controller1 = new MyController!ViewImpl;
-    
-    // But this will
-    MyController!ViewImpl controller3 = new MyController!ViewImpl;
-    
-    // And so will this -- it's also more idiomatic
-    auto controller2 = new MyController!ViewImpl;
+```d
+// This won't pick up the MyController attributes, as the declared
+// type is that of the base class
+Controller!ViewImpl controller1 = new MyController!ViewImpl;
 
+// But this will
+MyController!ViewImpl controller3 = new MyController!ViewImpl;
 
+// And so will this -- it's also more idiomatic
+auto controller2 = new MyController!ViewImpl;
+```
 Overall, Jacob has found the transition from C# to D fairly painless.
 
 

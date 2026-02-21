@@ -27,33 +27,32 @@ As the name implies, CTFE allows certain functions to be evaluated by the compil
 
 Since this is an integral part of the language, pure functions can be evaluated anywhere a compile-time constant may go. A simple example can be found in the [standard library](https://dlang.org/phobos/index.html) module, [`std.uri`](https://dlang.org/phobos/std_uri.html), where CTFE is used to compute a lookup table. It [looks like](https://github.com/dlang/Phobos/blob/master/std/uri.d) this:
 
-    
-    private immutable ubyte[128] uri_flags = // indexed by character
-    ({
-    
-        ubyte[128] uflags;
-    
-        // Compile time initialize
-        uflags['#'] |= URI_Hash;
-    
-        foreach (c; 'A' .. 'Z' + 1)
-        {
-            uflags[c] |= URI_Alpha;
-            uflags[c + 0x20] |= URI_Alpha; // lowercase letters
-    
-        }
-    
-        foreach (c; '0' .. '9' + 1) uflags[c] |= URI_Digit;
-    
-        foreach (c; ";/?:@&=+$,") uflags[c] |= URI_Reserved;
-    
-        foreach (c; "-_.!~*'()") uflags[c] |= URI_Mark;
-    
-        return uflags;
-    
-    })();
+```d
+private immutable ubyte[128] uri_flags = // indexed by character
+({
 
+    ubyte[128] uflags;
 
+    // Compile time initialize
+    uflags['#'] |= URI_Hash;
+
+    foreach (c; 'A' .. 'Z' + 1)
+    {
+        uflags[c] |= URI_Alpha;
+        uflags[c + 0x20] |= URI_Alpha; // lowercase letters
+
+    }
+
+    foreach (c; '0' .. '9' + 1) uflags[c] |= URI_Digit;
+
+    foreach (c; ";/?:@&=+$,") uflags[c] |= URI_Reserved;
+
+    foreach (c; "-_.!~*'()") uflags[c] |= URI_Mark;
+
+    return uflags;
+
+})();
+```
 Instead of populating the table with magic values, a simple expressive [function literal](https://dlang.org/spec/expression.html#FunctionLiteral) is used. This is much easier to understand and debug than some opaque static array. The `({` starts a function-literal, the `})` closes it. The `()` at the end tells the compiler to immediately evoke that literal such that `uri_flags` becomes the result of the literal.
 
 Functions are only evaluated at compile time if they need to be. `uri_flags` in the snippet above is declared in module scope. When a module-scope variable is initialized in this manner, the initializer must be available at compile time. In this case, since the initializer is a function literal, an attempt will be made to perform CTFE. This particular literal has no arguments and is pure, so the attempt succeeds.

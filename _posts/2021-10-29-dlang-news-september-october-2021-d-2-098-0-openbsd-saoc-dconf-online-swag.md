@@ -53,11 +53,7 @@ This release also [includes an optional concurrent garbage collector for Posix s
 To use the new GC, provide the DRuntime option `--DRT-gcopt=fork:1` on the command-line of any program compiled against DRuntime 2.098.0+ (this **is not a compiler option**, but an option to any program linked with DRuntime). It can also be configured programmatically via:
 
 
-    
     <code><span id="cb1-1"><a tabindex="-1" href="#cb1-1" aria-hidden="true"></a><span class="in">extern</span>(C) <span class="fu">__gshared</span> <span class="bu">string</span><span class="op">[]</span> rt_options <span class="op">=</span> <span class="op">[</span> <span class="st">"gcopt=fork:1"</span> <span class="op">];</span></span></code>
-
-
-
 See the D documentation [for more GC configuration options](https://dlang.org/spec/garbage.html#gc_config).
 
 

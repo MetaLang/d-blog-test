@@ -28,15 +28,14 @@ So he decided to study up on the system APIs across the platforms supported by D
 
 libasync takes advantage of D's delegates to provide a very intuitive interface.
 
-    
-    void testDNS() {
-    	auto dns = new shared AsyncDNS(g_evl);
-    	dns.handler((NetworkAddress addr) {
-    		writeln("Resolved to: ", addr.toString(), ", it took: ", g_swDns.peek().usecs, " usecs");
-    	}).resolveHost("127.0.0.1");
-    }
-
-
+```d
+void testDNS() {
+	auto dns = new shared AsyncDNS(g_evl);
+	dns.handler((NetworkAddress addr) {
+		writeln("Resolved to: ", addr.toString(), ", it took: ", g_swDns.peek().usecs, " usecs");
+	}).resolveHost("127.0.0.1");
+}
+```
 Etienne says of the code snippet above:
 
 

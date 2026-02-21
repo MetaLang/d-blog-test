@@ -46,24 +46,22 @@ In the next two sections, we’ll be working with the following C and D source f
 
 **chello.c**
 
-    
-    #include <stdio.h>
-    void say_hello(void) 
-    {
-        puts("Hello from C!");
-    }
-
-
+```c
+#include <stdio.h>
+void say_hello(void) 
+{
+    puts("Hello from C!");
+}
+```
 **hello.d**
 
-    
-    extern(C) void say_hello();
-    void main() 
-    {
-        say_hello();
-    }
-
-
+```d
+extern(C) void say_hello();
+void main() 
+{
+    say_hello();
+}
+```
 The `extern(C)` bit in the declaration of the C function in the D code is [a linkage attribute](https://dlang.org/spec/attribute.html#linkage). That's covered by the other material I referenced above, but it's a potential gotcha we'll look at later in this series.
 
 
@@ -76,30 +74,27 @@ When linking any foreign object files with a D program, it’s important that th
 
 Compiling C source to a format compatible with vanilla DMD on Windows requires [the Digital Mars C/C++ compiler](http://digitalmars.com/download/freecompiler.html). It’s a free download and ships with some of the same tools as DMD. It outputs object files in the OMF format. With both it and DMD installed and on the system path, the above source files can be compiled, linked, and executed like so:
 
-    
-    dmc -c chello.c
-    dmd hello.d chello.obj
-    hello
-
-
+```bash
+dmc -c chello.c
+dmd hello.d chello.obj
+hello
+```
 The `-c` option tells DMC to forego linking, causing it to only compile the C source and write out the object file `chello.obj`.
 
 To get 64-bit output on Windows, DMC is not an option. In that case, DMD requires the Microsoft build tools on Windows. Once the MS build tools are installed and set up, open the preconfigured x64 Native Tools Command Prompt from the Start menu and execute the following commands (again, see ‘[D, Windows, and C](https://dlang.org/blog/2017/10/25/dmd-windows-and-c)’ on this blog for information on how to get the Microsoft build tools and open the preconfigured command prompt, which may have a slightly different name depending on the version of Visual Studio or the MS Build Tools installed):
 
-    
-    cl /c chello.c
-    dmd -m64 hello.d chello.obj
-    hello
-
-
+```bash
+cl /c chello.c
+dmd -m64 hello.d chello.obj
+hello
+```
 Again, the `/c` option tells the compiler not to link. To produce 32-bit output with the MS compiler, open a preconfigured x86 Native Tools Command Prompt and execute these commands:
 
-    
-    cl /c hello.c
-    dmd -m32mscoff hello.c chello.obj
-    hello
-
-
+```bash
+cl /c hello.c
+dmd -m32mscoff hello.c chello.obj
+hello
+```
 DMD recognizes the `-m32` switch on Windows, but that tells it to produce 32-bit OMF output (the default), which is not compatible with Microsoft’s linker, so we must use `-m32mscoff` here instead.
 
 
@@ -110,12 +105,11 @@ On the other platforms D supports, the system C compiler is likely going to be G
 
 On these systems, the environment variable `CC` is often set to the system compiler command. Feel free to substitute either `gcc` or `clang` for `CC` in the lines below as appropriate for your system.
 
-    
-    CC -c chello.c
-    dmd hello.d chello.o
-    ./hello
-
-
+```bash
+CC -c chello.c
+dmd hello.d chello.o
+./hello
+```
 This will produce either 32-bit or 64-bit output, depending on your system configuration. If you are on a 64-bit system and have 32-bit developer tools installed, you can pass `-m32` to both `CC` and `dmd` to generate 32-bit binaries.
 
 
@@ -134,44 +128,41 @@ Consider the following C function:
 
 **maxval.c**
 
-    
-    #include <limits.h>
-    unsigned long max_val(void)
-    {
-        return ULONG_MAX;
-    }
-
-
+```c
+#include <limits.h>
+unsigned long max_val(void)
+{
+    return ULONG_MAX;
+}
+```
 The naive D implementation looks like this:
 
 **showmax1.d**
 
-    
-    extern(C) ulong max_val();
-    void main()
-    {
-        import std.stdio : writeln;
-        writeln(max_val());
-    }
-
-
+```d
+extern(C) ulong max_val();
+void main()
+{
+    import std.stdio : writeln;
+    writeln(max_val());
+}
+```
 What this does depends on the C compiler and architecture. For example, on Windows with `dmc` I get `7316910580432895`, with x86 `cl` I get `59663353508790271`, and `4294967295` with x64 `cl`. The last one is actually the correct value, even though the size of the `unsigned long` on the C side is still 4 bytes as it is in the other two scenarios. I assume this is because the x64 ABI stores return values in the 8-byte `RAX` register, so it can be read into the 8-byte `ulong` on the D side with no corruption. The important point here is that the two values in the x86 code are garbage because the D side is expecting a 64-bit return value from 32-bit registers, so it's reading more than it's being given.
 
 Thankfully, DRuntime provides a way around this in `core.c.config`, where you’ll find `c_long` and `c_ulong`. Both of these are conditionally configured to match the compile-time C runtime implementation and architecture configuration. With this, all that’s needed is to change the declaration of `max_val` in the D module, like so:
 
 **showmax2.d**
 
-    
-    import core.stdc.config : c_ulong;
-    extern(C) c_ulong max_val();
-    
-    void main()
-    {
-        import std.stdio : writeln;
-        writeln(max_val());
-    }
+```d
+import core.stdc.config : c_ulong;
+extern(C) c_ulong max_val();
 
-
+void main()
+{
+    import std.stdio : writeln;
+    writeln(max_val());
+}
+```
 Compile and run with this and you’ll find it does the right thing everywhere. On Windows, it's `4294967295` across the board.
 
 Though less commonly encountered, `core.stdc.config` also declares a portable `c_long_double` type to match any `long double` that might pop up in a C library to which a D module must bind.

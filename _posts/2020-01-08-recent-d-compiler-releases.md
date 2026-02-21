@@ -39,22 +39,21 @@ An argument to a lazy parameter is not evaluated before the function is called
 
 Under the hood, they are implemented as delegates. Now, it's possible to get at the underlying delegate by taking the address of the parameter, an operation which was previously illegal.
 
-    
-    import std.stdio;
-    
-    void chillax(lazy int x)
-    {
-        auto dg = &x;
-        assert(dg() == 10);
-        writeln(x);
-    }
-    
-    void main()
-    {
-        chillax(2 * 5);
-    }
+```d
+import std.stdio;
 
+void chillax(lazy int x)
+{
+    auto dg = &x;
+    assert(dg() == 10);
+    writeln(x);
+}
 
+void main()
+{
+    chillax(2 * 5);
+}
+```
 This release also renders obsolete [a D idiom](https://p0nce.github.io/d-idioms/#GC-proof-resource-class) used by those who find themselves with a need to distinguish between finalization (non-deterministic object destruction usually initiated by the garbage collector) and normal destruction (deterministic object destruction) from inside a class or struct destructor.
 
 With the current GC implementation, it's illegal to perform some GC operations during finalization. However, D does not provide for separate finalizers and destructors. There is only `~this`, which is referred to as a destructor even though it fills both roles. This sometimes presents difficulties when implementing destructors for types that are intended to be used with both GC and non-GC allocation. Any cleanup activity that touches the GC could throw an `InvalidMemoryOperationError`. Hence the need for the aforementioned workaround.

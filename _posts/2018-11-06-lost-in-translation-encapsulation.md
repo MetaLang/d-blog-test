@@ -33,18 +33,17 @@ We’re starting with a look at a particular feature that’s common among langu
 
 Most readers will already be familiar with the concept of encapsulation, but I want to make sure we’re on the same page. For the purpose of this article, I’m talking about encapsulation in the form of separating interface from implementation. Some people tend to think of it strictly as it relates to object-oriented programming, but it’s a concept that’s more broad than that. Consider this C code:
 
-    
-    #include <stdio.h>
-    static size_t s_count;
-    
-    void print_message(const char* msg) {
-        puts(msg);
-        s_count++;
-    }
-    
-    size_t num_prints() { return s_count; }
+```c
+#include <stdio.h>
+static size_t s_count;
 
+void print_message(const char* msg) {
+    puts(msg);
+    s_count++;
+}
 
+size_t num_prints() { return s_count; }
+```
 In C, functions and global variables decorated with `static` become private to the _translation unit_ (i.e. the source file along with any headers brought in via `#include`) in which they are declared. Non-static declarations are publicly accessible, usually provided in header files that lay out the public API for clients to use. Static functions and variables are used to hide implementation details from the public API.
 
 Encapsulation in C is a minimal approach. C++ supports the same feature, but it also has anonymous namespaces that can encapsulate type definitions in addition to declarations. Like Java, C#, and other languages that support OOP, C++ also has _access modifiers_ (alternatively known as access specifiers, protection attributes, visibility attributes) which can be applied to `class` and `struct` member declarations.
@@ -98,78 +97,72 @@ Examining encapsulation in other programming languages will continue to turn up 
 
 The foundation of D’s approach to encapsulation [is the module](https://dlang.org/spec/module.html). Consider this D version of the C snippet from above:
 
-    
-    module mymod;
-    
-    private size_t _count;
-    
-    void printMessage(string msg) {
-        import std.stdio : writeln;
-    
-        writeln(msg);
-        _count++;
-    }
-    
-    size_t numPrints() { return _count; }
+```d
+module mymod;
 
+private size_t _count;
 
+void printMessage(string msg) {
+    import std.stdio : writeln;
+
+    writeln(msg);
+    _count++;
+}
+
+size_t numPrints() { return _count; }
+```
 In D, access modifiers can apply to module-scope declarations, not just `class` and `struct` members. `_count` is `private`, meaning it is not visible outside of the module. `printMessage` and `numPrints` have no access modifiers; they are `public` by default, making them visible and accessible outside of the module. Both functions could have been annotated with the keyword `public`.
 
 _Note that imports in module scope are `private` by default, meaning the symbols in the imported modules are not visible outside the module, and local imports, as in the example, are never visible outside of their parent scope._
 
 Alternative syntaxes are supported, giving more flexibility to the layout of a module. For example, there’s C++ style:
 
-    
-    module mymod;
-    
-    // Everything below this is private until either another
-    // protection attribute or the end of file is encountered.
-    private:
-        size_t _count;
-    
-    // Turn public back on
-    public:
-        void printMessage(string msg) {
-            import std.stdio : writeln;
-    
-            writeln(msg);
-            _count++;
-        }
-    
-        size_t numPrints() { return _count; }
+```d
+module mymod;
 
+// Everything below this is private until either another
+// protection attribute or the end of file is encountered.
+private:
+    size_t _count;
 
-And this:
-
-    
-    module mymod;
-    
-    private {
-        // Everything declared within these braces is private.
-        size_t _count;
-    }
-    
-    // The functions are still public by default
+// Turn public back on
+public:
     void printMessage(string msg) {
         import std.stdio : writeln;
-    
+
         writeln(msg);
         _count++;
     }
-    
+
     size_t numPrints() { return _count; }
+```
+And this:
 
+```d
+module mymod;
 
+private {
+    // Everything declared within these braces is private.
+    size_t _count;
+}
+
+// The functions are still public by default
+void printMessage(string msg) {
+    import std.stdio : writeln;
+
+    writeln(msg);
+    _count++;
+}
+
+size_t numPrints() { return _count; }
+```
 Modules can belong to packages. A package is a way to group related modules together. In practice, the source files corresponding to each module should be grouped together in the same directory on disk. Then, in the source file, each directory becomes part of the module declaration:
 
-    
     // mypack/amodule.d
     mypack.amodule;
     
     // mypack/subpack/anothermodule.d
     mypack.subpack.anothermodule;
-
-
 _Note that it’s possible to have package names that don’t correspond to directories and module names that don’t correspond to files, but it’s bad practice to do so. A deep dive into packages and modules will have to wait for a future post._
 
 `mymod` does not belong to a package, as no packages were included in the module declaration. Inside `printMessage`, the function `writeln` is imported from the `stdio` module, which belongs to the `std` package. Packages have no special properties in D and primarily serve as namespaces, but they are a common part of the codescape.
@@ -178,49 +171,46 @@ In addition to `public` and `private`, the `package` access modifier can be appl
 
 Consider the following example. There are three modules in three files (only one module per file is allowed), each belonging to the same root package.
 
-    
-    // src/rootpack/subpack1/mod2.d
-    module rootpack.subpack1.mod2;
-    import std.stdio;
-    
-    package void sayHello() {
-        writeln("Hello!");
-    }
-    
-    // src/rootpack/subpack1/mod1.d
-    module rootpack.subpack1.mod1;
-    import rootpack.subpack1.mod2;
-    
-    class Speaker {
-        this() { sayHello(); }
-    }
-    
-    // src/rootpack/app.d
-    module rootpack.app;
-    import rootpack.subpack1.mod1;
-    
-    void main() {
-        auto speaker = new Speaker;
-    }
+```d
+// src/rootpack/subpack1/mod2.d
+module rootpack.subpack1.mod2;
+import std.stdio;
 
+package void sayHello() {
+    writeln("Hello!");
+}
 
+// src/rootpack/subpack1/mod1.d
+module rootpack.subpack1.mod1;
+import rootpack.subpack1.mod2;
+
+class Speaker {
+    this() { sayHello(); }
+}
+
+// src/rootpack/app.d
+module rootpack.app;
+import rootpack.subpack1.mod1;
+
+void main() {
+    auto speaker = new Speaker;
+}
+```
 Compile this with the following command line:
 
-    
-    cd src
-    dmd -i rootpack/app.d
-
-
+```bash
+cd src
+dmd -i rootpack/app.d
+```
 _The `-i` switch tells the compiler to automatically compile and link imported modules (excluding those in the standard library namespaces `core` and `std`). Without it, each module would have to be passed on the command line, else they wouldn’t be compiled and linked._
 
 The class `Speaker` has access to `sayHello` because they belong to modules that are in the same package. Now imagine we do a refactor and we decide that it could be useful to have access to `sayHello` throughout the `rootpack` package. D provides the means to make that happen by allowing the `package` attribute to be parameterized with the fully-qualified name (FQN) of a package. So we can change the declaration of `sayHello` like so:
 
-    
-    package(rootpack) void sayHello() {
-        writeln("Hello!");
-    }
-
-
+```d
+package(rootpack) void sayHello() {
+    writeln("Hello!");
+}
+```
 Now all modules in `rootpack` and _all modules in packages that descend from `rootpack`_ will have access to `sayHello`. Don’t overlook that last part. A parameter to the `package` attribute is saying that a package and all of its descendants can access this symbol. It may sound overly broad, but it isn’t.
 
 For one thing, only a package that is a direct ancestor of the module’s parent package can be used as a parameter. Consider a module `rootpack.subpack.subsub.mymod`. That name contains all of the packages that are legal parameters to the `package` attribute in `mymod.d`, namely `rootpack`, `subpack`, and `subsub`. So we can say the following about symbols declared in `mymod`:
@@ -266,20 +256,19 @@ Now we come to the motivation for this article. I can’t recall ever seeing any
 
 Classes and structs use the same access modifiers as modules: `public`, `package`, `package(some.pack)`, and `private`. The `protected` attribute can only be used in classes, as inheritance is not supported for structs (nor for modules, which aren’t even objects). `public`, `package`, and `package(some.pack)` behave exactly as they do at the module level. The thing that surprises some people is that `private` also behaves the same way.
 
-    
-    import std.stdio;
-    
-    class C {
-        private int x;
-    }
-    
-    void main() {
-        C c = new C();
-        c.x = 10;
-        writeln(c.x);
-    }
+```d
+import std.stdio;
 
+class C {
+    private int x;
+}
 
+void main() {
+    C c = new C();
+    c.x = 10;
+    writeln(c.x);
+}
+```
 _[Run this example online](https://run.dlang.io/is/L7geN6)_
 
 Snippets like this are posted in the forums now and again by people exploring D, accompanying a question along the lines of, “Why does this compile?” (and sometimes, “I think I’ve found a bug!”). This is an example of where experience can cloud expectations. Everyone knows what `private` means, so it’s not something most people bother to look up in the language docs. However, [those who do would find this](https://dlang.org/spec/attribute.html#visibility_attributes):
@@ -308,32 +297,23 @@ Sometimes though, there really is a benefit to denying access to private members
 
 In some cases, we don’t want to require the user to import multiple modules individually. Splitting a large module into smaller ones is one of those cases. Consider the following file tree:
 
-    
     -- mypack
     ---- mod1.d
     ---- mod2.d
-
-
 We have two modules in a package called `mypack`. Let’s say that `mod1.d` has grown extremely large and we’re starting to worry about maintaining it. For one, we want to ensure that private members aren’t manipulated outside of class declarations with hundreds or thousands of lines in between. We want to split the module into smaller ones, but at the same time we don’t want to break user code. Currently, users can get at the module’s symbols by importing it with `import mypack.mod1`. We want that to continue to work. Here’s how we do it:
 
-    
     -- mypack
     ---- mod1
     ------ package.d
     ------ split1.d
     ------ split2.d
     ---- mod2.d
-
-
 We’ve split `mod1.d` into two new modules and put them in a package named `mod1`. We’ve also created a special `package.d` file, which looks like this:
 
-    
     module mypack.mod1;
     
     public import mypack.mod1.split1,
                   mypack.mod1.split2;
-
-
 When the compiler sees `package.d`, it knows to treat it specially. Users will be able to continue using `import mypack.mod1` without ever caring that it’s now split into two modules in a new package. The key is the module declaration at the top of `package.d`. It’s telling the compiler to treat this package as the module `mod1`. And instead of automatically importing all modules in the package, the requirement to list them as public imports in `package.d` allows more freedom in implementing the package. Sometimes, you might want to require the user to explicitly import a module even when a `package.d` is present.
 
 Now users will continue seeing `mod1` as a single module and can continue to import it as such. Meanwhile, encapsulation is now more stringently enforced internally. Because `split1` and `split2` are now separate modules, they can’t touch each other’s private parts. Any part of the API that needs to be shared by both modules can be annotated with `package` protection. Despite the internal transformation, the public interface remains unchanged, and encapsulation is maintained.

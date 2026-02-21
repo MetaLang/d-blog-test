@@ -78,114 +78,91 @@ You read that right.
 
 To see how the cookie crumbles, let's take a look at a careful implementation of Hoare partition. To eliminate all extraneous details, the code in this article is written for `long` as the element type and uses raw pointers. It compiles and runs the same with a C++ or D compiler. This article will carry along implementations of all routines in both languages because much research literature measures algorithm performance using C++'s `std::sort` as an important baseline.
 
-    
-    /**
-    Partition using the minimum of the first and last element as pivot.
-    Returns: a pointer to the final position of the pivot.
-    */
-    long* hoare_partition(long* first, long* last) {
-        assert(first <= last);
-        if (last - first < 2)
-            return first; // nothing interesting to do
+```d
+/**
+Partition using the minimum of the first and last element as pivot.
+Returns: a pointer to the final position of the pivot.
+*/
+long* hoare_partition(long* first, long* last) {
+    assert(first <= last);
+    if (last - first < 2)
+        return first; // nothing interesting to do
+    --last;
+    if (*first > *last)
+        swap(*first, *last);
+    auto pivot_pos = first;
+    auto pivot = *pivot_pos;
+    for (;;) {
+        ++first;
+        auto f = *first;
+        while (f < pivot)
+            f = *++first;
+        auto l = *last;
+        while (pivot < l)
+            l = *--last;
+        if (first >= last)
+            break;
+        *first = l;
+        *last = f;
         --last;
-        if (*first > *last)
-            swap(*first, *last);
-        auto pivot_pos = first;
-        auto pivot = *pivot_pos;
-        for (;;) {
-            ++first;
-            auto f = *first;
-            while (f < pivot)
-                f = *++first;
-            auto l = *last;
-            while (pivot < l)
-                l = *--last;
-            if (first >= last)
-                break;
-            *first = l;
-            *last = f;
-            --last;
-        }
-        --first;
-        swap(*first, *pivot_pos);
-        return first;
     }
-    
-
-
+    --first;
+    swap(*first, *pivot_pos);
+    return first;
+}
+```
 (You may find the choice of pivot a bit odd, but not to worry: usually it's a more sophisticated scheme—such as median-of-3—but what's important to the core loop is that the pivot is not the largest element of the array. That allows the core loop to omit a number of limit conditions without running off array bounds.)
 
 There are a lot of good things to say about the efficiency of this implementation (which you're likely to find, with minor details changed, in implementations [of the C++](https://gcc.gnu.org/onlinedocs/libstdc++/libstdc++-html-USERS-4.4/a01347.html#l02202) or [D standard library](https://github.com/dlang/phobos/blob/v2.091.1/std/algorithm/sorting.d#L450)). You could tell the code above was written by people who live trim lives. People who keep their nails clean, show up when they say they'll show up, and call Mom regularly. They do a _wushu_ routine every morning and don't let computer cycles go to waste. That code has no slack in it. The generated Intel assembly is remarkably tight and virtually identical for C++ and D. It only varies across backends, with LLVM at a slight code size advantage (see [clang](https://godbolt.org/z/SWdu_5) and [ldc](https://godbolt.org/z/SN447V)) over gcc (see [g++](https://godbolt.org/z/ALe3BP) and [gdc](https://godbolt.org/z/eKeuFW)).
 
 The initial implementation of Lomuto's partition shown below works well for exposition, but is sloppy from an efficiency perspective:
 
-    
-    /**
-    Choose the pivot as the first element, then partition.
-    Returns: a pointer to the final position of the pivot. 
-    */
-    long* lomuto_partition_naive(long* first, long* last) {
-        assert(first <= last);
-        if (last - first < 2)
-            return first; // nothing interesting to do
-        auto pivot_pos = first;
-        auto pivot = *first;
-        ++first;
-        for (auto read = first; read < last; ++read) {
-            if (*read < pivot) {
-                swap(*read, *first);
-                ++first;
-            }
+```d
+/**
+Choose the pivot as the first element, then partition.
+Returns: a pointer to the final position of the pivot. 
+*/
+long* lomuto_partition_naive(long* first, long* last) {
+    assert(first <= last);
+    if (last - first < 2)
+        return first; // nothing interesting to do
+    auto pivot_pos = first;
+    auto pivot = *first;
+    ++first;
+    for (auto read = first; read < last; ++read) {
+        if (*read < pivot) {
+            swap(*read, *first);
+            ++first;
         }
-        --first;
-        swap(*first, *pivot_pos);
-        return first;
     }
-
-
+    --first;
+    swap(*first, *pivot_pos);
+    return first;
+}
+```
 For starters, the code above will do a lot of silly no-op swaps (array element with itself) if a bunch of elements on the left of the array are greater than the pivot. All that time `first==write`, so swapping `*first` with `*write` is unnecessary and wasteful. Let's fix that with a pre-processing loop that skips the uninteresting initial portion:
 
-    
-    /**
-    Partition using the minimum of the first and last element as pivot. 
-    Returns: a pointer to the final position of the pivot.
-    */
-    long* lomuto_partition(long* first, long* last) {
-        assert(first <= last);
-        if (last - first < 2)
-            return first; // nothing interesting to do
-        --last;
-        if (*first > *last)
-            swap(*first, *last);
-        auto pivot_pos = first;
-        auto pivot = *first;
-        // Prelude: position first (the write head) on the first element
-        // larger than the pivot.
-        do {
-            ++first;
-        } while (*first < pivot);
-        assert(first <= last);
-        // Main course.
-        for (auto read = first + 1; read < last; ++read) {
-            auto x = *read;
-            if (x < pivot) {
-                *read = *first;
-                *first = x;
-                ++first;
-            }
-        }
-        // Put the pivot where it belongs.
-        assert(*first >= pivot);
-        --first;
-        *pivot_pos = *first;
-        *first = pivot;
-        return first;
-    }
-
-
-The function now chooses the pivot as the smallest of first and last element, just like `hoare_partition`. I also made another small change—instead of using the `swap` routine, let's use explicit assignments. The optimizer takes care of that automatically (enregistering plus register allocation for the win), but expressing it in source helps us see the relatively expensive array reads and array writes. Now for the interesting part. Let's focus on the core loop:
-
-    
+```d
+/**
+Partition using the minimum of the first and last element as pivot. 
+Returns: a pointer to the final position of the pivot.
+*/
+long* lomuto_partition(long* first, long* last) {
+    assert(first <= last);
+    if (last - first < 2)
+        return first; // nothing interesting to do
+    --last;
+    if (*first > *last)
+        swap(*first, *last);
+    auto pivot_pos = first;
+    auto pivot = *first;
+    // Prelude: position first (the write head) on the first element
+    // larger than the pivot.
+    do {
+        ++first;
+    } while (*first < pivot);
+    assert(first <= last);
+    // Main course.
     for (auto read = first + 1; read < last; ++read) {
         auto x = *read;
         if (x < pivot) {
@@ -194,35 +171,103 @@ The function now chooses the pivot as the smallest of first and last element, ju
             ++first;
         }
     }
-    
+    // Put the pivot where it belongs.
+    assert(*first >= pivot);
+    --first;
+    *pivot_pos = *first;
+    *first = pivot;
+    return first;
+}
+```
+The function now chooses the pivot as the smallest of first and last element, just like `hoare_partition`. I also made another small change—instead of using the `swap` routine, let's use explicit assignments. The optimizer takes care of that automatically (enregistering plus register allocation for the win), but expressing it in source helps us see the relatively expensive array reads and array writes. Now for the interesting part. Let's focus on the core loop:
 
-
+```d
+for (auto read = first + 1; read < last; ++read) {
+    auto x = *read;
+    if (x < pivot) {
+        *read = *first;
+        *first = x;
+        ++first;
+    }
+}
+```
 Let's think statistics. There are two conditionals in this loop: `read < last` and `x < pivot`. How predictable are they? Well, the first one is eminently predictable—you can reliably predict it will always be true, and you'll only be wrong once no matter how large the array is. Compiler writers and hardware designers know this, and design the fastest path under the assumption loops will continue. (Gift idea for your Intel engineer friend: a doormat that reads "The Backward Branch Is Always Taken.") The CPU will speculatively start executing the next iteration of the loop even before having decided whether the loop should continue. That work will be thrown away only once, at the end of the loop. That's the magic of speculative execution.
 
 Things are quite a bit less pleasant with the second test, `x < pivot`. If you assume random data and a randomly-chosen pivot, it could go either way with equal probability. That means speculative execution is not effective at all, which is very bad for efficiency. How bad? In a deeply pipelined architecture (as all are today), failed speculation means the work done by several pipeline stages needs to be thrown away, which in turn propagates a bubble of uselessness through the pipeline (think air bubbles in a garden hose). If these bubbles occur too frequently, the loop produces results at only a fraction of the attainable bandwidth. As the measurements section will show, that one wasted speculation takes away about 30% of the potential speed.
 
 How to improve on this problem? Here's an idea: instead of making decisions that control the flow of execution, we write the code in a straight-line manner and we incorporate the decisions as integers that guide the _data_ flow by means of carefully chosen array indexing. Be prepared—this will force us to do silly things. For example, instead of doing two conditional writes per iteration, we'll do exactly two writes per iteration no matter what. If the writes were not needed, we'll overwrite words in memory with their own value. (Did I mention "silly things"?) To prepare the code for all that, let's rewrite it as follows:
 
-    
-    for (auto read = first + 1; read < last; ++read) {
-        auto x = *read;
-        if (x < pivot) {
-            *read = *first;
-            *first = x;
-            first += 1; 
-        } else {
-            *read = x;
-            *first = *first;
-            first += 0; 
-        }
+```d
+for (auto read = first + 1; read < last; ++read) {
+    auto x = *read;
+    if (x < pivot) {
+        *read = *first;
+        *first = x;
+        first += 1; 
+    } else {
+        *read = x;
+        *first = *first;
+        first += 0; 
     }
-    
-
-
+}
+```
 Now the two branches of the loop are almost identical save for the data. The code is still correct (albeit odd) because on the `else` branch it needlessly writes `*read` over itself and `*first` over itself. How do we now unify the two branches? Doing so in an efficient manner takes a bit of pondering and experimentation. Conditionally incrementing `first` is easy because we can always write `first += x < pivot`. Piece of cake. The two memory writes are more difficult, but the basic idea is to take the difference between pointers and use indexing. Here's the code. Take a minute to think it over:
 
-    
-    for (; read < last; ++read) {
+```d
+for (; read < last; ++read) {
+    auto x = *read;
+    auto smaller = -int(x < pivot);
+    auto delta = smaller & (read - first);
+    first[delta] = *first;
+    read[-delta] = x;
+    first -= smaller;
+}
+```
+To paraphrase a famous Latin aphorism, _explanatio longa, codex brevis est_. Short is the code, long is the 'splanation. The initialization of `smaller` with `-int(x < pivot)` looks odd but has a good reason: `smaller` can serve as both an integral (`0` or `-1`) used with the usual arithmetic and also as a mask that is `0` or `0xFFFFFFFF` (i.e. bits set all to 0 or all to 1) used with bitwise operations. We will use that mask to allow or obliterate another integral in the next line that computes `delta`. If `x < pivot`, `smaller` is all ones and `delta` gets initialized to `read - first`. Subsequently, `delta` is used in `first[delta]` and `read[-delta]`, which really are syntactic sugar for `*(first + delta)` and `*(read - delta)`, respectively. If we substitute `delta` in those expressions, we obtain `*(first + (read - first))` and `*(read - (read - first))`, respectively.
+
+The last line, `first -= smaller`, is trivial: if `x < pivot`, subtract `-1` from `first`, which is the same as incrementing `first`. Otherwise, subtract `0` from `first`, effectively leaving `first` alone. Nicely done.
+
+With `x < pivot` substituted to 1, the calculation done in the body of the loop becomes:
+
+```d
+auto x = *read;
+int smaller = -1;
+auto delta = -1 & (read - first);
+*(first + (read - first)) = *first;
+*(read - (read - first)) = x;
+first -= -1;
+```
+Kind of magically the two pointer expressions simplify down to `*read` and `*first`, so the two assignments effect a swap (recall that `x` had been just initialized with `*read`). Exactly what we did in the true branch of the test in the initial version!
+
+If `x < pivot` is `false`, `delta` gets initialized to zero and the loop body works as follows:
+
+```d
+auto x = *read;
+int smaller = 0;
+auto delta = 0 & (read - first);
+*(first + 0) = *first;
+*(read - 0) = x;
+first -= 0;
+```
+This time things are simpler: `*first` gets written over itself, `*read` also gets written over itself, and `first` is left alone. The code has no effect whatsoever, which is exactly what we wanted.
+
+Let's now take a look at the entire function:
+
+```d
+long* lomuto_partition_branchfree(long* first, long* last) {
+    assert(first <= last);
+    if (last - first < 2)
+        return first; // nothing interesting to do
+    --last;
+    if (*first > *last)
+        swap(*first, *last);
+    auto pivot_pos = first;
+    auto pivot = *first;
+    do {
+        ++first;
+        assert(first <= last);
+    } while (*first < pivot);
+    for (auto read = first + 1; read < last; ++read) {
         auto x = *read;
         auto smaller = -int(x < pivot);
         auto delta = smaller & (read - first);
@@ -230,73 +275,13 @@ Now the two branches of the loop are almost identical save for the data. The cod
         read[-delta] = x;
         first -= smaller;
     }
-    
-
-
-To paraphrase a famous Latin aphorism, _explanatio longa, codex brevis est_. Short is the code, long is the 'splanation. The initialization of `smaller` with `-int(x < pivot)` looks odd but has a good reason: `smaller` can serve as both an integral (`0` or `-1`) used with the usual arithmetic and also as a mask that is `0` or `0xFFFFFFFF` (i.e. bits set all to 0 or all to 1) used with bitwise operations. We will use that mask to allow or obliterate another integral in the next line that computes `delta`. If `x < pivot`, `smaller` is all ones and `delta` gets initialized to `read - first`. Subsequently, `delta` is used in `first[delta]` and `read[-delta]`, which really are syntactic sugar for `*(first + delta)` and `*(read - delta)`, respectively. If we substitute `delta` in those expressions, we obtain `*(first + (read - first))` and `*(read - (read - first))`, respectively.
-
-The last line, `first -= smaller`, is trivial: if `x < pivot`, subtract `-1` from `first`, which is the same as incrementing `first`. Otherwise, subtract `0` from `first`, effectively leaving `first` alone. Nicely done.
-
-With `x < pivot` substituted to 1, the calculation done in the body of the loop becomes:
-
-    
-    auto x = *read;
-    int smaller = -1;
-    auto delta = -1 & (read - first);
-    *(first + (read - first)) = *first;
-    *(read - (read - first)) = x;
-    first -= -1;
-    
-
-
-Kind of magically the two pointer expressions simplify down to `*read` and `*first`, so the two assignments effect a swap (recall that `x` had been just initialized with `*read`). Exactly what we did in the true branch of the test in the initial version!
-
-If `x < pivot` is `false`, `delta` gets initialized to zero and the loop body works as follows:
-
-    
-    auto x = *read;
-    int smaller = 0;
-    auto delta = 0 & (read - first);
-    *(first + 0) = *first;
-    *(read - 0) = x;
-    first -= 0;
-    
-
-
-This time things are simpler: `*first` gets written over itself, `*read` also gets written over itself, and `first` is left alone. The code has no effect whatsoever, which is exactly what we wanted.
-
-Let's now take a look at the entire function:
-
-    
-    long* lomuto_partition_branchfree(long* first, long* last) {
-        assert(first <= last);
-        if (last - first < 2)
-            return first; // nothing interesting to do
-        --last;
-        if (*first > *last)
-            swap(*first, *last);
-        auto pivot_pos = first;
-        auto pivot = *first;
-        do {
-            ++first;
-            assert(first <= last);
-        } while (*first < pivot);
-        for (auto read = first + 1; read < last; ++read) {
-            auto x = *read;
-            auto smaller = -int(x < pivot);
-            auto delta = smaller & (read - first);
-            first[delta] = *first;
-            read[-delta] = x;
-            first -= smaller;
-        }
-        assert(*first >= pivot);
-        --first;
-        *pivot_pos = *first;
-        *first = pivot;
-        return first;
-    }
-
-
+    assert(*first >= pivot);
+    --first;
+    *pivot_pos = *first;
+    *first = pivot;
+    return first;
+}
+```
 A beaut, isn't she? Even more beautiful is the generated code—take a look at [clang](https://godbolt.org/z/wav5Ys)/[ldc](https://godbolt.org/z/iE2xwZ) and [g++](https://godbolt.org/z/nUp8Te)/[gdc](https://godbolt.org/z/auHro3). Again, there is a bit of variation across backends.
 
 

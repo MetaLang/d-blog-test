@@ -90,7 +90,6 @@ Our service was losing connections from time to time. It took a while to find th
 
 The technical description of the derived class from the [Ddoc comments](https://tour.dlang.org/tour/en/gems/documentation) read:
 
-    
     /**
      * When a timeout has been set on the socket, the interface functions "recv"
      * and "send" are not restarted after being interrupted by a signal handler.
@@ -102,8 +101,6 @@ The technical description of the derived class from the [Ddoc comments](https:/
      *
      * See also: Linux manual page signal(7)
      */
-
-
 After nearly a decade of active development with D, Mario and his team have been pleased with their choice. They plan to continue using the language in new projects.
 
 

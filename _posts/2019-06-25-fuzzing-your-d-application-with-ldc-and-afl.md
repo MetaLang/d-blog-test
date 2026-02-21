@@ -33,65 +33,48 @@ I used AFL to fuzz test [LLtool](https://github.com/redstar/LLtool), my recursiv
 
 First of all, you need to install AFL. It is included in most Linux distributions, e.g. Ubuntu. A FreeBSD port is also available. One caveat here: please make sure that the AFL plugin is compiled with the same LLVM version as LDC. Otherwise you will see an error message like
 
-    
     ld-elf.so.1: /usr/local/lib/afl/afl-llvm-pass.so: Undefined symbol "...."
-
-
 during compilation. In this case, download AFL from the link above and compile it yourself.
 
 Different distributions install AFL in different locations. You need to find out the path. E.g. Ubuntu uses `/usr/lib/afl`, FreeBSD uses `/usr/local/lib/afl`. I use an environment variable to record this value for later use (bash syntax):
 
-    
     export AFL_PATH=`/ust/lib/afl`
-
-
 To instrument your code you have to specify the AFL plugin on the LDC command line:
 
-    
-    ldc2 -plugin=$AFL_PATH/afl-llvm-pass.so *.d
-
-
+```bash
+ldc2 -plugin=$AFL_PATH/afl-llvm-pass.so *.d
+```
 You will see a short statistic emitted by the new pass:
 
-    
     afl-llvm-pass 2.52b by <lszekeres@google.com>
     [+] Instrumented 16118 locations (non-hardened mode, ratio 100%).
-
-
 For LLVM instrumentation, AFL requires a small runtime library. You need to link the object file `$AFL_PATH/afl-llvm-rt.o` into your application.
 
 In my `dub.sdl` file I created a special build type for AFL. This puts all the steps above into a single place. Plus, you can copy and paste this build type directly to your own `dub.sdl` file because the only dependencies are AFL and LDC!
 
-    
-    buildType "afl" {
-        toolchainRequirements dmd="no" gdc="no" ldc=">=1.0.0"
-        dflags "-plugin=$AFL_PATH/afl-llvm-pass.so"
-        sourceFiles "$AFL_PATH/afl-llvm-rt.o"
-        versions "AFL"
-        buildOptions "debugMode" "debugInfo" "unittests"
-    }
-
-
+```d
+buildType "afl" {
+    toolchainRequirements dmd="no" gdc="no" ldc=">=1.0.0"
+    dflags "-plugin=$AFL_PATH/afl-llvm-pass.so"
+    sourceFiles "$AFL_PATH/afl-llvm-rt.o"
+    versions "AFL"
+    buildOptions "debugMode" "debugInfo" "unittests"
+}
+```
 Now you can type `dub build -b=afl` on the command line to instrument your application for use with afl. Do not forget to set the `AFL_PATH` environment variable, otherwise `dub` will complain.
 
 Now create two new directories called `testcases` and `findings`. Put a small, valid input file into the `testcases` directory. For example save this
 
-    
     %token number
     %%
     expr: term "+" term;
     term: factor "*" factor;
     factor: number;
-
-
 as file `t1.g` in the `testcases` folder. Inputs which crash the application will be saved in the `findings` directory.
 
 To call AFL, you type on the command line:
 
-    
     afl-fuzz -i testcases -o findings ./LLtool --DRT-trapExceptions=0 @@
-
-
 Two parts of the command line require further explanation. If the application requires a file for input, you specify the file path as `@@`. Otherwise AFL assumes that the application reads the input from `stdin`.
 
 If the application crashes, then AFL saves the input causing the crash in the `findings/crashes` directory. But the D runtime is very friendly. Exceptions uncaught by the application are caught by the D runtime, a stack trace is printed, and the application terminates. This does not count as a crash for AFL. To produce a crash you have to specify the D runtime option `--DRT-trapExceptions=0`. For more information, read the relevant edition of [This week in D](http://arsdnet.net/this-week-in-d/2016-aug-07.html).

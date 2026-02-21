@@ -27,27 +27,26 @@ What motivated the project was a day at Cisco when I wanted to use D but ended u
 
 Here’s the example he presented [in the blog post](https://atilaoncode.blog/2018/04/09/include-c-headers-in-d-code/) accompanying the initial announcement:
 
-    
-    // stdlib.dpp
-    #include <stdio.h>
-    #include <stdlib.h>
-    
-    void main() {
-        printf("Hello world\n".ptr);
-    
-        enum numInts = 4;
-        auto ints = cast(int*) malloc(int.sizeof * numInts);
-        scope(exit) free(ints);
-    
-        foreach(int i; 0 .. numInts) {
-            ints[i] = i;
-            printf("ints[%d]: %d ".ptr, i, ints[i]);
-        }
-    
-        printf("\n".ptr);
+```d
+// stdlib.dpp
+#include <stdio.h>
+#include <stdlib.h>
+
+void main() {
+    printf("Hello world\n".ptr);
+
+    enum numInts = 4;
+    auto ints = cast(int*) malloc(int.sizeof * numInts);
+    scope(exit) free(ints);
+
+    foreach(int i; 0 .. numInts) {
+        ints[i] = i;
+        printf("ints[%d]: %d ".ptr, i, ints[i]);
     }
 
-
+    printf("\n".ptr);
+}
+```
 Three months later, dpp was [successfully compiling the `julia.h` header](https://forum.dlang.org/post/fplmjoiggnxyuvuxpafa@forum.dlang.org) allowing the Julia language to be embedded in a D program. The following month, it was [enabled by default on run.dlang.io](https://run.dlang.io/is/egqYGY).
 
 C support is fairly solid, though not perfect.
@@ -74,17 +73,14 @@ The holy grail is to be able to #include a C++ standard library header, but that
 
 On the plus side, he’s found some of D’s features particularly helpful in implementing dpp, though he did say that “this is harder for me to recall since at this point I mostly take D’s advantages for granted.” The first thing that came to mind was a combination of built-in unit tests and token strings:
 
-    
-    unittest {
-        shouldCompile(
-            C(q{ struct Foo { int i; } }),
-            D(q{ static assert(is(typeof(Foo.i) == int)); })
-        );
-    }
-
-
-
-
+```d
+unittest {
+    shouldCompile(
+        C(q{ struct Foo { int i; } }),
+        D(q{ static assert(is(typeof(Foo.i) == int)); })
+    );
+}
+```
 It’s almost self-explanatory: the first parameter to `shouldCompile` is C code (a header), and the second D code to be compiled after translating the C header. D’s token strings allow the editor to highlight the code inside, and the fact that C syntax is so similar to D lets me use them on C code as well!
 
 

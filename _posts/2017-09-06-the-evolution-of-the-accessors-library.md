@@ -40,21 +40,19 @@ Anyway, the approach of using the model as a base for code generation always suf
 
 So we reversed the whole thing and decided to create documentation from code. We could still use code which had been generated before, but all the new classes had to be supplied with accessor functions. You can imagine that this was very annoying.
 
-    
-    public class Journey
+```d
+public class Journey
+{
+    private Leg[] legs_;
+
+    public Leg[] legs()
     {
-        private Leg[] legs_;
-    
-        public Leg[] legs()
-        {
-    	return this.legs_.dup;
-        }
-    
-    ...
+	return this.legs_.dup;
     }
-    
 
-
+...
+}
+```
 (Yes, we’ve been writing Java and compiling as D.)
 
 Code which was generated before still had these `@Read` and `@Write` annotations next to the fields. So I thought, "These look like UDAs. Why not just use those to generate the methods automatically?" I'd always wanted to use mixins and compile-time introspection in order to move forward with a more D-like development approach.
@@ -65,10 +63,9 @@ Code which was generated before still had these `@Read` and `@Write` annotations
 
 The very first version of the accessors library was able to generate basic read- and write-accessor methods using the [`allMembers` trait](https://dlang.org/spec/traits.html#allMembers), filtering by UDAs, and generating some basic code like:
 
-    
-    public final Leg[] legs() { return this.legs_.dup; }
-
-
+```d
+public final Leg[] legs() { return this.legs_.dup; }
+```
 It works... Yes, it does.
 
 We did not replace all existing accessor methods at once, but working on a large project at that time we introduced many of them. The automated generation of accessor methods was really a simplification for us.
@@ -95,29 +92,18 @@ The solution to this issue was rather simple. We had to use a [string mixin](htt
 
 We have a guideline to avoid magic `bool`s wherever possible and use much more verbose flags instead. So a simple attribute like:
 
-    
     private bool isExtraJourney_;
-
-
 Becomes:
 
-    
     private Flag!”isExtraJourney” isExtraJourney_;
-
-
 This approach has two advantages. Providing a value with `Yes.isExtraJourney` is much more verbose than just a `true`, and it creates a type. When there are two or more flags as part of a method signature, you cannot change the order of the flags (by accident) as you could with `bool`s.
 
 To generate the type of the return value (or in case of mutable access of the parameter) we used `T.stringof`, where `T` is the type of the field. Unfortunately, this does not work as expected for Flags.
 
-    
     Flag!”foo” fooFlag;
     
     static assert(`Flag!”foo”`, typeof(fooFlag).stringof); // Fails!
     static assert(`Flag`, typeof(fooFlag).stringof); // Succeeds!
-
-
-
-
 #### Unit Tests
 
 

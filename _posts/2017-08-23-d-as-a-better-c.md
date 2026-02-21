@@ -80,19 +80,16 @@ What may be initially most important to C programmers is memory safety in the fo
 
 Consider a C program:
 
-    
-    #include <stdio.h>
-    
-    int main(int argc, char** argv) {
-        printf("hello world\n");
-        return 0;
-    }
-    
+```c
+#include <stdio.h>
 
-
+int main(int argc, char** argv) {
+    printf("hello world\n");
+    return 0;
+}
+```
 It compiles to:
 
-    
     _main:
     push EAX
     mov [ESP],offset FLAT:_DATA
@@ -100,98 +97,90 @@ It compiles to:
     xor EAX,EAX
     pop ECX
     ret
-    
-
-
 The executable size is 23,068 bytes.
 
 Translate it to D:
 
-    
-    import core.stdc.stdio;
-    
-    extern (C) int main(int argc, char** argv) {
-        printf("hello world\n");
-        return 0;
-    }
-    
+```d
+import core.stdc.stdio;
 
-
+extern (C) int main(int argc, char** argv) {
+    printf("hello world\n");
+    return 0;
+}
+```
 The executable size is the same, 23,068 bytes. This is unsurprising because the C compiler and D compiler generate the same code, as they share the same code generator. (The equivalent full D program would clock in at 194Kb.) In other words, nothing extra is paid for using D rather than C for the same code.
 
 The `Hello World` program is a little too trivial. Let's step up in complexity to the infamous sieve benchmark program:
 
-    
-    #include <stdio.h>
-    
-    /* Eratosthenes Sieve prime number calculation. */
-    
-    #define true    1
-    #define false   0
-    #define size    8190
-    #define sizepl  8191
-    
-    char flags[sizepl];
-    
-    int main() {
-        int i, prime, k, count, iter;
-    
-        printf ("10 iterations\n");
-        for (iter = 1; iter <= 10; iter++) {
-            count = 0;
-            for (i = 0; i <= size; i++)
-                flags[i] = true;
-            for (i = 0; i <= size; i++) {
-                if (flags[i]) {
-                    prime = i + i + 3;
-                    k = i + prime;
-                    while (k <= size) {
-                        flags[k] = false;
-                        k += prime;
-                    }
-                    count += 1;
+```c
+#include <stdio.h>
+
+/* Eratosthenes Sieve prime number calculation. */
+
+#define true    1
+#define false   0
+#define size    8190
+#define sizepl  8191
+
+char flags[sizepl];
+
+int main() {
+    int i, prime, k, count, iter;
+
+    printf ("10 iterations\n");
+    for (iter = 1; iter <= 10; iter++) {
+        count = 0;
+        for (i = 0; i <= size; i++)
+            flags[i] = true;
+        for (i = 0; i <= size; i++) {
+            if (flags[i]) {
+                prime = i + i + 3;
+                k = i + prime;
+                while (k <= size) {
+                    flags[k] = false;
+                    k += prime;
                 }
+                count += 1;
             }
         }
-        printf ("\n%d primes", count);
-        return 0;
     }
-    
-
-
+    printf ("\n%d primes", count);
+    return 0;
+}
+```
 Rewriting it in Better C:
 
-    
-    import core.stdc.stdio;
-    
-    extern (C):
-    
-    __gshared bool[8191] flags;
-    
-    int main() {
-        int count;
-    
-        printf("10 iterations\n");
-        foreach (iter; 1 .. 11) {
-            count = 0;
-            flags[] = true;
-            foreach (i; 0 .. flags.length) {
-                if (flags[i]) {
-                    const prime = i + i + 3;
-                    auto k = i + prime;
-                    while (k < flags.length) {
-                        flags[k] = false;
-                        k += prime;
-                    }
-                    count += 1;
+```d
+import core.stdc.stdio;
+
+extern (C):
+
+__gshared bool[8191] flags;
+
+int main() {
+    int count;
+
+    printf("10 iterations\n");
+    foreach (iter; 1 .. 11) {
+        count = 0;
+        flags[] = true;
+        foreach (i; 0 .. flags.length) {
+            if (flags[i]) {
+                const prime = i + i + 3;
+                auto k = i + prime;
+                while (k < flags.length) {
+                    flags[k] = false;
+                    k += prime;
                 }
+                count += 1;
             }
         }
-        printf("%d primes\n", count);
-        return 0;
     }
-
-
+    printf("%d primes\n", count);
+    return 0;
+}
+```
 It looks much the same, but some things are worthy of note:
 
 

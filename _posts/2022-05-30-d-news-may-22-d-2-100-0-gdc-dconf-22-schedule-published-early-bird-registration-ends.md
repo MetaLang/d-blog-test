@@ -70,44 +70,38 @@ N`delete` would both destroy an object instance (call its destructors) and relea
 Many D programmers are familiar with the `.tupleof` property of structs, which is particularly useful when interfacing with C libraries:
 
 
-    
-    struct Circle {
-        float x, y;
-        float radius;
-        ubyte r, g, b, a;
-    }
-    
-    @nogc nothrow
-    extern(C) void draw_circle (
-        float cx, float cy, float radius,
-        ubyte r, ubyte g, ubyte b, ubyte a
-    );
-    
-    void foo() {
-        Circle c = makeCircle();
-        draw_circle(c.tupleof);
-    }
+```d
+struct Circle {
+    float x, y;
+    float radius;
+    ubyte r, g, b, a;
+}
 
+@nogc nothrow
+extern(C) void draw_circle (
+    float cx, float cy, float radius,
+    ubyte r, ubyte g, ubyte b, ubyte a
+);
 
-
+void foo() {
+    Circle c = makeCircle();
+    draw_circle(c.tupleof);
+}
+```
 Now we can [do the same thing with static arrays](https://dlang.org/changelog/2.100.0.html#static_array_tupleof):
 
 
-    
-    void foo(int, int, int) { /* ... */ }
-    
-    int[3] ia = [1, 2, 3];
-    foo(ia.tupleof); // same as `foo(1, 2, 3);
-    
-    float[3] fa;
-    //fa = ia; // error
-    fa.tupleof = ia.tupleof;
-    assert(fa == [1F, 2F, 3F]);
+```python
+void foo(int, int, int) { /* ... */ }
 
+int[3] ia = [1, 2, 3];
+foo(ia.tupleof); // same as `foo(1, 2, 3);
 
-
-
-
+float[3] fa;
+//fa = ia; // error
+fa.tupleof = ia.tupleof;
+assert(fa == [1F, 2F, 3F]);
+```
 ## DConf '22
 
 

@@ -20,36 +20,34 @@ This time, we'll look at the very basics, focusing on the language features tha
 
 The first thing to understand about D's garbage collector is that it only runs during allocation, and only if there is no memory available to allocate. It isn't sitting in the background, periodically scanning the heap and collecting garbage. This knowledge is fundamental to writing code that makes efficient use of GC-managed memory. Take the following example:
 
-    
-    void main() {
-        int[] ints;
-        foreach(i; 0..100) {
-            ints ~= i;
-        }
+```d
+void main() {
+    int[] ints;
+    foreach(i; 0..100) {
+        ints ~= i;
     }
-
-
+}
+```
 This declares a dynamic array of `int`, then uses D's append operator to append the numbers 0 to 99 in [a foreach range loop](https://dlang.org/spec/statement.html#foreach-range-statement). What isn't obvious to the untrained eye is that the append operator makes use of the GC heap to allocate space for the values it adds to the array.
 
 DRuntime's array implementation isn't a dumb one. In the example, there aren't going to be one hundred allocations, one for each value. When more memory is needed, the implementation will allocate more space than is requested. In this particular case, it's possible to determine how many allocations are actually made by making use of the [`capacity`](https://dlang.org/phobos/object.html#.capacity) property of D's dynamic arrays and slices. This returns the total number of elements the array can hold before an allocation is necessary.
 
-    
-    void main() {
-        import std.stdio : writefln;
-        int[] ints;
-        size_t before, after;
-        foreach(i; 0..100) {
-            before = ints.capacity;
-            ints ~= i;
-            after = ints.capacity;
-            if(before != after) {
-                writefln("Before: %s After: %s",
-                    before, after);
-            }
+```d
+void main() {
+    import std.stdio : writefln;
+    int[] ints;
+    size_t before, after;
+    foreach(i; 0..100) {
+        before = ints.capacity;
+        ints ~= i;
+        after = ints.capacity;
+        if(before != after) {
+            writefln("Before: %s After: %s",
+                before, after);
         }
     }
-
-
+}
+```
 Executing this when compiled with **DMD 2.073.2** shows the message is printed six times, meaning there were six total GC allocations in the loop. That means there were six opportunities for the GC to collect garbage. In this small example, it almost certainly didn't. If this loop were part of a larger program, with GC allocations throughout, it very well might.
 
 On a side note, it's informative to examine the values of `before` and `after`. Doing so shows a sequence of 0, 3, 7, 15, 31, 63, and 127. So by the end, `ints` contains 100 values and has space for appending 27 more before the next allocation, which, extrapolating from the values in the sequence, should be 255. That's an implementation detail of DRuntime, though, and could be tweaked or changed in any release. For more details on how arrays and slices are managed by the GC, take a look at Steven Schveighoffer's [excellent article](https://dlang.org/d-array-article.html) on the topic.
@@ -58,75 +56,67 @@ So, six allocations, six opportunities for the GC to initiate one of its pauses 
 
 Even with languages that don't come with a stock GC out of the box, like C and C++, most programmers learn at some point that it's better for overall performance to allocate as much as possible up front and minimize allocations in the inner loops. It's one of the many types of premature optimization that are not actually the root of all evil, something we tend to call _best practice_. Given that D's GC only runs when memory is allocated, the same strategy can be applied as a simple way to mitigate any potential impact it could have on performance. Here's one way to rewrite the example:
 
-    
-    void main() {
-        int[] ints = new int[](100);
-        foreach(i; 0..100) {
-            ints[i] = i;
-        }
+```d
+void main() {
+    int[] ints = new int[](100);
+    foreach(i; 0..100) {
+        ints[i] = i;
     }
-
-
+}
+```
 Now we've gone from six allocations down to one. The only opportunity the GC has to run is before the inner loop. This actually allocates space for at least 100 values and initializes them all to 0 before entering the loop. The array will have a length of 100 after `new`, but will almost certainly have additional capacity.
 
 There's an alternative to `new` for arrays: the [`reserve`](https://dlang.org/phobos/object.html#.reserve) function:
 
-    
-    void main() {
-        int[] ints;
-        ints.reserve(100);
-        foreach(i; 0..100) {
-            ints ~= i;
-        }
+```d
+void main() {
+    int[] ints;
+    ints.reserve(100);
+    foreach(i; 0..100) {
+        ints ~= i;
     }
-
-
+}
+```
 This allocates memory for at least 100 values, but the array is still empty (its `length` property will return 0) when it returns, so nothing is default initialized. Given that the loop only appends 100 values, it's guaranteed not to allocate.
 
 In addition to `new` and `reserve`, it's possible to call [`GC.malloc`](http://dlang.org/phobos/core_memory.html#.GC.malloc) directly for explicit allocation.
 
-    
-    import core.memory;
-    void* intsPtr = GC.malloc(int.sizeof * 100);
-    auto ints = (cast(int*)intsPtr)[0 .. 100];
-
-
+```d
+import core.memory;
+void* intsPtr = GC.malloc(int.sizeof * 100);
+auto ints = (cast(int*)intsPtr)[0 .. 100];
+```
 [Array literals](https://dlang.org/spec/arrays.html#dynamic-arrays) will usually allocate.
 
-    
-    auto ints = [0, 1, 2];
-
-
+```d
+auto ints = [0, 1, 2];
+```
 This is also true when an array literal `enum` is used.
 
-    
-    enum intsLiteral = [0, 1, 2];
-    auto ints1 = intsLiteral;
-    auto ints2 = intsLiteral;
-
-
+```d
+enum intsLiteral = [0, 1, 2];
+auto ints1 = intsLiteral;
+auto ints2 = intsLiteral;
+```
 An `enum` exists only at compile time and has no memory address. Its name is a synonym for its value. Everywhere you use one, it's like copying and pasting its value in place of its name. Both `ints1` and `ints2` trigger allocations exactly as if they were declared like so:
 
-    
-    auto ints1 = [0, 1, 2];
-    auto ints2 = [0, 1, 2];
-
-
+```d
+auto ints1 = [0, 1, 2];
+auto ints2 = [0, 1, 2];
+```
 Array literals do not allocate when the target is [a static array](http://dlang.org/spec/arrays.html#static-arrays). Also, string literals (strings in D are arrays under the hood) are [an exception to the rule](https://dlang.org/blog/2017/02/22/snowflake-strings/).
 
-    
-    int[3] noAlloc1 = [0, 1, 2];
-    auto noAlloc2 = "No Allocation!";
-
-
+```d
+int[3] noAlloc1 = [0, 1, 2];
+auto noAlloc2 = "No Allocation!";
+```
 The concatenate operator will always allocate:
 
-    
-    auto a1 = [0, 1, 2];
-    auto a2 = [3, 4, 5];
-    auto a3 = a1 ~ a2;
-
-
+```d
+auto a1 = [0, 1, 2];
+auto a2 = [3, 4, 5];
+auto a3 = a1 ~ a2;
+```
 D's [associative arrays](https://dlang.org/spec/hash-map.html) have their own allocation strategy, but you can expect them to allocate when items are added and potentially when removed. They also expose two properties, `keys` and `values`, which both allocate arrays and fill them with copies of the respective items. When its desirable to modify the underlying associative array during iteration, or when the items need to be sorted or otherwise manipulated independently of the associative array, these properties are just what the doctor ordered. Otherwise, they're needless allocations that put undue pressure on the GC.
 
 When the GC does run, the total amount of memory it needs to scan is going to determine how long it takes. The smaller, the better. Avoiding unnecessary allocations isn't going to hurt anyone and is another good mitigation strategy. D's [associative arrays provide three properties](http://dlang.org/spec/hash-map.html#properties) that help do just that: `byKey`, `byValue`, and `byKeyValue`. These each return forward ranges that can be iterated lazily. They do not allocate because they actually refer to the items in the associative array, so it should not be modified while iterating them. For more on ranges, see the chapters titled [Ranges](http://ddili.org/ders/d.en/ranges.html) and [More Ranges](http://ddili.org/ders/d.en/ranges_more.html) in Ali Çehreli's [Programming in D](http://ddili.org/ders/d.en/index.html).

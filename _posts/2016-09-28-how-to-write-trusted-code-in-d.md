@@ -45,43 +45,34 @@ The easiest way to explain what is safe, is to examine what results in unsafe co
 
 The first item is quite simple to achieve in D:
 
-    
-    auto buf = new int[1]; 
-    buf[2] = 1;
-
-
+```d
+auto buf = new int[1]; 
+buf[2] = 1;
+```
 With default bounds checks on, this results in an exception at runtime, even in code that is not checked for safety. But D allows circumventing this by accessing the pointer of the array:
 
-    
     buf.ptr[2] = 1;
-
-
 For an example of the second, all that is needed is a cast:
 
-    
     *cast(int*)(0xdeadbeef) = 5;
-
-
 And the third is relatively simple as well:
 
-    
-    auto buf = new int[1];
-    auto buf2 = buf;
-    delete buf;  // sets buf to null
-    buf2[0] = 5; // but not buf2.
-
-
+```d
+auto buf = new int[1];
+auto buf2 = buf;
+delete buf;  // sets buf to null
+buf2[0] = 5; // but not buf2.
+```
 Dangling pointers also frequently manifest by pointing at stack data that is no longer in use (or is being used for a different reason). It's very simple to achieve:
 
-    
-    int[] foo()
-    {
-        int[4] buf;
-        int[] result = buf[];
-        return result;
-    }
-
-
+```d
+int[] foo()
+{
+    int[4] buf;
+    int[] result = buf[];
+    return result;
+}
+```
 So simply put, safe code avoids doing things that could potentially result in memory corruption. To that end, we must follow some rules that prohibit such behavior.
 
 Note: dereferencing a `null` pointer in user-space is _not_ considered a memory safety issue in D. Why not? Because this triggers a hardware exception, and generally does not leave the program in an undefined state with corrupted memory. It simply aborts the program. This may seem undesirable to the user or the programmer, but it's perfectly fine in terms of preventing exploits. There are potential memory issues possible with `null` pointers, if one has a `null` pointer to a very large memory space. But for safe D, this requires an unusually large struct to even begin to worry about it. In the eyes of the D language, instrumenting all pointer dereferences to check for `null` is not worth the performance degradation for these rare situations.
@@ -129,10 +120,7 @@ The following rules are geared to prevent issues like the ones discussed above (
  	
   11. In D, all variables are default initialized. However, this can be changed to uninitialized by using a [void initializer](http://dlang.org/spec/declaration.html#void_init):
 
-    
     int *s = void;
-
-
 Such usage is not allowed in `@safe` D. The above pointer would point to random memory and create an obvious dangling pointer.
 
  	
@@ -155,38 +143,32 @@ Such usage is not allowed in `@safe` D. The above pointer would point to random 
 
 The above rules work well to prevent memory corruption, but they prevent a lot of valid, and actually safe, code. For example, consider a function that wants to use the system call [`read`](http://pubs.opengroup.org/onlinepubs/009695399/functions/read.html), which is prototyped like this:
 
-    
     ssize_t read(int fd, void* ptr, size_t nBytes);
-
-
 For those unfamiliar with this function, it reads data from the given file descriptor, and puts it into the buffer pointed at by `ptr` and expected to be `nBytes` bytes long. It returns the number of bytes actually read, or a negative value if an error occurs.
 
 Using this function to read data into a stack-allocated buffer might look like this:
 
-    
-    ubyte[128] buf;
-    auto nread = read(fd, buf.ptr, buf.length);
-
-
+```d
+ubyte[128] buf;
+auto nread = read(fd, buf.ptr, buf.length);
+```
 How is this done inside a `@safe` function? The main issue with using `read` in `@safe` code is that pointers can only pass a single value, in this case a single `ubyte`. `read` expects to store more bytes of the buffer. In D, we would normally pass the data to be read as a dynamic array. However, `read` is not D code, and uses a common C idiom of passing the buffer and length separately, so it cannot be marked `@safe`. Consider the following call from `@safe` code:
 
-    
-    auto nread = read(fd, buf.ptr, 10_000);
-
-
+```d
+auto nread = read(fd, buf.ptr, 10_000);
+```
 This call is definitely _not_ safe. What is safe in the above `read` example is only the one call, where the understanding of the `read` function and calling context assures memory outside the buffer will not be written.
 
 To solve this situation, D provides the [`@trusted`  attribute](http://dlang.org/spec/function.html#trusted-functions), which tells the compiler that the code inside the function is assumed to be `@safe`, but will not be mechanically checked. It's on you, the developer, to make sure the code is actually `@safe`.
 
 A function that solves the problem might look like this in D:
 
-    
-    auto safeRead(int fd, ubyte[] buf) @trusted
-    {
-        return read(fd, buf.ptr, buf.length);
-    }
-
-
+```d
+auto safeRead(int fd, ubyte[] buf) @trusted
+{
+    return read(fd, buf.ptr, buf.length);
+}
+```
 Whenever marking an entire function `@trusted`, consider if code could call this function from _any context_ that would compromise memory safety. If so, this function should not be marked `@trusted` **under any circumstances**. Even if the intention is to only call it in safe ways, the compiler will not prevent unsafe usage by others. `safeRead` should be fine to call from any `@safe` context, so it's a great candidate to mark `@trusted`.
 
 A more liberal API for the `safeRead` function might take a `void[]` array as the buffer. However, recall that in `@safe` code, one can cast any dynamic array to a `void[]` array -- including an array of pointers. Reading file data into an array of pointers could result in an array of dangling pointers. This is why `ubyte[]` is used instead.
@@ -197,10 +179,9 @@ A more liberal API for the `safeRead` function might take a `void[]` array as th
 
 A `@trusted` escape is a single expression that allows `@system` (the unsafe default in D) calls such as `read` without exposing the potentially unsafe call to any other part of the program. Instead of writing the `safeRead` function, the same feat can be accomplished inline within a `@safe` function:
 
-    
-    auto nread = ( () @trusted => read(fd, buf.ptr, buf.length) )();
-
-
+```d
+auto nread = ( () @trusted => read(fd, buf.ptr, buf.length) )();
+```
 Let's take a closer look at this escape to see what is actually happening. D allows declaring a [lambda function](https://en.wikipedia.org/wiki/Anonymous_function) that evaluates and returns a single expression, with the [`() => expr` syntax](http://dlang.org/spec/expression.html#Lambda). In order to call the lambda function, parentheses are appended to the lambda. However, operator precedence will apply those parentheses to the expression and not the lambda, so the entire lambda must be wrapped in parentheses to clarify the call. And finally, the lambda can be tagged `@trusted` as shown, so the call is now usable from the `@safe` context that contains it.
 
 In addition to simple lambdas, whole [nested functions](http://dlang.org/spec/function.html#nested) or multi-statement lambdas can be used. However, remember that adding a trusted nested function or saving a lambda to a variable exposes the rest of the function to potential safety concerns! Take care not to expose the escape too much because this risks having to manually verify code that should just be mechanically checked.

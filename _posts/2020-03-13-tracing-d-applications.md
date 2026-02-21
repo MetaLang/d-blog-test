@@ -43,36 +43,35 @@ When developing an application, you can use tracing to monitor its characteristi
 
 In this article, the following contrived D example is used to help illustrate all three cases. We’ll be focusing on Linux. All example code in this article can be found in the GitHub repository at [https://github.com/drug007/tracing_post](https://github.com/drug007/tracing_post).
 
-    
-    foreach(counter; 0..total_cycles)
+```d
+foreach(counter; 0..total_cycles)
+{
+    // randomly generate one of three kinds of event
+    Event event = cast(Event) uniform(0, 3);
+
+    // "perform" the job and benchmark its CPU execution time
+    switch (event)
     {
-        // randomly generate one of three kinds of event
-        Event event = cast(Event) uniform(0, 3);
-    
-        // "perform" the job and benchmark its CPU execution time
-        switch (event)
-        {
-            case Event.One:
-    
-                doSomeWork;
-    
-            break;
-            case Event.Two:
-    
-                doSomeWork;
-    
-            break;
-            case Event.Three:
-    
-                doSomeWork;
-    
-            break;
-            default:
-                assert(0);
-        }
+        case Event.One:
+
+            doSomeWork;
+
+        break;
+        case Event.Two:
+
+            doSomeWork;
+
+        break;
+        case Event.Three:
+
+            doSomeWork;
+
+        break;
+        default:
+            assert(0);
     }
-
-
+}
+```
 `doSomeWork` simulates a CPU-intensive job by using DRuntime’s `Thread.sleep` method. This is a very common pattern where an application runs in cycles and, on every iteration, performs a job depending on the application state. Here we can see that the application has three code paths (`CaseOne`, `CaseTwo`, and `CaseThree`). We need to trace the application at run time and collect information about its timings.
 
 
@@ -81,30 +80,25 @@ In this article, the following contrived D example is used to help illustrate al
 
 Using `writef/ln` from Phobos, [D’s standard library](https://dlang.org/phobos/index.html), to trace the application is naive, but can be very useful nevertheless. The code [from tracing_writef.d](https://github.com/drug007/tracing_post/blob/master/tracing_writef.d):
 
-    
-        case Event.One:
-                auto sw = StopWatch(AutoStart.no);
-                sw.start();
-    
-                doSomeWork;
-    
-                sw.stop();
-                writefln("%d:\tEvent %s took: %s", counter, event, sw.peek);
-            break;
-    
+```d
+    case Event.One:
+            auto sw = StopWatch(AutoStart.no);
+            sw.start();
 
+            doSomeWork;
 
+            sw.stop();
+            writefln("%d:\tEvent %s took: %s", counter, event, sw.peek);
+        break;
+```
 With this trivial approach, `StopWatch` from the standard library is used to measure the execution time of the code block of interest. Compile and run the application with the command `dub tracing_writef.d` and look at its output:
 
-    
     Running ./example-writef
     0:      Event One took:   584 ms, 53 μs, and 5 hnsecs
     1:      Event One took:   922 ms, 72 μs, and 6 hnsecs
     2:      Event Two took:   1 sec, 191 ms, 73 μs, and 8 hnsecs
     3:      Event Two took:   974 ms, 73 μs, and 7 hnsecs
     ...
-
-
 There is a price for this—we need to compile tracing code into our binary, we need to manually implement the collection of tracing output, disable it when we need to, and so on—and this means the size of the binary increases. To summarize:
 
 **Pros**
@@ -160,17 +154,13 @@ The debugger, in this case GDB, is a more advanced means to trace applications. 
 
 Let’s take a look [the code from tracing_gdb.d](https://github.com/drug007/tracing_post/blob/master/tracing_gdb.d) for the first event:
 
-    
         case Case.One:
     
             doSomeWork;
     
         break;
-
-
 As you can see, now there is no tracing code and it is much cleaner. The tracing logic is placed in [a separate file called trace.gdb](https://github.com/drug007/tracing_post/blob/master/trace.gdb). It consists of a series of command blocks configured to execute on specific breakpoints, like this:
 
-    
     set pagination off
     set print address off
     
@@ -191,17 +181,14 @@ As you can see, now there is no tracing code and it is much cleaner. The tracing
     
     run
     quit
-
-
 In the first line, pagination is switched off. This enables scrolling so that there is no need to press “Enter” or “Q” to continue script execution when the current console fills up. The second line disables showing the address of the current breakpoint in order to make the output less verbose. Then breakpoints are set on lines 53 and 54, each followed by a list of commands (between the `commands` and `end` labels) that will be executed when GDB stops on these breakpoints. The breakpoint on line 53 is configured to fetch the current timestamp (using a helper) before `doSomeWork` is called, and the one on line 54 to get the current timestamp after `doSomeWork` has been executed. In fact, line 54 is an empty line in the source code, but GDB is smart enough to set the breakpoint on the next available line. `$EventOne` is [a convenience variable](https://www.sourceware.org/gdb/onlinedocs/gdb/Convenience-Vars.html) where we store the timestamps to calculate code execution time. `currClock()` and `printClock(long)` are helpers to let us prettify the formatting by means of Phobos. The last two commands in the script initiate the debugging and quit the debugger when it’s finished.
 
 To build and run this tracing session, use the following commands:
 
-    
-    dub build tracing_gdb.d --single
-    gdb --command=trace.gdb ./tracing-gdb | grep Event
-
-
+```bash
+dub build tracing_gdb.d --single
+gdb --command=trace.gdb ./tracing-gdb | grep Event
+```
 `trace.gdb` is the name of the GDB script and `tracing-gdb` is the name of the binary. We use `grep` to make the GDB output look like `writefln` output for easier comparison.
 
 **Pros**
@@ -255,7 +242,6 @@ Unfortunately, due to historical reasons, the Linux tracing ecosystem is fragmen
 
 We will [be using bpftrace](https://github.com/iovisor/bpftrace), a high level tracing language [for Linux eBPF](http://www.brendangregg.com/blog/2019-01-01/learn-ebpf-tracing.html). In D, USDT probes are provided by [the usdt library](http://code.dlang.org/packages/usdt). Let’s start from [the code in tracing_usdt.d](https://github.com/drug007/tracing_post/blob/master/tracing_usdt.d):
 
-    
     	case Case.One:
     		mixin(USDT_PROBE!("dlang", "CaseOne", kind));
     
@@ -263,43 +249,38 @@ We will [be using bpftrace](https://github.com/iovisor/bpftrace), a high level t
     
     		mixin(USDT_PROBE!("dlang", "CaseOne_return", kind));
     	break;
-
-
 Here [we mixed in](https://dlang.org/spec/expression.html#mixin_expressions) two probes at the start and the end of the code of interest. It looks similar to the first example using `writef`, but a huge difference is that there is no logic here. We only defined two probes that are NOP instructions. That means that these probes have almost zero overhead and we can use them in production. The second great advantage is that we can change the logic while the application is running. That is just impossible when using the `writef` approach. Since we are using bpftrace, we need to write a script, [called bpftrace.bt](https://github.com/drug007/tracing_post/blob/master/bpftrace.bt), to define actions that should be performed on the probes:
 
-    
-    usdt:./tracing-usdt:dlang:CaseOne
-    {
-    	@last["CaseOne"] = nsecs;
-    }
-    
-    usdt:./tracing-usdt:dlang:CaseOne_return
-    {
-    	if (@last["CaseOne"] != 0)
-    	{
-    		$tmp = nsecs;
-    		$period = ($tmp - @last["CaseOne"]) / 1000000;
-    		printf("%d:\tEvent CaseOne   took: %d ms\n", @counter++, $period);
-    		@last["CaseOne"] = $tmp;
-    		@timing = hist($period);
-    	}
-    }
-    ...
+```c
+usdt:./tracing-usdt:dlang:CaseOne
+{
+	@last["CaseOne"] = nsecs;
+}
 
-
+usdt:./tracing-usdt:dlang:CaseOne_return
+{
+	if (@last["CaseOne"] != 0)
+	{
+		$tmp = nsecs;
+		$period = ($tmp - @last["CaseOne"]) / 1000000;
+		printf("%d:\tEvent CaseOne   took: %d ms\n", @counter++, $period);
+		@last["CaseOne"] = $tmp;
+		@timing = hist($period);
+	}
+}
+...
+```
 The first statement is the action block. It triggers on the USDT probe that is compiled in the `./tracing-usdt` executable (it includes the path to the executable) with the `dlang` provider name and the `CaseOne` probe name. When this probe is hit, then the global (indicated by the `@` sign) associative array `last` updates the current timestamp for its element `CaseOne`. This stores the time of the moment the code starts running. The second action block defines actions performed when the `CaseOne_return` probe is hit. It first checks if corresponding element in the `@last` associative array is already initialized. This is needed because the application may already be running when the script is executed, in which case the `CaseOne_return` probe can be fired before `CaseOne`. Then we calculate how much time code execution took, output it, and store it in a histogram called `timing`.
 
 The BEGIN and END blocks at the top of `bpftrace.bt` define actions that should be performed at the beginning and the end of script execution. This is nothing more than initialization and finalization. Build and run the example with:
 
-    
-    dub build tracing_usdt.d   --single --compiler=ldmd2 # or gdc
-    ./tracing-usdt &                                     # run the example in background
-    sudo bpftrace bpftrace.bt                            # start tracing session
-
-
+```bash
+dub build tracing_usdt.d   --single --compiler=ldmd2 # or gdc
+./tracing-usdt &                                     # run the example in background
+sudo bpftrace bpftrace.bt                            # start tracing session
+```
 Output:
 
-    
     Attaching 8 probes...
     0:	Event CaseThree took: 552 ms
     1:	Event CaseThree took: 779 ms
@@ -327,8 +308,6 @@ Output:
     [256, 512)             1 |@@@@@                                               |
     [512, 1K)             10 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
     [1K, 2K)               7 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                |
-
-
 In the session output above there are only 18 lines instead of 20; it’s because `tracing-usdt` was started before the `bpftrace` script so the first two events were lost. Also, it's necessary to kill the example by typing `Ctrl-C` after `tracing-usdt` completes. After the `bpftrace` script stops execution, it ouputs the contents of the `timing` map as a histogram. The histogram says that one-time code execution takes between 256 and 512 ms, ten times between 512 and 1024 ms, and seven times more between 1024 and 2048 ms. These builtin statistics make using `bpftrace` easy.
 
 **Pros**
