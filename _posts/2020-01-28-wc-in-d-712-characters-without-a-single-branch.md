@@ -68,12 +68,12 @@ Is the D `wc` faster than the coreutils `wc`? No, but it took me 15 minutes to w
 <table > 
 
 <tr >
-file
-lines
-bytes
-coreutils
-haskell
-D
+<td>file</td>
+<td>lines</td>
+<td>bytes</td>
+<td>coreutils</td>
+<td>haskell</td>
+<td>D</td>
 </tr>
 
 <tbody >
@@ -159,14 +159,15 @@ D
 </tr>
 </tbody>
 </table>
+
 Memory:
 <table > 
 
 <tr >
-file
-coreutils
-haskell
-D
+<td>file</td>
+<td>coreutils</td>
+<td>haskell</td>
+<td>D</td>
 </tr>
 
 <tbody >
@@ -238,11 +239,14 @@ I’ll not claim that one language is faster than another. If you spend a chunk 
 
 ![Digital Mars D logo](http://dlang.org/blog/wp-content/uploads/2016/08/d6.png)A range is an abstraction that you can consume through iteration without consuming the underlying collection (if there is one). Technically, a range can be a struct or a class that adheres to one of a handful of `Range` interfaces. The most basic form, [the `InputRange`](https://dlang.org/phobos/std_range_primitives.html#isInputRange), requires the function
 
-    void popFront();
+```d
+void popFront();
+```
 and two members or properties:
-
-    T front;
-    bool empty;
+```d
+T front;
+bool empty;
+```
 `T` is the generic type of the elements the range iterates.
 
 In D, ranges are special in a way that other objects are not. When a range is given to a `foreach` statement, the compiler does a little rewrite.

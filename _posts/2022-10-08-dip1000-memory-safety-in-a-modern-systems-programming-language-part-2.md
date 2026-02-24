@@ -174,7 +174,7 @@ They don't work like just any pointer. Once you understand `ref`, you can use DI
 The simplest possible way to use `ref` is probably this:
 
 
-```python
+```d
 @safe void fun(ref int arg) {
     arg = 5;
 }
@@ -189,9 +189,10 @@ fun(anArray[1]); // or, via UFCS: anArray[1].fun;
 ```
 instead of `fun(&anArray[1])`. [Unlike C++ references](https://en.wikipedia.org/wiki/Reference_(C%2B%2B)), D `ref`erences can be `null`, but the application will instantly terminate with a segmentation fault if a null `ref` is used for something other than reading the address with the `&` operator. So this:
 
-
-    int* ptr = null;
-    fun(*ptr);
+```d
+int* ptr = null;
+fun(*ptr);
+```
 …compiles, but crashes at runtime because the assignment inside `fun` lands at the null address.
 
 The address of a `ref` variable is always guarded against escape. In this sense `@safe void fun(ref int arg){arg = 5;}` is like `@safe void fun(scope int* pArg){*pArg = 5;}`. For example, `@safe int* fun(ref int arg){return &arg;}` will not compile, just like `@safe int* fun(scope int* pArg){return pArg;}` will not.
@@ -243,9 +244,10 @@ There is a `return ref` storage class, however, that allows returning the addres
 ```
 `mergeSort` here guarantees it won't leak the address of the `float`s in `arr` except in the return value. This is the same guarantee that would be had from a `return scope float[] arr` parameter. But at the same time, because `arr` is a `ref` parameter, `mergeSort` can mutate the array passed to it. Then the client can write:
 
-
-    float[] values = [5, 1.5, 0, 19, 1.5, 1];
-    values.mergeSort;
+```d
+float[] values = [5, 1.5, 0, 19, 1.5, 1];
+values.mergeSort;
+```
 With a non-`ref` argument, the client would have to write `values = values.sort` instead (not using `ref` would be a perfectly reasonable API in this case, because we do not always want to mutate the original array). This is something that cannot be accomplished with pointers, because `return scope float[]* arr` would protect the address of the array's metadata (the `length` and `ptr` fields of the array), not the address of it's contents.
 
 It is also possible to have a returnable `ref` argument to a `scope` reference. Since this example has a unit test, remember to use the `-unittest` compile flag to include it in the compiled binary.

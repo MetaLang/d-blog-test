@@ -88,26 +88,26 @@ The code was run on a computer with an Ubuntu 20.04 OS, 32 GB memory, and an Int
 ```bash
 $ julia --version
 julia version 1.4.1
+```
 
 
 
-
-
+```bash
 $ dmd --version
 DMD64 D Compiler v2.090.1
+```
 
 
 
-
-
+```d
 ldc2 --version
 LDC - the LLVM D compiler (1.18.0):
   based on DMD v2.088.1 and LLVM 9.0.0
+```
 
 
 
-
-
+```bash
 $ chpl --version
 chpl version 1.22.0
 ```
@@ -121,8 +121,9 @@ Chapel:
 
 
 
-
-    chpl script.chpl kernelmatrix.chpl --fast && ./script
+```bash
+chpl script.chpl kernelmatrix.chpl --fast && ./script
+```
 D:
 
 
@@ -135,8 +136,9 @@ Julia (no compilation required but can be run from the command line):
 
 
 
-
-    julia script.jl
+```bash
+julia script.jl
+```
 ## Implementations
 
 
@@ -245,7 +247,7 @@ The `Symmetric` type saves the small bit of extra work needed for allocating to 
 
 
 
-```python
+```julia
 function calculateKernelMatrix(Kernel::K, data::Array{T}) where {K <: AbstractKernel,T <: AbstractFloat}
   n = size(data)[2]
   mat = zeros(T, n, n)
@@ -262,7 +264,7 @@ The `@bounds` and `@simd` macros in the kernel functions were used to turn bound
 
 
 
-```python
+```julia
 struct DotProduct <: AbstractKernel end
 @inline function kernel(K::DotProduct, x::AbstractArray{T, N}, y::AbstractArray{T, N}) where {T,N}
   ret = zero(T)
@@ -319,6 +321,7 @@ Chapel took the longest total time but consumed the least amount of memory (near
     	Signals delivered: 0
     	Page size (bytes): 4096
     	Exit status: 0
+
 D consumed the highest amount of memory (around 20GB RAM peak memory) but took less total time than Chapel to execute:
 
 
@@ -347,6 +350,7 @@ D consumed the highest amount of memory (around 20GB RAM peak memory) but took l
     	Signals delivered: 0
     	Page size (bytes): 4096
     	Exit status: 0
+
 Julia consumed a moderate amount of memory (around 7.5 GB peak memory) but ran the quickest--probably because its random number generator is the fastest:
 
 
@@ -375,6 +379,7 @@ Julia consumed a moderate amount of memory (around 7.5 GB peak memory) but ran t
     	Signals delivered: 0
     	Page size (bytes): 4096
     	Exit status: 0
+
 ## Performance optimization
 
 
@@ -454,6 +459,7 @@ Programmers want a fast code/compile/result loop during development to quickly o
     real	0m0.545s
     user	0m0.447s
     sys	0m0.101s
+
 Compared with Chapel:
 
 
@@ -462,6 +468,7 @@ Compared with Chapel:
     real	0m5.980s
     user	0m5.787s
     sys	0m0.206s
+
 That’s a large actual and _psychological_ difference, it can make programmers reluctant to check their work and delay the development loop if they have to wait for outputs, especially when source code increases in volume and compilation times become significant.
 
 
@@ -628,7 +635,7 @@ All three languages have convenient places where users can ask questions. For Ch
 
 <tbody >
 <tr >
-<td > Compilation/Interactivty 
+<td > Compilation/Interactivity 
 </td>
 <td style="text-align:center" > Slow   
 </td>

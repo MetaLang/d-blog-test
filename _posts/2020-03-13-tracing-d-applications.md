@@ -99,13 +99,14 @@ With this trivial approach, `StopWatch` from the standard library is used to mea
     2:      Event Two took:   1 sec, 191 ms, 73 μs, and 8 hnsecs
     3:      Event Two took:   974 ms, 73 μs, and 7 hnsecs
     ...
+
 There is a price for this—we need to compile tracing code into our binary, we need to manually implement the collection of tracing output, disable it when we need to, and so on—and this means the size of the binary increases. To summarize:
 
 **Pros**
 
 
 
- 	
+ 
   * all the might of Phobos is available to employ ([except when in BetterC mode](https://dlang.org/blog/2017/08/23/d-as-a-better-c/))
 
  	
@@ -153,12 +154,13 @@ This approach is very suitable in the early stages of development and less usefu
 The debugger, in this case GDB, is a more advanced means to trace applications. There is no need to modify the application to change the tracing methodology, making it very useful in production. Instead of compiling tracing logic into the application, breakpoints are set. When the debugger stops execution on a breakpoint, the developer can use the large arsenal of GDB functionality to inspect the internal state of the _inferior_ (which, in GDB terms, usually refers to [the process being debugged](https://sourceware.org/gdb/onlinedocs/gdb/Inferiors-and-Programs.html)). It is not possible in this case to use Phobos directly, but helpers are available and, moreover, you have access to registers and the stack—options which are unavailable in the case of `writef` debugging.
 
 Let’s take a look [the code from tracing_gdb.d](https://github.com/drug007/tracing_post/blob/master/tracing_gdb.d) for the first event:
+```d
+case Case.One:
 
-        case Case.One:
-    
-            doSomeWork;
-    
-        break;
+    doSomeWork;
+
+break;
+```
 As you can see, now there is no tracing code and it is much cleaner. The tracing logic is placed in [a separate file called trace.gdb](https://github.com/drug007/tracing_post/blob/master/trace.gdb). It consists of a series of command blocks configured to execute on specific breakpoints, like this:
 
     set pagination off
@@ -181,6 +183,7 @@ As you can see, now there is no tracing code and it is much cleaner. The tracing
     
     run
     quit
+
 In the first line, pagination is switched off. This enables scrolling so that there is no need to press “Enter” or “Q” to continue script execution when the current console fills up. The second line disables showing the address of the current breakpoint in order to make the output less verbose. Then breakpoints are set on lines 53 and 54, each followed by a list of commands (between the `commands` and `end` labels) that will be executed when GDB stops on these breakpoints. The breakpoint on line 53 is configured to fetch the current timestamp (using a helper) before `doSomeWork` is called, and the one on line 54 to get the current timestamp after `doSomeWork` has been executed. In fact, line 54 is an empty line in the source code, but GDB is smart enough to set the breakpoint on the next available line. `$EventOne` is [a convenience variable](https://www.sourceware.org/gdb/onlinedocs/gdb/Convenience-Vars.html) where we store the timestamps to calculate code execution time. `currClock()` and `printClock(long)` are helpers to let us prettify the formatting by means of Phobos. The last two commands in the script initiate the debugging and quit the debugger when it’s finished.
 
 To build and run this tracing session, use the following commands:
@@ -241,17 +244,18 @@ So far we have two ways to trace our application that are complimentary, but is 
 Unfortunately, due to historical reasons, the Linux tracing ecosystem is fragmented and rather confusing. There is no plain and simple introduction. Get ready to invest much more time if you want to understand this domain. The first well-known, full-fledged tracing framework was DTrace, developed by Sun Microsystems (now it [is open source and licensed under the GPL](http://dtrace.org/blogs/about/)). Yes, strace and ltrace have been around for a long time, but they are limited, e.g., they do not let you trace what happens inside a function call. Today, DTrace is available on Solaris, FreeBSD, macOS, and Oracle Linux. DTrace is not available in other Linux distributions because it was initially licensed under the CDDL. In 2018, it was relicensed under the GPL, but by then Linux had its own tracing ecosystem. As with everything, Open Source has disadvantages. In this case, it resulted in fragmentation. There are now several tools/frameworks/etc. that are able to solve the same problems in different ways but somehow and sometimes can interoperate with each other.
 
 We will [be using bpftrace](https://github.com/iovisor/bpftrace), a high level tracing language [for Linux eBPF](http://www.brendangregg.com/blog/2019-01-01/learn-ebpf-tracing.html). In D, USDT probes are provided by [the usdt library](http://code.dlang.org/packages/usdt). Let’s start from [the code in tracing_usdt.d](https://github.com/drug007/tracing_post/blob/master/tracing_usdt.d):
+```d
+case Case.One:
+	mixin(USDT_PROBE!("dlang", "CaseOne", kind));
 
-    	case Case.One:
-    		mixin(USDT_PROBE!("dlang", "CaseOne", kind));
-    
-    		doSomeWork;
-    
-    		mixin(USDT_PROBE!("dlang", "CaseOne_return", kind));
-    	break;
+	doSomeWork;
+
+	mixin(USDT_PROBE!("dlang", "CaseOne_return", kind));
+break;
+```
 Here [we mixed in](https://dlang.org/spec/expression.html#mixin_expressions) two probes at the start and the end of the code of interest. It looks similar to the first example using `writef`, but a huge difference is that there is no logic here. We only defined two probes that are NOP instructions. That means that these probes have almost zero overhead and we can use them in production. The second great advantage is that we can change the logic while the application is running. That is just impossible when using the `writef` approach. Since we are using bpftrace, we need to write a script, [called bpftrace.bt](https://github.com/drug007/tracing_post/blob/master/bpftrace.bt), to define actions that should be performed on the probes:
 
-```c
+```
 usdt:./tracing-usdt:dlang:CaseOne
 {
 	@last["CaseOne"] = nsecs;
@@ -308,6 +312,7 @@ Output:
     [256, 512)             1 |@@@@@                                               |
     [512, 1K)             10 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
     [1K, 2K)               7 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                |
+
 In the session output above there are only 18 lines instead of 20; it’s because `tracing-usdt` was started before the `bpftrace` script so the first two events were lost. Also, it's necessary to kill the example by typing `Ctrl-C` after `tracing-usdt` completes. After the `bpftrace` script stops execution, it ouputs the contents of the `timing` map as a histogram. The histogram says that one-time code execution takes between 256 and 512 ms, ten times between 512 and 1024 ms, and seven times more between 1024 and 2048 ms. These builtin statistics make using `bpftrace` easy.
 
 **Pros**
@@ -382,8 +387,7 @@ printing
 and other libs
 </td>
 
-<td >by means of
-[pretty-printing](https://www.sourceware.org/gdb/onlinedocs/gdb/Pretty-Printing.html)
+<td >by means of pretty-printing
 </td>
 
 <td >limited builtins
@@ -518,13 +522,7 @@ even in production
 <td >yes
 </td>
 </tr>
-<tr >
 
-<td >
-</td>
-
-<td style="text-align: center;" >
-</td>
 </tr>
 </tbody>
 </table>

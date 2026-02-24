@@ -60,6 +60,7 @@ From the GCC documentation, we can get a list of every warning the analyzer can 
     -Wanalyzer-use-of-pointer-in-stale-stack-frame 
     -Wanalyzer-write-to-const 
     -Wanalyzer-write-to-string-literal 
+
 These names are fairly descriptive. However, let's take a look at some examples before going into detail.
 
 Let's say we have some code that allocates a buffer for itself via `malloc`, like the following.
@@ -96,6 +97,7 @@ For this code, the static analyzer gives us two warnings, the first of which is 
         |      | ~                                    
         |      | |
         |      | (3) 'slice.ptr' leaks here; was allocated at (1)
+
 As you might expect, since we didn't free the memory we allocated, the analyzer warns us that the memory leaks at the end of the scope.
 
 The second warning complains that we used the memory from `malloc` without checking if it was `null`. Program failure due to dereferencing a null-pointer is sometimes desirable in D, so you can turn this off with `-Wno-analyzer-possible-null-dereference` if you need to.
@@ -359,6 +361,7 @@ If we're lucky, we'll see an error message like
 
     free(): double free detected in tcache 2
     Aborted (core dumped)
+
 which is better than nothing but nonetheless not ideal if we were unfamiliar with the code.
 
 If instead, we compile with `gdc d.d c.c -fanalyzer -flto` (the last flag is essential), we get this warning:

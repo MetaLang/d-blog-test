@@ -132,7 +132,7 @@ void main()
 The resulting error is:
 
 
-```d
+```
 foo.d(5): Error: semicolon expected, not `writeln`
 ```
 But wait, there _is_ a semicolon on line 5! So why is it having a problem? Technically, putting an extra semicolon just before the `writeln` call on line 5 would solve the error (after all, D doesn't have significant whitespace). But really, the compiler shouldn't be suggesting that.
@@ -142,6 +142,7 @@ I'd rather see something like:
 
     foo.d(5): Error: previous statement not terminated, perhaps you need 
     a semicolon on line 4?
+
 What if you are missing a brace or have an extra one? That spits out a lot of error vomit that is sometimes really difficult to decipher. I know this isn't as easy a problem to solve, but since the compiler is not even to the tricky semantic parts, what if it used some other hints of the source to try and tease out a suggested solution? Like maybe taking cues from the indentation.
 
 A great feature of the D compiler is the spelling correction suggestions. But sometimes it's not easy to see what has changed in the suggested spelling correction (especially when it's just different capitalization). Why not highlight the changed letters? Since D has gained colorized output for errors, things have become much clearer in my opinion.

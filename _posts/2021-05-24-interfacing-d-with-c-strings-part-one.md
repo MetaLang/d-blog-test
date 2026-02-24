@@ -172,6 +172,7 @@ If we were compiling C or C++, we could expect to find string literals in the re
     Hex dump of section '.rodata':
       0x00001e40 57686572 6520616d 20493f00 00000000 Where am I?.....
       0x00001e50 2f757372 2f6c6962 2f6c6463 2f783836 /usr/lib/ldc/x86
+
 In all three cases, the string is right there in the read-only data segment. The D spec explicitly avoids specifying where a string literal will be stored, but in practice, we can bank on the following: it might be in the binary's read-only segment, or it might be in the normal data segment, but it won't trigger a GC allocation, and it won't be allocated on the stack.
 
 Wherever it is, there's a positive consequence that we can sometimes take advantage of. Notice in the `readelf` output that there is a dot (`.`) immediately following the question mark at the end of each string. That represents the NUL terminator. It is not counted in the string's `.length` (so `"Where am I?".length` is 11 and not 12), but it's still there. So when we initialize a string variable with a string literal or assign a string literal to a variable, the lack of an allocation also means there's no copying, which in turn means the variable is pointing to the literal's location in memory. And that means we can safely do this:
@@ -191,10 +192,11 @@ If you've read [the GC series on this blog](https://dlang.org/blog/the-gc-series
 
 To be very clear: this is only true for string variables that have been directly initialized with a string literal or assigned one. If the value of the variable was the result of any other operation, then it cannot be considered NUL-terminated. Examples:
 
-
-    string s1 = s ~ "...I'm Unreliable!!";
-    string s2 = s ~ s1;
-    string s3 = format("I'm %s!!", "Unreliable");
+```d
+string s1 = s ~ "...I'm Unreliable!!";
+string s2 = s ~ s1;
+string s3 = format("I'm %s!!", "Unreliable");
+```
 None of these strings can be considered NUL-terminated. Each case will trigger a GC allocation. The runtime pays no mind to the NUL terminator of any of the literals during the append operations or in the `format` function, so the programmer can't trust it will be part of the result. Pass any one of these strings to C without first terminating it and trouble will eventually come knocking.
 
 
@@ -276,14 +278,15 @@ dmd -m64 -ofwin-rely.exe rely.d
 ```
 There is a much bigger difference in the memory addresses here than in the dmd binary on Linux. We're dealing with the PE/COFF format in this case, and I'm not familiar with anything similar to `readelf` for that format on Windows. But I do know a little something about [Abner Fog's `objconv` utility](https://www.agner.org/optimize/#objconv). Not only does it convert between object file formats, but it can also disassemble them:
 
-
-    objconv -fasm win-rely.obj
+```bash
+objconv -fasm win-rely.obj
+```
 This produces a file, `win-rely.asm`. Open it in a text editor and search for a portion of the string, e.g., `"I rel"`. You'll find the two entries aren't too far apart, but one is located in a block of text under this heading:
 
 
 
 
-rdata SEGMENT PARA 'CONST'       ; section number 4
+    rdata SEGMENT PARA 'CONST' ; section number 4
 
 
 
@@ -293,7 +296,7 @@ And the other under this heading:
 
 
 
-.data$B SEGMENT PARA 'DATA'        ; section number 6
+    .data$B SEGMENT PARA 'DATA' ; section number 6
 
 
 
