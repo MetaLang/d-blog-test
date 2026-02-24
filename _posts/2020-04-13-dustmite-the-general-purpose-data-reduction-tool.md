@@ -319,6 +319,7 @@ With [the above changes in place](https://github.com/cybershadow/DustMite/commit
     /// The original tree remains unchanged.
     /// Copies only modified parts of the tree, and whatever references them.
     Entity applyReduction(Entity origRoot, ref Reduction r)
+
 With the biggest hurdle behind us, and a few more rounds of applying [Walter Bright's secret weapon](https://forum.dlang.org/post/i53nti$1ja3$1@digitalmars.com), the performance metrics started to look more like what they should:
 
 

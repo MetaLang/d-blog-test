@@ -317,7 +317,9 @@ This cast is not a problem, right? Object references are always of the same size
 Unfortunately, that's not how [the D specification views it](https://dlang.org/spec/expression.html#AssignExpression). Having two class references (or any references, for that matter) in the same memory location but with different types, and then assigning one of them to the other, is undefined behavior. That's exactly what happens in
 
 
-    if (cast(Exception) o) o = e;
+```d
+if (cast(Exception) o) o = e;
+```
 if the array does contain the `e` argument. Since `true` can only be returned when undefined behavior is triggered, it means that any compiler would be free to optimize `replaceExceptions` to always return `false`. This is a dormant bug no amount of testing will find, but that might, years later, completely mess up the application when compiled with the powerful optimizations of an advanced compiler.
 
 It may seem that requiring a cast to use a function is an obvious warning sign that a good D programmer would not ignore. I wouldn't be so sure. Casts aren't that rare even in fine high-level code. Even if you disagree, other cases are provably bad enough to bite anyone. Last summer, this case [appeared in the D forums](https://forum.dlang.org/thread/t7qd45$1lrb$1@digitalmars.com):

@@ -100,16 +100,17 @@ It even handles [user-defined attributes (UDAs)](https://dlang.org/spec/attribut
 
 
 
+```d
+struct testParameter;
 
-    struct testParameter;
-    
-    void testPlus(@testParameter int a, @testParameter int b);
-    
-    pragma(msg, typeof(testPlus));
-    // void(@(testParameter) int a, @(testParameter) int b)
-    
-    pragma(msg, typeof(forward!testPlus));
-    // void(@(testParameter) int a, @(testParameter) int b)
+void testPlus(@testParameter int a, @testParameter int b);
+
+pragma(msg, typeof(testPlus));
+// void(@(testParameter) int a, @(testParameter) int b)
+
+pragma(msg, typeof(forward!testPlus));
+// void(@(testParameter) int a, @(testParameter) int b)
+```
 Speaking of UDAs, that's one of the issues with the solution above: it doesn't carry _function_ UDAs. It also doesn't work with functions that return a reference. Both issues are easy to fix:
 
 
@@ -293,6 +294,7 @@ Alas, this fails to compile, throwing errors like:
 
     Error: function `challenge.Mock!(JsonSerializable).Mock.asJson` return type
     inference is not supported if may override base class function
+
 In other words, `auto` cannot be used here. We have to fall back to explicitly specifying the return type:
 
 
@@ -323,9 +325,10 @@ This will not handle `ref` functions though. What about adding a `ref` in front 
 
 
 
-
-    // as before
-              ref ReturnType!fun %s(Parameters!fun args) ...
+```d
+// as before
+          ref ReturnType!fun %s(Parameters!fun args) ...
+```
 This will fail with all the functions in the interface that do _not_ return a reference.
 
 
@@ -389,7 +392,9 @@ I won't delve into the details of `openmethods` here (see [an older blog post](h
 
 
 
-    Matrix times(virtual!Matrix a, double b);
+```d
+Matrix times(virtual!Matrix a, double b);
+```
 `openmethods` generates this function:
 
 
@@ -458,10 +463,11 @@ The culprit is `Parameters`. This template is a wrapper around an obscure featur
 
 
 
-
-    pragma(msg, Parameters!scale.stringof); // (ref virtual!(Matrix), lazy double)
-    pragma(msg, Parameters!scale[0].stringof); // virtual!(Matrix)
-    pragma(msg, Parameters!scale[1].stringof); // double
+```d
+pragma(msg, Parameters!scale.stringof); // (ref virtual!(Matrix), lazy double)
+pragma(msg, Parameters!scale[0].stringof); // virtual!(Matrix)
+pragma(msg, Parameters!scale[1].stringof); // double
+```
 We see that accessing a parameter individually returns the type... and discards everything else!
 
 
@@ -472,9 +478,10 @@ There is actually a way to extract everything about a single parameter: use a _s
 
 
 
-
-    pragma(msg, Parameters!scale[0..1].stringof); // (ref virtual!(Matrix))
-    pragma(msg, Parameters!scale[1..2].stringof); // (lazy double)
+```d
+pragma(msg, Parameters!scale[0..1].stringof); // (ref virtual!(Matrix))
+pragma(msg, Parameters!scale[1..2].stringof); // (lazy double)
+```
 So this gives us a solution for handling the second parameter of `scale`:
 
 
@@ -537,10 +544,11 @@ This is not quite sufficient though, because it still doesn't take care of param
 
 
 
-
-    Matrix times(virtual!Matrix a, double b);
-    pragma(msg, refract!(times, "times").mixture);
-    // @system ReturnType!(times) times(Parameters!(times) _0);
+```d
+Matrix times(virtual!Matrix a, double b);
+pragma(msg, refract!(times, "times").mixture);
+// @system ReturnType!(times) times(Parameters!(times) _0);
+```
 Why does `refract` need the anchor string? Can't the string `"times"` be inferred from the function by means of `__traits(identifier...)`? Yes, it can, but in real applications we don't want to use this. The whole point of the library is to be used in templates, where the function is typically passed to `refract` via an alias. In general, the function's name has no meaning in the template's scope--or if, by chance, the name exists, it does not name the function. All the meta-expressions used to dissect the function must work in terms of the _local_ symbol that identifies the alias.
 
 
@@ -580,9 +588,10 @@ All aspects of the function are available piecemeal. For example:
 
 
 
-
-    @nogc void scale(ref virtual!Matrix m, lazy double by);
-    pragma(msg, refract!(scale, "scale").parameters[0].storageClasses); // ["ref"]
+```d
+@nogc void scale(ref virtual!Matrix m, lazy double by);
+pragma(msg, refract!(scale, "scale").parameters[0].storageClasses); // ["ref"]
+```
 `Function` also has methods that return a new `Function` object, with an alteration to one of the aspects. They can be used to create a variation of a function. For example:
 
 
@@ -612,7 +621,7 @@ This is the reason behind the name "refraction": the module creates a blueprint 
 
 
 
-```python
+```d
 original = refract!(scale, "scale");
 
 pragma(msg,

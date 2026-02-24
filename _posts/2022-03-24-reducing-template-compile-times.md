@@ -70,6 +70,7 @@ This yields the following output during compilation:
 
     genericAdd instantiated with int
     genericAdd instantiated with float
+
 We can see `int` and `float` as we expected, but notice that each is only mentioned once. Newcomers to languages with templates or generics can sometimes mistakenly think that using a template requires a potentially expensive instantiation on every use in the source code. For the benefit of those new users of D, the above is categoric proof that this is not the case; you _cannot_ pay twice for templates you have already asked the compiler to instantiate. (You can, however, convince yourself that you _are_ asking the compiler to do something it's already done when you in fact are not. We'll go over contrived and real-world examples of this later in this article.)
 
 The benefit of this feature should be obvious, but what may not be obvious is how it can be employed in writing templates. Within the bounds of our desire for ergonomics, we should design the _interfaces_ of our templates to maximize the number of identical instantiations.
@@ -95,9 +96,10 @@ struct Vector3
 ```
 To demonstrate the phenomenon, we don't have to do anything fancy, so we'll just declare a stub called `send`.
 
-
-    // Let's say this sends a value of type T to a database.
-    void send(T)(T x);
+```d
+// Let's say this sends a value of type T to a database.
+void send(T)(T x);
+```
 **A note on syntax:** Given a variable `val` of type `int`, this template could be explicitly instantiated as `send!(int)(val)`. However, the compiler can infer the type `T`, so we can instantiate it as if it were a normal function call as `send(val)`. Using D's [Uniform Function Call Syntax](https://dlang.org/spec/function.html#pseudo-member), we could alternatively call it like a property or member, as `val.send()` (the approach used in the following example), or even `val.send`, since parentheses are optional in function calls when there are no arguments.
 
 Our test might then be something like:
@@ -150,6 +152,7 @@ This results in the following output from the compiler:
     JustInt
     JustInt
     JustInt
+
 Huh? Doesn't this violate our "you can't pay twice" rule? If you were to take this output from the compiler as gospel, then yes, but there's a more subtle truth here.
 
 
@@ -238,9 +241,10 @@ To prove the point I'm discussing, we don't need to implement this function--its
 
 Let's say our `register` function looks like this:
 
-
-    // Context is something our hypothetical interpreter works with
-    void register(alias func, string registeredName)(Context x); 
+```d
+// Context is something our hypothetical interpreter works with
+void register(alias func, string registeredName)(Context x);
+```
 It's pretty reasonable, right? It takes a template alias parameter that specifies the function to call (a common idiom in D) and a template value parameter of type `string` that represents the name of the function as it is exposed to scripts. The implementation of `register` will presumably map the value of `registeredName` to the `func` alias, and then scripts can call the function using that value. Functions can be registered with, e.g., the following:
 
 
@@ -275,7 +279,9 @@ More broadly, with a bunch of functions that have identical signatures and a bun
 So what happens if we move the compile-time parameters to run time? Since `registeredName` is a template value parameter, we can just move it into the function parameter list with no change. We have to handle the `func` parameter differently. Almost any symbol can bind at compile time to a template alias parameter, but symbols can't bind at run time to function parameters. We have to use a function pointer instead. In that case, we can use the type of the referenced function as a template parameter.
 
 
-    void register(FuncType)(Context x, FuncType ptr, string registeredName);
+```d
+void register(FuncType)(Context x, FuncType ptr, string registeredName);
+```
 With this signature, the compile time drops to roughly **1** second.
 
 
@@ -336,7 +342,9 @@ This does the job, but it also creates an additional instantiation for each diff
 Since we only want to provide an alternate name for the implementation and aren't doing anything to the parameter list, we can achieve the same result without adding another template into the mix: just use `alias` by itself.
 
 
-    alias FunTemplate = FunTemplateImpl; 
+```d
+alias FunTemplate = FunTemplateImpl; 
+```
 Since `FunTemplate` is no longer a template, `FunTemplate!"Foo"` only creates the one instance of `FunTemplateImpl`.
 
 
@@ -431,7 +439,7 @@ Here's a simple lesson in Linux userspace tracing: you can use a tool like `bpft
 You'll need a `bpftrace` file like the following (saved as e.g., `main.bt`):
 
 
-```d
+```
 BEGIN
 {
   printf("Tracing a D file\n");

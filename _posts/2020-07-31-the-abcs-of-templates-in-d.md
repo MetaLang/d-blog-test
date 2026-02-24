@@ -298,8 +298,9 @@ void main()
 
 Unlike `std.conv.to`, `toUTF8` takes exactly one parameter. The signature of the declaration looks like this:
 
-
-    string toUTF8(S)(S s)
+```d
+string toUTF8(S)(S s)
+```
 But in the example, we aren't passing a type as a template argument. Just as the compiler was able to deduce `to`'s second argument, it's able to deduce `toUTF8`'s sole argument.
 
 `toUTF8` is an eponymous function template with a template parameter `S` and a function parameter `s` of type `S`. There are two things we can say about this: 1) the return type is independent of the template parameter and 2) the template parameter is the type of the function parameter. Because of 2), the compiler has all the information it needs from the function call itself and has no need for the template argument in the instantiation.

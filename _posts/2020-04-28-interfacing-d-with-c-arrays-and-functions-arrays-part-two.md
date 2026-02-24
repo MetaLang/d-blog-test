@@ -28,21 +28,26 @@ Using C libraries in D is extremely easy. Most of the time, things work exactly 
 The most straightforward and common way of declaring a C function that accepts an array as a parameter is to to use a pointer in the parameter list. For example, this hypothetical C function:
 
 
-    void f0(int *arr);
+```c
+void f0(int *arr);
+```
 In C, any array of `int` can be passed to this function no matter how it was declared. Given `int a[]`, `int b[3]`, or `int *c`, the function calls `f0(a)`, `f0(b)`, and `f0(c)` are all the same: a pointer to the first element of each array is passed to the function. Or using the lingo of C programmers, arrays _decay_ to pointers
 
 Typically, in a function like `f0`, the implementer will expect the array to have been terminated with a marker appropriate to the context. For example, strings in C are arrays of `char` that are terminated with the `\0` character (we'll look at D strings vs. C strings in a future post). This is necessary because, without that character, the implementation of `f0` has no way to know which element in the array is the last one. Sometimes, a function is simply documented to expect a certain length, either in comments or in the function name, e.g., a `vector3f_add(float *vec)` will expect that `vec` points to exactly 3 elements. Another option is to require the length of the array as a separate argument:
 
 
-    void f1(int *arr, size_t len);
+```d
+void f1(int *arr, size_t len);
+```
 None of these approaches is foolproof. If `f0` receives an array with no end marker or which is shorter than documented, or if `f1` receives an array with an actual length shorter than `len`, then the door is open for memory corruption. D arrays take this possibility into account, making it much easier to avoid such problems. But again, even D's safety features aren't 100% foolproof when calling C functions from D.
 
 There are other, less common, ways array parameters may be declared in C:
 
-
-    void f2(int arr[]);
-    void f3(int arr[9]);
-    void f4(int arr[static 9]);
+```d
+void f2(int arr[]);
+void f3(int arr[9]);
+void f4(int arr[static 9]);
+```
 Although these parameters are declared using C's array syntax, they boil down to the exact same function signature as `f0` because of the aforementioned pointer decay. The `[9]` in `f3` triggers no special enforcement by the compiler; `arr` is still effectively a pointer to `int` with unknown length. The `[9]` serves as documentation of what the function expects, and the implementation cannot rely on the array having nine elements.
 
 The only potential difference is in `f4`. The `static` added to the declaration tells the compiler that the function must take an array of, in this case, _at least_ nine elements. It could have more than nine, but it can't have fewer. That also rules out null pointers. The problem is, this isn't necessarily enforced. Depending on which C compiler you use, if you shortchange the function and send it less than nine elements you might see warnings if they are enabled, but the compiler might not complain at all. (I haven't tested current compilers for this article to see if any are actually reporting errors for this, or which ones provide warnings.)
@@ -77,9 +82,10 @@ Are there any consequences of taking this approach? The answer is yes, but that 
 
 The previous article showed that D makes a distinction between dynamic and static arrays:
 
-
-    int[] a0;
-    int[9] a1;
+```d
+int[] a0;
+int[9] a1;
+```
 `a0` is a dynamic array and `a1` is a static array. Both have the properties `.ptr` and `.length`. Both may be indexed using the same syntax. But there are some key differences between them.
 
 
@@ -145,6 +151,7 @@ I say naïve because this is never the right answer. Compiling `f2.c` with `df2.
     3
     0
     1970470928
+
 There is no compiler error because the declaration of `f2` is pefectly valid D. The `extern(C)` indicates that this function uses the `cdecl` calling convention. Calling conventions affect the way arguments are passed to functions and how the function's symbol is mangled. In this case, the symbol will be either `_f2` or `f2` (other calling conventions, like `stdcall`--`extern(Windows)` in D--have different mangling schemes). The declaration still has to be valid D. (In fact, any D function can be marked as `extern(C)`, something which is necessary when creating a D library that will be called from other languages.)
 
 There is also no linker error. DMD is calling out to the system linker (in this case, Microsoft's `link.exe`), the same linker used by the system's C and C++ compilers. That means the linker has no special knowledge about D functions. All it knows is that there is a call to a symbol, `f2` or `_f2`, that needs to be linked with the implementation. Since the type and number of parameters are not mangled into the symbol name, the linker will happily link with any matching symbol it finds (which, by the way, is the same thing it would do if a C program tried to call a C function which was declared with an incorrect parameter list).
@@ -166,14 +173,16 @@ Note the use of `a.ptr`. It's an error to try to pass a D array argument where a
 
 The story for `f3` and `f4` is similar:
 
-
-    void f3(int arr[9]);
-    void f4(int arr[static 9]);
+```d
+void f3(int arr[9]);
+void f4(int arr[static 9]);
+```
 Remember, `int[9]` in D is a static array, not a dynamic array. The following do not match the C declarations:
 
-
-    void f3(int[9]);
-    void f4(int[9]);
+```d
+void f3(int[9]);
+void f4(int[9]);
+```
 Try it yourself. The C implementation:
 
 
@@ -197,7 +206,7 @@ void main() {
 This is likely to crash, depending on the system. Rather than passing a pointer to the array, this code is instead passing all nine array elements by value! Now consider a C library that does something like this:
 
 
-```python
+```c
 typedef float[16] mat4f;
 void do_stuff(mat4f mat);
 ```
@@ -213,7 +222,9 @@ The sixteen floats will be passed to `do_stuff` every time it's called. The same
 In D, we can do better:
 
 
-    void do_stuff(ref mat4f);
+```d
+void do_stuff(ref mat4f);
+```
 Not only does this match the API implementor's intent, the compiler will guarantee that any arrays passed to `do_stuff` are static float arrays with 16 elements. Since a `ref` parameter is just a pointer under the hood, all is as it should be on the C side.
 
 With that, we can rewrite the `f3` example:

@@ -51,6 +51,7 @@ The easiest way to do the compilation is to use [D’s package manager, called D
 
     library(embedr)
     dubNew()
+
 This will create a `/src` subdirectory to hold your project’s source code if it doesn’t already exist, add a file called `r.d` to `/src` and create a `dub.sdl` file in the project directory. Create a file in the `/src` directory called `hello.d`, containing the following program:
 
 ```d
@@ -137,6 +138,7 @@ Create a new project directory and initialize DUB from within R, with the one ad
     library(embedr)
     dubNew()
     dubOptim()
+
 `dubOptim()` adds the file `optim.d` to the `src/` directory. Create a file called `nelder.d` inside the `src` directory with the following program:
 
 ```d
@@ -168,7 +170,7 @@ The purpose of many R packages is to provide a convenient interface to a C, C++,
 An example of an R interface to Fortran code is found in [the popular glmnet package](//cran.r-project.org/web/packages/glmnet/index.html)).
 Lasso estimation using the `elnet` function is done by passing 28 pointers to the function `elnet` in `libglmnet.so` with this interface:
 
-```python
+```
 .Fortran("elnet", ka, parm=alpha, nobs, nvars, as.double(x), y,
                   weights, jd, vp, cl, ne, nx, nlam, flmin, ulam, thresh,
                   isd, intr, maxit, lmu=integer(1), a0=double(nlam),

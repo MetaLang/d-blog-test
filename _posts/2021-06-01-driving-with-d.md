@@ -34,26 +34,28 @@ I picked D (as `-betterC`) because of its ingenious Uniform Function Call Syntax
 This has made my code significantly clearer. My code can accurately follow the flow of data without polluting my stack with single-use variables, nesting many function calls, or other sorts of clutter.
 Here is an example of how you could potentially use it in an ECU ([Engine Control Unit](https://en.wikipedia.org/wiki/Engine_control_unit)):
 
-
-    immutable injectorTime = airStoich(100.kpa, 25.degCelsius)
-        .airMass
-        .fuelMass((14.7f).afr)
-        .fuelMol
-        .calculateInjectorWidth;
+```d
+immutable injectorTime = airStoich(100.kpa, 25.degCelsius)
+    .airMass
+    .fuelMass((14.7f).afr)
+    .fuelMol
+    .calculateInjectorWidth;
+```
 This is equivalent to:
 
-
-    immutable injectorTime =
-        calculateInjectorWidth(
-            fuelMol(
-                fuelMass(
-                    airMass(
-                        airStoich(kpa(100), degCelsius(25))
-                    ),
-                    afr(14.7)
-                )
+```d
+immutable injectorTime =
+    calculateInjectorWidth(
+        fuelMol(
+            fuelMass(
+                airMass(
+                    airStoich(kpa(100), degCelsius(25))
+                ),
+                afr(14.7)
             )
-        ); // brackets have been expanded for reading clarity
+        )
+    ); // brackets have been expanded for reading clarity
+```
 _Please note: the values in this example are hardcoded to simplify the code and demonstrate how UFCS can give a unit of measurement to a value._
 
 Both representations are valid D code; you can use either.
@@ -102,7 +104,7 @@ void main(string[] args)
 [Structs]() and [classes]() can include contracts, called _invariants_, that sanity check the state of an instance for its whole lifetime. Invariants are checked after the constructor is run, before the destructor is run, and before _and_ after public function calls.
 
 
-```python
+```d
 struct MyStruct
 {
     int blah;

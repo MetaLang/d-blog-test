@@ -344,19 +344,25 @@ Code should flow from left to right, and top to bottom. Just like how this artic
 
 
 
-    f() + g() // which executes first?
+```d
+f() + g() // which executes first?
+```
 Fortunately, D guarantees a left-to-right ordering (C does not). But what about:
 
 
 
 
-    g(f(e(d(c(b(a))),3)));
+```d
+g(f(e(d(c(b(a))),3)));
+```
 That executes inside out! Quick, which function call does the `3` get passed to? D’s Universal Function Call Syntax to the rescue:
 
 
 
 
-    a.b.c.d(3).e.f.g;
+```d
+a.b.c.d(3).e.f.g;
+```
 That's the equivalent, but execution flows clearly left-to-right. Is this an extreme example, or the norm?
 
 
@@ -397,8 +403,7 @@ The example also nicely segues into the next observation.
 
 > 
 > Shaw: You know a great deal about computers, don’t you?  
-
-Mr. Spock: I know all about them.
+> Mr. Spock: I know all about them.
 > 
 > 
 
@@ -411,20 +416,22 @@ I submit that:
 
 
 
-
-    version (X)
-         doX();
-    doY();
-    if (Z)
-         doZ();
+```d
+version (X)
+     doX();
+doY();
+if (Z)
+     doZ();
+ ```
 is less comprehensible than:
 
 
 
-
-    doX();
-    doY();
-    doZ();
+```d
+doX();
+doY();
+doZ();
+```
 What happened to the conditional expressions? Move them to the interiors of `doX()` and `doZ()`.
 
 
@@ -451,26 +458,17 @@ Negation in English:
 
 
 
-> 
+
 > Dr McCoy: We’re trying to help you, Oxmyx.  
-
-Bela Oxmyx: Nobody helps nobody but himself.  
-
-Mr. Spock: Sir, you are employing a double negative.
-> 
-> 
+> Bela Oxmyx: Nobody helps nobody but himself.  
+> Mr. Spock: Sir, you are employing a double negative.  
 
 
 
 
 
-
-
-
-> 
 > Cowardly Lion: Not nobody! Not nohow!
-> 
-> 
+
 
 
 
@@ -500,13 +498,17 @@ Skilled communicators avoid negation. Savvy programmers do, too. How many times 
 
 
 
-    if (!noWay)
+```d
+if (!noWay)
+```
 is inevitably perceived as:
 
 
 
 
-    if (noWay)
+```d
+if (noWay)
+```
 I mentioned this discovery to my good friend Andrei Alexandrescu. He didn’t buy it. He said I needed research to back it up. I didn’t have any research, but didn’t change my mind (i.e., hubris). Eventually, I did run across a paper that did do such research and came to the same conclusion as my assumption. I excitedly sent it to Andrei, and to his great credit, he conceded defeat, which is why Andrei is an exceptional man (rare is the person who ever concedes defeat!).
 
 
@@ -518,7 +520,9 @@ The lesson here is to avoid using negation in identifiers if at all possible.
 
 
 
-    if (way)
+```d
+if (way)
+```
 Isn't that better?
 
 
@@ -583,7 +587,9 @@ This leads us to the D `version` conditional.
 
 
 
-    version ( Identifier )
+```d
+version ( Identifier )
+```
 _Identifier_ is usually predefined by the compiler or the command line. Only an identifier is allowed--no negation, AND, OR, or XOR. (Collectively call that _version algebra_.) Our users often chafe at this restriction, and I get that it's difficult to accept the rationale at first. It’s not impossible to do version algebra:
 
 
@@ -640,16 +646,19 @@ Taking this a step further:
 
 
 
-
-    if (A && B && C && D)
+```d
+if (A && B && C && D)
     
-    if (A || B || C || D)
+if (A || B || C || D)
+```
 are easy for a human to parse. Encountering:
 
 
 
 
-    if (A && (!B || C))
+```d
+if (A && (!B || C))
+```
 is always like transitioning from smooth asphalt to a cobblestone road. Ugh. I've made mistakes with such constructions all the time. Not only is it hard to even see the `!`, but it’s still hard to satisfy yourself that it is correct.
 
 
@@ -660,9 +669,10 @@ Fortunately, De Morgan’s Theorem can sometimes come to the rescue:
 
 
 
-
-    (!A && !B) => !(A || B)
-    (!A || !B) => !(A && B)
+```d
+(!A && !B) => !(A || B)
+(!A || !B) => !(A && B)
+```
 It gets rid of one negation. Repeated application can often transform it into a much more easily understood equation while being equally correct.
 
 
@@ -680,7 +690,9 @@ To sum up this section, here’s a shameful snippet from Ubuntu’s unistd.h:
 
 
 
-    #if defined __USE_BSD || (defined __USE_XOPEN && !defined __USE_UNIX98)
+```c
+#if defined __USE_BSD || (defined __USE_XOPEN && !defined __USE_UNIX98)
+```
 > 
 > Prof Marvel: I can’t bring it back, I don’t know how it works!
 > 
@@ -714,7 +726,9 @@ Pull Request: [remove some dyncast calls](https://github.com/dlang/dmd/pull/1548
 
 
 
-    char* xyzzy(char* p)
+```d
+char* xyzzy(char* p)
+```
   * Does `p` modify what it points to?
 
 
@@ -738,7 +752,7 @@ These crucial bits of information are rarely noted in the documentation for the 
 
 
 
-```d
+```c
 const char* xyzzy(return scope const char* p)
 ```
   * `p` doesn’t modify what it points to

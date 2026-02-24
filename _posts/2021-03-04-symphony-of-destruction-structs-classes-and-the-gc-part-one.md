@@ -135,6 +135,7 @@ Inserting `writeln(*p)` immediately after `destroy(*p)` should print
 
 
     Predictable(0)
+
 for each destroyed instance. (The default `.init` state for a struct in D is the aggregate of the `.init` property of each of its members; in this case, the sole member, being of type `int`, has an `.init` property of `0`, so the struct's default `.init` state is `Predictable(0)`. This [can be changed in the struct definition](https://dlang.org/spec/struct.html#default_struct_init), e.g., `struct Predictable { int id = 1; }`.)
 
 `destroy` is not restricted to instances allocated on the non-GC heap. Any aggregate type instance (`struct`, `class`, or `interface`) is a valid argument no matter where it was allocated.
@@ -208,6 +209,7 @@ We'll see that the output is drastically different:
     Destructor #0
     Destructor #1
     Destructor #2
+
 Anyone familiar with the characteristics of the default DRuntime constructor can predict for this very simple program that all the destructors will be run when the GC's cleanup function is executed as the D runtime shuts down, and that they will be executed in the order in which they were declared (an implementation detail; and note that destruction at shut down [can be disabled via a command line argument](https://dlang.org/spec/garbage.html#gc_config)). But in a more complex program, this ability to predict breaks down. Destructors can be invoked by the GC at _almost_ any time and in any order.
 
 To be clear, the GC will only perform its cleanup duties if and when it finds more memory is needed to fulfill a specific allocation request. In other words, it isn't constantly running in the background, marking objects unreachable and calling destructors willy nilly. To that extent, we can predict when the GC has the _possibility_ to perform its duties. Beyond that, all bets are off. We cannot predict with accuracy if any destructors will be invoked during any given allocation request or the order in which they will be invoked. This uncertainty has ramifications for how one implements destructors for any GC-managed type.
