@@ -118,13 +118,6 @@ blockquote p {
   display: inline;
 }
 
-/* High-Contrast Syntax Colors */
-.highlight .k, .highlight .kt { color: #a31515; font-weight: bold; }  
-.highlight .s { color: #0433ff; font-weight: 500; }  
-.highlight .nf { color: #8a6343; font-weight: bold; }  
-.highlight .mi { color: #009926; font-weight: bold; }  
-.highlight .c1 { color: #999988; font-style: italic; }
-
 /* --- Sidebar (Reflow Centering) --- */
 .sidebar-col { text-align: center; }
 .sidebar-col .sidebar-section { display: flex; flex-direction: column; align-items: center; }
