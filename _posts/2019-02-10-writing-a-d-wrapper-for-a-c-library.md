@@ -165,7 +165,7 @@ What we need is a bijective (“back and forth”) mapping between D pointers an
 
 How to do this in practice? The best way to explain is with an example. We will consider how to create an I/O stream class which uses the C library callbacks to implement it. For example, when the user of our wrapper requests to write some information to a file, our class receives _write_ message. To handle this message, our implementation calls our virtual function `doWriteBytes()`, which actually handles the user’s request.
 
-```rust
+```d
 private immutable DispatcherType Dispatch =
     { version_: 2,
       init: null,
