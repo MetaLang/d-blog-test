@@ -6,6 +6,9 @@ url: "https://metalang.github.io"
 
 permalink: /:title/
 
+kramdown:
+  syntax_highlighter: rouge
+
 plugins:
   - jekyll-paginate
   - jekyll-feed
