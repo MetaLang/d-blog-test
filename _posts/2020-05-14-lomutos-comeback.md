@@ -312,11 +312,14 @@ One important measurement is the CPU utilization efficiency, shown by Intel VTun
 
 The micropipes shown below correspond to the Hoare partition, Lomuto partition (in the traditional implementation), and branch-free Lomuto partition. The first two throw away about 30% of all work as bad speculation. In contrast, the Lomuto branchless partition wastes no work on speculation, which allows it a better efficiency in spite of more memory writes.
 
-[caption id="attachment_2521" align="aligncenter" width="651"]![](http://dlang.org/blog/wp-content/uploads/2020/05/hoare-partition-upipe.png) Intel VTune pipe efficiency diagram for the Hoare partition. A large percentage of work is wasted on failed speculation.[/caption]
+![](http://dlang.org/blog/wp-content/uploads/2020/05/hoare-partition-upipe.png)
+*Intel VTune pipe efficiency diagram for the Hoare partition. A large percentage of work is wasted on failed speculation.*
 
-[caption id="attachment_2548" align="alignnone" width="655"]![](http://dlang.org/blog/wp-content/uploads/2020/05/lomuto-branchfree-partition-upipe.png) Intel VTune pipe efficiency diagram for the traditional "branchy" Lomuto partition, featuring about as much failed speculation as the Hoare partition.[/caption]
+![](http://dlang.org/blog/wp-content/uploads/2020/05/lomuto-branchfree-partition-upipe.png)
+*Intel VTune pipe efficiency diagram for the traditional "branchy" Lomuto partition, featuring about as much failed speculation as the Hoare partition.*
 
-[caption id="attachment_2520" align="aligncenter" width="647"]![](http://dlang.org/blog/wp-content/uploads/2020/05/lomuto-partition-upipe.png) Intel VTune pipe efficiency diagram for the Lomuto branch-free partition. Virtually no work is wasted on failed speculation, leading to a much better efficiency.[/caption]
+![](http://dlang.org/blog/wp-content/uploads/2020/05/lomuto-partition-upipe.png)
+*Intel VTune pipe efficiency diagram for the Lomuto branch-free partition. Virtually no work is wasted on failed speculation, leading to a much better efficiency.*
 
 
 #### Discussion
