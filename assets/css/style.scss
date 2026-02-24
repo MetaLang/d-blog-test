@@ -1,3 +1,8 @@
+---
+---
+
+@import "syntax"
+
 /* --- Global Reset & Containment --- */
 html, body {
   margin: 0;
@@ -59,10 +64,10 @@ header p { color: #888; margin-bottom: 40px; border-bottom: 1px solid #eee; padd
 blockquote, .post-content blockquote {
   margin: 40px 0;
   padding: 5px 30px;
-  border-left: 4px solid #b03931; /* Restores the D-Red accent bar */
-  font-style: italic; /* Forces the italicized look from your screenshot */
+  border-left: 4px solid #b03931;
+  font-style: italic;
   color: #333;
-  background-color: transparent; /* Keeping it clean and minimalist */
+  background-color: transparent;
   line-height: 1.6;
 }
 
