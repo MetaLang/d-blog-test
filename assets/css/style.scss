@@ -96,6 +96,12 @@ blockquote p {
   text-transform: lowercase;
 }
 
+/* Codeblock styling */
+code.hljs {
+  font-family: 'Consolas', 'Monaco', monospace !important;
+  font-size: 0.85em !important;
+}
+
 /* --- Sidebar (Reflow Centering) --- */
 .sidebar-col { text-align: center; }
 .sidebar-col .sidebar-section { display: flex; flex-direction: column; align-items: center; }
