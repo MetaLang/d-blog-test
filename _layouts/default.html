@@ -9,7 +9,12 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/d.min.js"></script>
 
-  <script>hljs.highlightAll();</script>
+  <script>
+    hljs.configure({
+      languages: ['d', 'c', 'cpp', 'python', 'bash', 'julia', 'chapel', 'haskell'] // Only allow these languages
+    });
+    hljs.highlightAll();
+  </script>
 
   <title>{% if page.title %}{{ page.title }} | The D Blog{% else %}The D Blog{% endif %}</title>
 

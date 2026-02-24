@@ -115,7 +115,7 @@ With that out of the way, let’s now talk about what’s wrong with `std::visit
 
 The main problems with the C++ implementation are that - aside from clunkier template syntax - metaprogramming is very arcane and convoluted, and there are very few static introspection tools included out of the box. You get the absolute basics in `std::type_traits`, but that’s it (there are a couple third-party solutions, which are appropriately horrifying and verbose). This makes implementing `std::visit` much more difficult than it has to be, and also pushes that complexity down to consumers of the library, which makes _using_ it that much more difficult as well. My eyes bled at this code from Mr. Kline’s article which generates a visitor struct from the provided lambda functions:
 
-```d
+```c++
 template <class... Fs>
 struct overload;
 
@@ -144,7 +144,7 @@ auto make_visitor(Fs... fs)
 ```
 Now, as he points out, this can be simplified down to the following in C++17:
 
-```d
+```c++
 template<class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
 template<class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
 
@@ -186,7 +186,7 @@ _**Note:** As a fun exercise, try leaving out an overload for one of the types c
 
 Here’s an example from [cppreference.com](http://en.cppreference.com/w/cpp/utility/variant/visit) showcasing the _minimal_ amount of work necessary to use `std::visit`:
 
-```d
+```c++
 template<class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
 template<class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
 
@@ -275,7 +275,7 @@ And in a puff of efficiency, we’ve completely obviated all this machinery that
 
 For comparison, the C++ equivalent:
 
-```d
+```c++
 template<class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
 template<class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
 
@@ -322,7 +322,7 @@ v.visit!((arg) {
 ```
 vs.
 
-```c
+```c++
 //C++
 visit([](auto& arg) {
     using T = std::decay_t<decltype(arg)>;
