@@ -23,9 +23,13 @@
   {% feed_meta %}
 
   <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
-  <link rel="shortcut icon" href="{{ '/assets/images/favicon.ico' | relative_url }}">
-  <link rel="icon" type="image/png" sizes="64x64" href="{{ '/assets/images/favicon.png' | relative_url }}">
-  <link rel="apple-touch-icon" href="{{ '/assets/images/favicon.png' | relative_url }}">
+
+
+
+  <link rel="icon" href="{{ '/assets/images/favicon-192.png' | relative_url }}" sizes="192x192" />
+  <link rel="apple-touch-icon" href="{{ '/assets/images/apple-touch-icon.png' | relative_url }}" />
+  <link rel="icon" href="{{ '/assets/images/favicon-32.png' | relative_url }}" sizes="32x32" />
+  <meta name="msapplication-TileImage" content="{{ '/assets/images/favicon-270.png' | relative_url }}" />
 
   <link rel="manifest" href="{{ '/manifest.json' | relative_url }}">
 </head>
