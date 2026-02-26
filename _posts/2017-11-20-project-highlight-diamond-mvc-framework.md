@@ -13,6 +13,8 @@ wordpress_id: 1236
 categories:
 - Project Highlights
 - Web Development
+permalink: /project-highlight-diamond-mvc-framework/
+redirect_from: /2017/11/20/project-highlight-diamond-mvc-framework/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2017/11/logo.png)

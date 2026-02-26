@@ -10,6 +10,8 @@ wordpress_id: 45
 categories:
 - Compilers &amp; Tools
 - Guest Posts
+permalink: /making-of-ldc-1-0/
+redirect_from: /2016/06/20/making-of-ldc-1-0/
 ---
 
 _This is a guest post from Kai Nacke. A long-time contributor to the D community, Kai is the author of _[D Web Development](http://amzn.to/1qdrvrH)_ and the maintainer of _[LDC, the LLVM D Compiler](https://github.com/ldc-developers/ldc/releases/tag/v1.0.0)_._

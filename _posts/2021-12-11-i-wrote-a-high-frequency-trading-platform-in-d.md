@@ -10,9 +10,11 @@ wordpress_id: 3012
 categories:
 - Guest Posts
 - User Stories
+permalink: /i-wrote-a-high-frequency-trading-platform-in-d/
+redirect_from: /2021/12/11/i-wrote-a-high-frequency-trading-platform-in-d/
 ---
 
-![](https://dlang.org/blog/wp-content/uploads/2019/03/brain02.png)
+![]({{ '/assets/images/i-wrote-a-high-frequency-trading-platform-in-d/brain02.png' | relative_url }})
 
 I’ve used the D programming language to implement a high-frequency trading (HFT) platform. I’ve been quite satisfied with the experience and thought I’d share how I got here. It wasn’t a direct path.
 

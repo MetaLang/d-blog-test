@@ -13,13 +13,15 @@ categories:
 - Guest Posts
 - The Language
 - Tutorials
+permalink: /dip1000-memory-safety-in-a-modern-systems-programming-language-part-2/
+redirect_from: /2022/10/08/dip1000-memory-safety-in-a-modern-systems-programming-language-part-2/
 ---
 
 # DIP1000: Memory Safety in a Modern System Programming Language Pt. 2
 
 
 
-![](https://dlang.org/blog/wp-content/uploads/2019/03/brain02.png)
+![]({{ '/assets/images/dip1000-memory-safety-in-a-modern-systems-programming-language-part-2/brain02.png' | relative_url }})
 
 [The previous entry in this series](https://dlang.org/blog/2022/06/21/dip1000-memory-safety-in-a-modern-system-programming-language-pt-1/) shows how to use the new DIP1000 rules to have slices and pointers refer to the stack, all while being memory safe. But D can refer to the stack in other ways, too, and that's the topic of this article.
 

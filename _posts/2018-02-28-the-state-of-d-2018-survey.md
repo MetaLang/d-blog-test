@@ -16,6 +16,8 @@ categories:
 - Core Team
 - News
 - State of D
+permalink: /the-state-of-d-2018-survey/
+redirect_from: /2018/02/28/the-state-of-d-2018-survey/
 ---
 
 **NOTE**: The survey is closed. Thanks to everyone who participated!

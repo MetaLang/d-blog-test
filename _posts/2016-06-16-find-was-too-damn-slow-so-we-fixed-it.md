@@ -10,6 +10,8 @@ wordpress_id: 31
 categories:
 - Guest Posts
 - Phobos
+permalink: /find-was-too-damn-slow-so-we-fixed-it/
+redirect_from: /2016/06/16/find-was-too-damn-slow-so-we-fixed-it/
 ---
 
 _This is a guest post from Andreas Zwinkau, a problem solving thinker, working as a doctoral researcher at the IPD Snelting within the InvasIC project on compiler and language perfection. He manages and teaches students at the KIT. With a beautiful wife and two jolly kids, he lives in Karlsruhe, Germany._

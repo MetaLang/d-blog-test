@@ -10,11 +10,13 @@ wordpress_id: 2892
 categories:
 - Guest Posts
 - User Stories
+permalink: /driving-with-d/
+redirect_from: /2021/06/01/driving-with-d/
 ---
 
 Here is what comes to mind when I think of D: fast, expressive, easy, and… driving? That's right, I drive with D.
 
-![](https://dlang.org/blog/wp-content/uploads/2016/08/d3.png)Enter my venerable [Holden VZ Ute](https://en.m.wikipedia.org/wiki/Holden_Commodore_(VZ)#Commercial_range) daily driver. From the factory, it came with a rubbish four-speed automatic gearbox. During 18 months of ownership, I destroyed four gearboxes. I could not afford a new vehicle at the time (I'm a 20-year-old Australian computer science student at Monash University), so I had to get creative. I purchased a rock-solid, bulletproof, six-speed automatic gearbox from another car. But that's where the solutions ended. To make it work, I had to build my own circuit board, computer system, and firmware to control the solenoids, hydraulics, and clutches inside the gearbox, handle user input, perform shifting decisions, and interface to my car by pretending to be the four-speed automatic.
+![]({{ '/assets/images/driving-with-d/d3.png' | relative_url }})Enter my venerable [Holden VZ Ute](https://en.m.wikipedia.org/wiki/Holden_Commodore_(VZ)#Commercial_range) daily driver. From the factory, it came with a rubbish four-speed automatic gearbox. During 18 months of ownership, I destroyed four gearboxes. I could not afford a new vehicle at the time (I'm a 20-year-old Australian computer science student at Monash University), so I had to get creative. I purchased a rock-solid, bulletproof, six-speed automatic gearbox from another car. But that's where the solutions ended. To make it work, I had to build my own circuit board, computer system, and firmware to control the solenoids, hydraulics, and clutches inside the gearbox, handle user input, perform shifting decisions, and interface to my car by pretending to be the four-speed automatic.
 
 I'm quite proud of my solution. It can perform a shift in 250 milliseconds, which is great for racing. It has a steep first gear, giving it a swift takeoff. It has given some more powerful cars a run for their money. It's got flappy paddles, diagnostic data on the screen, and the ability to go ahead and change the way it works whenever I want.
 

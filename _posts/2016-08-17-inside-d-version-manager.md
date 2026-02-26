@@ -10,6 +10,8 @@ wordpress_id: 183
 categories:
 - Compilers &amp; Tools
 - Guest Posts
+permalink: /inside-d-version-manager/
+redirect_from: /2016/08/17/inside-d-version-manager/
 ---
 
 _In his day job, Jacob Carlborg is a Ruby backend developer for [Derivco Sweden](http://www.derivco.se), but he's been using D on his own time since 2006. He is the maintainer of numerous open source projects, including [DStep](https://github.com/jacob-carlborg/dstep), a utility that generates D bindings from C and Objective-C headers, [DWT](https://github.com/d-widget-toolkit), a port of the Java GUI library [SWT](https://www.eclipse.org/swt/), and the topic of this post, [DVM](https://github.com/jacob-carlborg/dvm). He implemented native Thread Local Storage support for DMD on OS X and contributed, along with Michel Fortin, to [the integration of Objective-C](https://dlang.org/spec/objc_interface.html) in D._

@@ -11,13 +11,15 @@ categories:
 - Algorithms
 - Code
 - Guest Posts
+permalink: /function-generation-in-d-the-good-the-bad-the-ugly-and-the-bolt/
+redirect_from: /2020/09/28/function-generation-in-d-the-good-the-bad-the-ugly-and-the-bolt/
 ---
 
 ## Introduction
 
 
 
-![Digital Mars D logo](https://dlang.org/blog/wp-content/uploads/2016/08/d6.png)
+![Digital Mars D logo]({{ '/assets/images/function-generation-in-d-the-good-the-bad-the-ugly-and-the-bolt/d6.png' | relative_url }})
 
 A while ago, Andrei Alexandrescu started a thread in the D Programming Language forums, [titled "Perfect forwarding"](https://forum.dlang.org/post/rfim9h$a45$1@digitalmars.com), about a challenge which came up during [the July 2020 beerconf](https://forum.dlang.org/thread/reah5u$dua$1@digitalmars.com):
 

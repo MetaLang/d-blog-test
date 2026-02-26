@@ -17,6 +17,8 @@ wordpress_id: 802
 categories:
 - Code
 - Guest Posts
+permalink: /faster-command-line-tools-in-d/
+redirect_from: /2017/05/24/faster-command-line-tools-in-d/
 ---
 
 _Jon Degenhardt is a member of eBay's search team focusing on recall, ranking, and search engine design. He is also the author of [eBay's TSV utilities](https://github.com/eBay/tsv-utils), an open source data mining toolkit for delimited files. The toolkit is written in D and is [quite fast](https://github.com/eBay/tsv-utils/blob/master/docs/Performance.md). Much of its performance derives from approaches like those described here._

@@ -11,6 +11,8 @@ categories:
 - Core Team
 - D Foundation
 - DConf
+permalink: /introspection-introspection-everywhere/
+redirect_from: /2017/05/22/introspection-introspection-everywhere/
 ---
 
 #### Prelude: Orem, UT, May 29 2015

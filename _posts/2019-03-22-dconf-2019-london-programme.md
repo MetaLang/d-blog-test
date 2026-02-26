@@ -9,6 +9,8 @@ title: DConf 2019 London Programme
 wordpress_id: 1994
 categories:
 - DConf
+permalink: /dconf-2019-london-programme/
+redirect_from: /2019/03/22/dconf-2019-london-programme/
 ---
 
 The [DConf 2019 schedule](https://dconf.org/2019/schedule/index.html) was published on March 17th. This year we've got a solid mix of first-time DConf speakers and veterans. If you haven't visited the site in a while, you'll surely notice that it's been redesigned. The old version was not responsive and was quite annoying to manipulate on small screens. That has been rectified. And we've also got a new logo appropriate for this year's venue.

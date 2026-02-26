@@ -18,6 +18,8 @@ categories:
 - Community
 - Compilers &amp; Tools
 - Project Highlights
+permalink: /project-highlight-the-d-community-hub/
+redirect_from: /2018/02/17/project-highlight-the-d-community-hub/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2016/08/d3.png)

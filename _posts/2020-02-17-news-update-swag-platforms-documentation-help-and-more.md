@@ -12,6 +12,8 @@ categories:
 - D Foundation
 - Donations
 - News
+permalink: /news-update-swag-platforms-documentation-help-and-more/
+redirect_from: /2020/02/17/news-update-swag-platforms-documentation-help-and-more/
 ---
 
 Here are a few updates on things that have been going on both in front of and behind the scenes of the D Programming Language community.

@@ -11,6 +11,8 @@ categories:
 - Code
 - Compilers &amp; Tools
 - Guest Posts
+permalink: /dcompute-gpgpu-with-native-d-for-opencl-and-cuda/
+redirect_from: /2017/07/17/dcompute-gpgpu-with-native-d-for-opencl-and-cuda/
 ---
 
 _Nicholas Wilson is a student at Murdoch University, studying for his BEng (Hons)/BSc in Industrial Computer Systems (Hons) and Instrumentation & Control/ Molecular Biology & Genetics and Biomedical Science. He just finished his thesis on low-cost defect detection of solar cells by electroluminescence imaging, which gives him time to work on DCompute and write about it for the D Blog. He plays the piano, ice skates, and has spent 7 years putting D to use on number bashing, automation, and anything else that he could make a computer do for him._

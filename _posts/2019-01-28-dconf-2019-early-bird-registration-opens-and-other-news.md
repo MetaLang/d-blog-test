@@ -15,6 +15,8 @@ categories:
 - DConf
 - Donations
 - SAoC
+permalink: /dconf-2019-early-bird-registration-opens-and-other-news/
+redirect_from: /2019/01/28/dconf-2019-early-bird-registration-opens-and-other-news/
 ---
 
 I've got a few big news items for you today, the biggest being one I've been eagerly awaiting: early-bird registration for [DConf 2019 London](https://dconf.org/2019/index.html) is now open!

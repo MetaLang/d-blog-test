@@ -13,6 +13,8 @@ categories:
 - Core Team
 - DMD Releases
 - News
+permalink: /new-d-compiler-release-dmd-2-075-0/
+redirect_from: /2017/07/24/new-d-compiler-release-dmd-2-075-0/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2016/08/d6.png)DMD 2.075.0 was released a few days back. As with every release, the changelog is available so you can [browse the list of fixed bugs and new features](https://dlang.org/changelog/2.075.0.html). 2.075.0 can be fetched from the [dlang.org download page](https://dlang.org/download.html), which always makes available the latest DMD release alongside a nightly build.

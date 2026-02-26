@@ -11,6 +11,8 @@ categories:
 - Compilers &amp; Tools
 - IDEs
 - Project Highlights
+permalink: /project-highlight-workspace-d/
+redirect_from: /2017/03/31/project-highlight-workspace-d/
 ---
 
 Not so long ago, Jan Jurzitza sat down at his keyboard intent on writing a D plugin for [Atom](https://atom.io/), his text editor of choice at the time. Then came disappointment.

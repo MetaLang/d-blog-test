@@ -10,9 +10,11 @@ wordpress_id: 3142
 categories:
 - Code
 - Tutorials
+permalink: /crafting-self-evident-code-with-d/
+redirect_from: /2023/10/02/crafting-self-evident-code-with-d/
 ---
 
-![Digital Mars D logo](https://dlang.org/blog/wp-content/uploads/2016/08/d6.png)
+![Digital Mars D logo]({{ '/assets/images/crafting-self-evident-code-with-d/d6.png' | relative_url }})
 
 Have you ever looked at your code from five years ago and had to study it to figure out what it was doing? And the further back in time you look, the worse it gets? Pity me, who is still maintaining code I wrote over 40 years ago. This article illustrates many simple methods of making your code self-evident and much easier to understand and maintain
 
@@ -121,7 +123,7 @@ For example, since I started as an aerospace engineer:
 
 
 
-![](https://dlang.org/blog/wp-content/uploads/2023/10/lever.jpg)
+![]({{ '/assets/images/crafting-self-evident-code-with-d/lever.jpg' | relative_url }})
 
 
 

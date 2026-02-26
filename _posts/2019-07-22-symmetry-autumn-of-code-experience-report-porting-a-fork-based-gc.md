@@ -10,6 +10,8 @@ wordpress_id: 2148
 categories:
 - Community
 - SAoC
+permalink: /symmetry-autumn-of-code-experience-report-porting-a-fork-based-gc/
+redirect_from: /2019/07/22/symmetry-autumn-of-code-experience-report-porting-a-fork-based-gc/
 ---
 
 ![Symmetry Investments logo](http://dlang.org/blog/wp-content/uploads/2018/09/logo-1.png)The 2018 edition of the [Symmetry Autumn of Code](https://dlang.org/blog/symmetry-autumn-of-code/) was a wonderful opportunity for me and two other students to dive into an interesting programming challenge and contribute to the D community. I am going to describe the process that led to my participation in SAOC and what this four months of work meant to me.

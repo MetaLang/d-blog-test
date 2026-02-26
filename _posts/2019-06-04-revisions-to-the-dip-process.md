@@ -9,6 +9,8 @@ title: Revisions to the DIP Process
 wordpress_id: 2071
 categories:
 - DIPs
+permalink: /revisions-to-the-dip-process/
+redirect_from: /2019/06/04/revisions-to-the-dip-process/
 ---
 
 At [the AGM that was held](https://youtu.be/cpTAtiboIDs) prior to the Hackathon at [DConf 2019 in London](https://dconf.org/2019/index.html), I announced that I would be making revisions to the DIP progress aimed at shortening the length of time required to go from the Community  Review to a final verdict. I also, in response to Joseph Rushton Wakeling's feedback about guidance for reviewers, agreed to enhance the existing documentation to clarify what is expected of reviewers during the Community and Final Review stages and to provide guidance on how to provide a good review.

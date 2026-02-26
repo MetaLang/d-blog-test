@@ -17,6 +17,8 @@ categories:
 - Core Team
 - DMD Releases
 - News
+permalink: /dmd-2-078-0-has-been-released/
+redirect_from: /2018/01/04/dmd-2-078-0-has-been-released/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2016/08/d6.png)

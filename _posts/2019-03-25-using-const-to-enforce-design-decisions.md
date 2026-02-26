@@ -11,6 +11,8 @@ categories:
 - Code
 - Guest Posts
 - The Language
+permalink: /using-const-to-enforce-design-decisions/
+redirect_from: /2019/03/25/using-const-to-enforce-design-decisions/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2016/08/d3.png)

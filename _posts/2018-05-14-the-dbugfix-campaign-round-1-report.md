@@ -11,6 +11,8 @@ categories:
 - '#dbugfix'
 - Compilers &amp; Tools
 - Core Team
+permalink: /the-dbugfix-campaign-round-1-report/
+redirect_from: /2018/05/14/the-dbugfix-campaign-round-1-report/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2018/02/bug.jpg)

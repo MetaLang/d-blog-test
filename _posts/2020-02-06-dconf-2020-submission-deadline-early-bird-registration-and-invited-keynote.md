@@ -12,6 +12,8 @@ categories:
 - D Foundation
 - DConf
 - SAoC
+permalink: /dconf-2020-submission-deadline-early-bird-registration-and-invited-keynote/
+redirect_from: /2020/02/06/dconf-2020-submission-deadline-early-bird-registration-and-invited-keynote/
 ---
 
 In early January, I announced that [Symmetry Investments is bringing DConf back to London](https://dlang.org/blog/2020/01/04/dconf-2020-double-decker-edition/) for our 2020 edition. At the same time, I said we'd start taking submissions from anyone who wanted to send them in. In the interim, we've fixed our deadlines and prepared to start accepting reservations. There was only one thing remaining before I was ready for the formal call for submissions and opening of early-bird registrations: confirming our invited keynote speaker. Now that he has confirmed, it's all official!

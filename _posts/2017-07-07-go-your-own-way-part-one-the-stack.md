@@ -10,6 +10,8 @@ wordpress_id: 949
 categories:
 - Code
 - GC
+permalink: /go-your-own-way-part-one-the-stack/
+redirect_from: /2017/07/07/go-your-own-way-part-one-the-stack/
 ---
 
 This is my third post in [the GC series](http://dlang.org/blog/the-gc-series/). In [the first post](https://dlang.org/blog/2017/03/20/dont-fear-the-reaper/), I introduced D's garbage collector and the language features that require it, and touched on simple strategies to use it effectively. In [the second post](https://dlang.org/blog/2017/06/16/life-in-the-fast-lane/), I showed off the tools provided by the language and library to disable or prohibit the GC in specific parts of a code base, how to use the compiler to assist in that endeavor, and recommended that D programs be written initially to embrace the GC, taking advantage of simple strategies to mitigate its impact, and later tuned to avoid it or further optimize its usage only when profiling shows it's warranted.

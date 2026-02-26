@@ -14,6 +14,8 @@ wordpress_id: 1507
 categories:
 - Code
 - Phobos
+permalink: /std-variant-is-everything-cool-about-d/
+redirect_from: /2018/03/29/std-variant-is-everything-cool-about-d/
 ---
 
 _Jared Hanson has been involved with the D community since 2012, and an active contributor since 2013. Recently, he joined the Phobos team and devised a scheme to make it look like he's contributing by adding at least 1 tag to every new PR. He holds a Bachelor of Computer Science degree from the University of New Brunswick and works as a Level 3 Support Engineer at one of the largest cybersecurity companies in the world._

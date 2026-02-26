@@ -11,6 +11,8 @@ categories:
 - Compilers &amp; Tools
 - Core Team
 - Guest Posts
+permalink: /dustmite-the-general-purpose-data-reduction-tool/
+redirect_from: /2020/04/13/dustmite-the-general-purpose-data-reduction-tool/
 ---
 
 If you've been around for a while, or are a particularly adventurous developer who enjoys mixing language features in interesting ways, you may have run into one compiler bug or two:

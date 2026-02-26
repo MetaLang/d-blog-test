@@ -11,6 +11,8 @@ categories:
 - Core Team
 - D Foundation
 - The Language
+permalink: /my-vision-of-ds-future/
+redirect_from: /2019/10/15/my-vision-of-ds-future/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2019/08/royal_d-200x200.png)When Andrei Alexandrescu stepped down as deputy leader of the D programming language, I was asked to take over the role going forward. It’s needless to say, but I’ll say it anyway, that those are some pretty big shoes to fill.

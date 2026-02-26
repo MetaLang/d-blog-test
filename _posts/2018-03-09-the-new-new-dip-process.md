@@ -15,6 +15,8 @@ wordpress_id: 1437
 categories:
 - Community
 - Core Team
+permalink: /the-new-new-dip-process/
+redirect_from: /2018/03/09/the-new-new-dip-process/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2016/08/d6.png)When I took on the role of DIP Manager last year, my number one goal was to clear out the queue. I made a few revisions to the process and got busy. Over the next few months, things went along fairly well, not so much from anything I did as from the quality of the submissions. But at some point, things broke down and the process stalled.

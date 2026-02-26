@@ -15,6 +15,8 @@ wordpress_id: 1054
 categories:
 - Code
 - Guest Posts
+permalink: /open-methods-from-c-to-d/
+redirect_from: /2017/08/28/open-methods-from-c-to-d/
 ---
 
 ### Prelude

@@ -13,6 +13,8 @@ categories:
 - DConf
 - News
 - SAoC
+permalink: /saoc-2020-and-other-news/
+redirect_from: /2020/06/23/saoc-2020-and-other-news/
 ---
 
 ### Symmetry Autumn of Code 2020

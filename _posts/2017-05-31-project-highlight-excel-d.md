@@ -10,6 +10,8 @@ wordpress_id: 826
 categories:
 - Code
 - Project Highlights
+permalink: /project-highlight-excel-d/
+redirect_from: /2017/05/31/project-highlight-excel-d/
 ---
 
 Ever had the need to write an Excel plugin? Check this out.

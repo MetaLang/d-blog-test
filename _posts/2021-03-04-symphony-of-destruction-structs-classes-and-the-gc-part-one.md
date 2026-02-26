@@ -13,9 +13,11 @@ categories:
 - Code
 - GC
 - Tutorials
+permalink: /symphony-of-destruction-structs-classes-and-the-gc-part-one/
+redirect_from: /2021/03/04/symphony-of-destruction-structs-classes-and-the-gc-part-one/
 ---
 
-![Digital Mars D logo](https://dlang.org/blog/wp-content/uploads/2016/08/d6.png)
+![Digital Mars D logo]({{ '/assets/images/symphony-of-destruction-structs-classes-and-the-gc-part-one/d6.png' | relative_url }})
 
 This post is part of [a broader series](https://dlang.org/blog/the-gc-series/) on garbage collection in D. The motivation is to explore how destructors and the GC interact. To do that, we first need a bit of background. We do not go into a broader discussion on the ins and outs of object destruction, only what is most relevant to the interaction of destructors and the GC.
 

@@ -20,6 +20,8 @@ categories:
 - Books
 - Guest Posts
 - Web Development
+permalink: /the-making-of-d-web-development/
+redirect_from: /2017/09/13/the-making-of-d-web-development/
 ---
 
 _A long-time contributor to the D community, Kai Nacke is the author of '[D Web Development](https://www.packtpub.com/web-development/d-web-development)' and the maintainer of [LDC](https://wiki.dlang.org/LDC), the LLVM D Compiler. In this post, he tells the story of how his book came together._

@@ -10,9 +10,11 @@ wordpress_id: 3068
 categories:
 - Code
 - Tutorials
+permalink: /reducing-template-compile-times/
+redirect_from: /2022/03/24/reducing-template-compile-times/
 ---
 
-![](https://dlang.org/blog/wp-content/uploads/2019/08/cropped-rocket-200x200.png)
+![]({{ '/assets/images/reducing-template-compile-times/cropped-rocket-200x200.png' | relative_url }})
 
 Templates have been enormously profitable for the D programming language. They allow the programmer to generate efficient and correct code at compile time. Long gone are the days of preprocessor macros or handwritten, per-type data structures. D templates, though designed in the shadow of C++ templates, were not made in their image. D makes templates cleaner and more expressive, and also enables patterns like "[Design by Introspection](https://www.youtube.com/watch?v=HdzwvY8Mo-w)".
 

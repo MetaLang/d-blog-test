@@ -10,6 +10,8 @@ wordpress_id: 469
 categories:
 - Guest Posts
 - Phobos
+permalink: /big-performance-improvement-for-std-regex/
+redirect_from: /2016/11/07/big-performance-improvement-for-std-regex/
 ---
 
 _Dmitry Olshansky has been a frequent contributor to the D programming language. Perhaps his best known work is his overhaul of the [std.regex](http://dlang.org/phobos/std_regex.html) module, which he architected as part of [Google Summer of Code 2011](https://www.google-melange.com/archive/gsoc/2011/orgs/dprogramminglanguage/projects/dolsh.html). In this post, he describes an algorithmic optimization he implemented this past summer that resulted in a big performance win._

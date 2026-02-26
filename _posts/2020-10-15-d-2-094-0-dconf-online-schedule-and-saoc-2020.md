@@ -11,9 +11,11 @@ categories:
 - Community
 - D Foundation
 - DConf
+permalink: /d-2-094-0-dconf-online-schedule-and-saoc-2020/
+redirect_from: /2020/10/15/d-2-094-0-dconf-online-schedule-and-saoc-2020/
 ---
 
-![Digital Mars D logo](https://dlang.org/blog/wp-content/uploads/2016/08/d6.png)
+![Digital Mars D logo]({{ '/assets/images/d-2-094-0-dconf-online-schedule-and-saoc-2020/d6.png' | relative_url }})
 
 The end of September saw [a new release of the reference D compiler](https://forum.dlang.org/post/yiwfozsqnbakmbgzriiq@forum.dlang.org), DMD 2.094.0, sporting the latest language features. That was followed not long after by [a beta release of LDC](https://forum.dlang.org/post/shwneawohteeqvegvqoq@forum.dlang.org), the LLVM-based D compiler, based on the same frontend version. The DMD 2.094.1 patch release [entered into beta](https://forum.dlang.org/post/oroaeukkyymnjcbibjoa@forum.dlang.org) a few days before this post was published. Meanwhile, the first Milestone of the Symmetry Autumn of Code has come to an end, and the DConf Online 2020 schedule has been published.
 

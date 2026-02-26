@@ -11,6 +11,8 @@ categories:
 - Compilers &amp; Tools
 - Core Team
 - Guest Posts
+permalink: /snowflake-strings/
+redirect_from: /2017/02/22/snowflake-strings/
 ---
 
 _[Walter Bright](http://walterbright.com/) is the BDFL of the D Programming Language and founder of [Digital Mars](http://digitalmars.com/). He has decades of experience implementing compilers and interpreters for multiple languages, including Zortech C++, the first native C++ compiler. He also created [Empire, the Wargame of the Century](http://www.classicempire.com/)._

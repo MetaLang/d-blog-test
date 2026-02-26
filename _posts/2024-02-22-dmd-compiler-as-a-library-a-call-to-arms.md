@@ -12,9 +12,11 @@ categories:
 - Compilers &amp; Tools
 - Core Team
 - D Foundation
+permalink: /dmd-compiler-as-a-library-a-call-to-arms/
+redirect_from: /2024/02/22/dmd-compiler-as-a-library-a-call-to-arms/
 ---
 
-![Digital Mars D logo](https://dlang.org/blog/wp-content/uploads/2016/08/d6.png)
+![Digital Mars D logo]({{ '/assets/images/dmd-compiler-as-a-library-a-call-to-arms/d6.png' | relative_url }})
 
 Having a flexible and powerful compiler library has been one of the stated goals of the D Language Foundation for some time now. This makes sense, as a proper compiler library will channel the efforts of contributors into building developer tools, which in turn, will increase the adoption rate of the language. However, progress on this topic has been slow, mainly due to two aspects: (1) the lack of a clear direction, and (2) the intimidating complexity of the DMD frontend, which requires significant work on the compiler codebase.
 

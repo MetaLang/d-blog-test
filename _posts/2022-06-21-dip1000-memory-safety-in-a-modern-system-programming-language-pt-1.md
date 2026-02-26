@@ -13,13 +13,15 @@ categories:
 - Guest Posts
 - The Language
 - Tutorials
+permalink: /dip1000-memory-safety-in-a-modern-system-programming-language-pt-1/
+redirect_from: /2022/06/21/dip1000-memory-safety-in-a-modern-system-programming-language-pt-1/
 ---
 
 ## Memory safety needs no checks
 
 
 
-![](https://dlang.org/blog/wp-content/uploads/2019/03/brain02.png)
+![]({{ '/assets/images/dip1000-memory-safety-in-a-modern-system-programming-language-pt-1/brain02.png' | relative_url }})
 
 D is both a garbage-collected programming language and an efficient raw memory access language. Modern high-level languages like D are memory safe, preventing users from accidently reading or writing to unused memory or breaking the type system of the language.
 

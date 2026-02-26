@@ -10,6 +10,8 @@ wordpress_id: 2405
 categories:
 - Algorithms
 - Code
+permalink: /lomutos-comeback/
+redirect_from: /2020/05/14/lomutos-comeback/
 ---
 
 _The Continental Club in Austin, Texas, USA_

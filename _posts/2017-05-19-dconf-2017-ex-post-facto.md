@@ -10,6 +10,8 @@ wordpress_id: 762
 categories:
 - D Foundation
 - DConf
+permalink: /dconf-2017-ex-post-facto/
+redirect_from: /2017/05/19/dconf-2017-ex-post-facto/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2017/04/dconf.jpg)Another May, [another DConf](http://dconf.org/2017/index.html) in the rear view. This year's edition, organized and hosted once again by the talented folks from Sociomantic, and emceed for the second consecutive year by their own Dylan Cromwell, brought more talks, more fun, and an extra day. The livestream this year, barring a glitch or two with the audio, went almost perfectly. And for the first time in DConf history, videos of the talks started appearing online almost as soon as the conference was over. [The entire playlist](https://www.youtube.com/playlist?list=PL3jwVPmk_PRxo23yyoc0Ip_cP3-rCm7eB) is available now.

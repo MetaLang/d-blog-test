@@ -11,6 +11,8 @@ categories:
 - Community
 - DIPs
 - News
+permalink: /dip-reviews-discussion-vs-feedback/
+redirect_from: /2020/01/26/dip-reviews-discussion-vs-feedback/
 ---
 
 ![Digital Mars D logo](http://dlang.org/blog/wp-content/uploads/2016/08/d6.png)For a while now, I've been including [a link to the DIP Reviewer Guidelines](https://github.com/dlang/DIPs/blob/master/docs/guidelines-reviewers.md) in the initial forum post for every DIP review. My hope was that it would encourage reviewers to keep the thread on topic and also to provide more focused feedback. As it turns out, a link to reviewer guidelines is not quite enough. Recent review threads have turned into massive, 20+ page discussions touching on a number of tangential topics.

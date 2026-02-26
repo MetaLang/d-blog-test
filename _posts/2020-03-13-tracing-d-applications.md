@@ -11,6 +11,8 @@ categories:
 - Code
 - Guest Posts
 - Tutorials
+permalink: /tracing-d-applications/
+redirect_from: /2020/03/13/tracing-d-applications/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2018/02/bug.jpg)At one time or another during application development you need to make a decision: does your application work like it should and, if not, what is wrong with it? There are different techniques to help you decide, some of which are logging, tracing, and profiling. How are they different? One way to look at it is like this:

@@ -10,6 +10,8 @@ wordpress_id: 24
 categories:
 - Core Team
 - News
+permalink: /core-team-update-vladimir-panteleev/
+redirect_from: /2016/06/10/core-team-update-vladimir-panteleev/
 ---
 
 When Walter Bright unleashed the first public release of DMD on the world, the whole release and maintenance process surrounding the language and the compiler was largely a one man show. Today, there are a number of regular contributors at every step of the process, but at the heart, in addition to Walter, are three core team members who keep the engine running. One of them is Vladimir Panteleev.

@@ -19,6 +19,8 @@ categories:
 - Companies
 - Guest Posts
 - User Stories
+permalink: /user-stories-funkwerk/
+redirect_from: /2018/03/14/user-stories-funkwerk/
 ---
 
 The deadline for the early-bird [registration for DConf 2018 in Munich](https://dlang.org/blog/2018/01/31/dconf-2018-register-now/) is coming up on March 17th. The price will go up from $340 to $400. If you’d like to go, hurry and sign up to save yourself $60. And remember, the NH Munich Messe hotel, the conference venue, is offering [a special deal on single rooms plus breakfast](https://dlang.org/blog/2018/02/23/dconf-2018-munich-the-venue/) for attendees.

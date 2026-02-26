@@ -11,6 +11,8 @@ categories:
 - Companies
 - D Foundation
 - SAoC
+permalink: /get-ready-for-symmetry-autumn-of-code-2019/
+redirect_from: /2019/07/01/get-ready-for-symmetry-autumn-of-code-2019/
 ---
 
 ![Symmetry Investments logo](http://dlang.org/blog/wp-content/uploads/2018/09/logo-1.png)Last year, [Symmetry Investments](http://symmetryinvestments.com/) sponsored three programmers to work on projects in the D community. Two completed successfully. Francesco Gallà worked on adding support for [HTTP/2 to vibe.d](http://vibed.org/) and got the grand prize of a bonus payment and a free trip to [DConf 2019](https://dconf.org/2019/), where [he gave a talk about the experience and his project](https://dconf.org/2019/talks/galla.html). His compatriot, Franceso Mecca, worked on porting an old D1 forking GC to D2 for integration into [DRuntime](https://github.com/dlang/druntime). He has a blog post drafted on that already that I will publish here as soon as he finishes the next round of work on the project and updates the draft with some new data.

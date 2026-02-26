@@ -11,9 +11,11 @@ categories:
 - Code
 - Guest Posts
 - User Stories
+permalink: /teaching-d-from-scratch-is-it-a-viable-first-language/
+redirect_from: /2021/12/23/teaching-d-from-scratch-is-it-a-viable-first-language/
 ---
 
-![](https://dlang.org/blog/wp-content/uploads/2021/12/gettyimages-1249804112-612x612-1-200x200.jpg)
+![]({{ '/assets/images/teaching-d-from-scratch-is-it-a-viable-first-language/gettyimages-1249804112-612x612-1-200x200.jpg' | relative_url }})
 
 About two-and-a-half years ago, one of my son's homeschooling friends asked if I would teach a coding class. Both of my kids have shown interest [in coding via Scratch](https://scratch.mit.edu/), and I also need to pull my weight when it comes to homeschooling them (my wife doing most of the instruction). So I thought, surely, this can't be too hard. The challenges I would encounter over the course of the last few years surprised me more often than I would have expected!
 

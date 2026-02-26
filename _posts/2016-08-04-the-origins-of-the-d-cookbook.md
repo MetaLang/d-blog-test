@@ -10,6 +10,8 @@ wordpress_id: 140
 categories:
 - Books
 - Guest Posts
+permalink: /the-origins-of-the-d-cookbook/
+redirect_from: /2016/08/04/the-origins-of-the-d-cookbook/
 ---
 
 _Adam Ruppe is the author of [D Cookbook](http://amzn.to/1ZTE47m) and maintainer of [This Week in D](http://arsdnet.net/this-week-in-d). Modules from his freely available [arsd package](https://github.com/adamdruppe/arsd) are used throughout the D community. He is also known for his [legendary DConf 2014 presentation](http://dconf.org/2014/talks/ruppe.html)._

@@ -10,6 +10,8 @@ wordpress_id: 283
 categories:
 - Guest Posts
 - The Language
+permalink: /how-to-write-trusted-code-in-d/
+redirect_from: /2016/09/28/how-to-write-trusted-code-in-d/
 ---
 
 _Steven Schveighoffer is the creator and maintainer of the [dcollections](https://github.com/schveiguy/dcollections) and [iopipe](https://github.com/schveiguy/iopipe) libraries. He was the primary instigator of D's [inout](https://dlang.org/spec/function.html#inout-functions) feature and the architect of a major rewrite of the language's built-in arrays. He also authored the oft-recommended [introductory article](https://dlang.org/d-array-article.html) on the latter.

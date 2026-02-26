@@ -11,6 +11,8 @@ categories:
 - Guest Posts
 - Phobos
 - The Language
+permalink: /testing-in-the-d-standard-library/
+redirect_from: /2017/01/20/testing-in-the-d-standard-library/
 ---
 
 _Jack Stouffer is a member of the Phobos team and a contributor to dlang.org. You can check out more of his writing on [his blog](https://jackstouffer.com/blog/index.html)._

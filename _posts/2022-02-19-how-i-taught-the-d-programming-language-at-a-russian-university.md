@@ -11,11 +11,13 @@ categories:
 - Education
 - Guest Posts
 - User Stories
+permalink: /how-i-taught-the-d-programming-language-at-a-russian-university/
+redirect_from: /2022/02/19/how-i-taught-the-d-programming-language-at-a-russian-university/
 ---
 
 _This article was [originally published in Russian](https://habr.com/ru/post/522002/) by Grigorii Smorkalov. It was translated to English for the D Blog by Georgy Markov and lightly revised from the original by Michael Parker._
 
-![](https://dlang.org/blog/wp-content/uploads/2021/12/gettyimages-1249804112-612x612-1-200x200.jpg)
+![]({{ '/assets/images/how-i-taught-the-d-programming-language-at-a-russian-university/gettyimages-1249804112-612x612-1-200x200.jpg' | relative_url }})
 
 This is the fourth year I'm teaching my D Programming Language course at a very real university in Russia. It's a full-term course with lectures, practical lessons, and exams, although it's all remote now. This is the story about how I got there, the challenges I encountered, and how students sometimes surpass their teachers.
 

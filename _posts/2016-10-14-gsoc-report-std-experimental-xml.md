@@ -11,6 +11,8 @@ categories:
 - GSoC
 - Guest Posts
 - Phobos
+permalink: /gsoc-report-std-experimental-xml/
+redirect_from: /2016/10/14/gsoc-report-std-experimental-xml/
 ---
 
 _Lodovico Giaretta is currently pursuing a Bachelor Degree in Computer Science at the University of Trento, Italy. He participated in Google Summer of Code 2016, working on a new XML module for D's standard library, Phobos._

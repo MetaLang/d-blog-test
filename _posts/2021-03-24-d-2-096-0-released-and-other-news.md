@@ -7,9 +7,11 @@ link: https://dlang.org/blog/2021/03/24/d-2-096-0-released-and-other-news/
 slug: d-2-096-0-released-and-other-news
 title: D 2.096.0 Released and Other News
 wordpress_id: 2815
+permalink: /d-2-096-0-released-and-other-news/
+redirect_from: /2021/03/24/d-2-096-0-released-and-other-news/
 ---
 
-![Digital Mars D logo](https://dlang.org/blog/wp-content/uploads/2016/08/d6.png)
+![Digital Mars D logo]({{ '/assets/images/d-2-096-0-released-and-other-news/d6.png' | relative_url }})
 
 The latest version of DMD, the D reference compiler, [is now available for download](https://dlang.org/download.html). [The changelog notes](https://dlang.org/changelog/2.096.0.html) 17 major changes and 81 resolved Bugzilla issues [from 54 contributors](https://dlang.org/changelog/2.096.0.html#contributors). After we get into some notable items from the changelog, we'll turn our attention to other items of note from the D community: a new release of LDC is right around the corner and one of GDC just beyond the horizon; the Symmetry Autumn of Code wrapped up with a surprise ending; and there are two sometimes forgotten places where anyone can go to find ways to contribute and sharpen their D coding skills.
 

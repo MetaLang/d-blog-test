@@ -18,6 +18,8 @@ wordpress_id: 1493
 categories:
 - D Foundation
 - DConf
+permalink: /dconf-2018-programme-open-registration/
+redirect_from: /2018/03/19/dconf-2018-programme-open-registration/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2017/04/dconf.jpg)The [programme for DConf 2018](http://dconf.org/2018/schedule/index.html), May 2–5 in Munich, has been published and [general registration is now open](http://dconf.org/2018/registration.html).

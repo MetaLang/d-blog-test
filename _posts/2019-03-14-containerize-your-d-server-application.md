@@ -12,6 +12,8 @@ categories:
 - Guest Posts
 - Tutorials
 - Web Development
+permalink: /containerize-your-d-server-application/
+redirect_from: /2019/03/14/containerize-your-d-server-application/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2017/03/product-icon.png)

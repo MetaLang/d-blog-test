@@ -10,6 +10,8 @@ wordpress_id: 155
 categories:
 - IDEs
 - Project Highlights
+permalink: /project-highlight-visual-d/
+redirect_from: /2016/08/12/project-highlight-visual-d/
 ---
 
 ![](http://rainers.github.io/visuald/visuald/images/vd_logo.png)In the world of modern software development, a language that is not supported in any of the major Integrated Development Environments is not going to gain very much traction. For better or worse, the IDE has become a widespread and permanent fixture. Programmers are free to use any editor or environment they want in their own time, but those who write software for a living and are not self-employed are going to have to work in the environment(s) allowed by their employer. In Windows shops, that often means [Visual Studio](https://www.visualstudio.com/).

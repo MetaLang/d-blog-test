@@ -9,6 +9,8 @@ title: 'The D Blog in 2016: Seven Months of Page Views'
 wordpress_id: 569
 categories:
 - The D Blog
+permalink: /the-d-blog-in-2016-seven-months-page-views/
+redirect_from: /2017/01/06/the-d-blog-in-2016-seven-months-page-views/
 ---
 
 The D Blog was born at [DConf 2016](http://dconf.org/2016/) and [the first post](http://dlang.org/blog/2016/06/03/recent-d-foundation-activities/) was published on June 3rd. There were 27 more posts between then and the end of the year, most of which were shared on the usual social media sites. In case some of you in DLand are curious about such things, a year-end stats post is a fun way to kick off the new year.

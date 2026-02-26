@@ -10,6 +10,8 @@ wordpress_id: 491
 categories:
 - Compilers &amp; Tools
 - Project Highlights
+permalink: /project-highlight-the-new-ctfe-engine/
+redirect_from: /2016/11/18/project-highlight-the-new-ctfe-engine/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2016/08/d6.png) CTFE ([Compile-Time Function Execution](https://en.wikipedia.org/wiki/Compile_time_function_execution)) is today a core feature of the D Programming Language. D creator Walter Bright first implemented it in DMD as an extension of the [constant folding logic](http://www.compileroptimizations.com/category/constant_folding.htm) that was already there. Don Clugston (of [FastDelegate](http://www.codeproject.com/Articles/7150/Member-Function-Pointers-and-the-Fastest-Possible) fame) made a pass at improving it and, according to Walter, "[took it much further](https://dlang.org/blog/2016/08/30/ruminations-on-d-an-interview-with-walter-bright/)". Since that time, usage of CTFE has shown up in one D project after another, including in D's standard library. For example, Dmitry Olshansky employed it in his overhaul of [std.regex](https://dlang.org/phobos/std_regex.html) to great effect.

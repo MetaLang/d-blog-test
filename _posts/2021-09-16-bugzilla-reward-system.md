@@ -11,9 +11,11 @@ categories:
 - Community
 - D Foundation
 - News
+permalink: /bugzilla-reward-system/
+redirect_from: /2021/09/16/bugzilla-reward-system/
 ---
 
-![Digital Mars D logo](https://dlang.org/blog/wp-content/uploads/2016/08/d6.png)
+![Digital Mars D logo]({{ '/assets/images/bugzilla-reward-system/d6.png' | relative_url }})
 
 [The Dlang bot](https://bot.dlang.io/) has been updated to track [Bugzilla issues](https://issues.dlang.org/)
 that have been fixed. It went live for testing on the 2nd of July. Each GitHub user who fixes a bug via a merged pull request is awarded a number of points depending on the severity of the issue. The current results can always be seen on [the contributor stats page](https://bot.dlang.io/contributor_stats). This blog post covers all of the details regarding the implementation, rules, and prizes of the reward system.

@@ -10,6 +10,8 @@ wordpress_id: 2745
 categories:
 - Community
 - DConf
+permalink: /dconf-online-2020-how-to-participate/
+redirect_from: /2020/11/20/dconf-online-2020-how-to-participate/
 ---
 
 [![DConf Online 2020](https://dconf.org/2020/online/images/logo.png)](https://dconf.org/2020/online/)

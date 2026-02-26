@@ -17,6 +17,8 @@ categories:
 - Code
 - Companies
 - Guest Posts
+permalink: /the-evolution-of-the-accessors-library/
+redirect_from: /2017/09/06/the-evolution-of-the-accessors-library/
 ---
 
 _[![](http://www.funkwerk.com/wp-content/themes/funkwerk/library/images/logo.png)](http://www.funkwerk.com)Ronny Spiegel is a developer at [Funkwerk AG](http://www.funkwerk.com/), a German company whose passenger information system is developed in D and was [recently highlighted on this blog](https://dlang.org/blog/2017/07/28/project-highlight-funkwerk/). In this post, Ronny tells the story of the company's open source [accessors library](https://github.com/funkwerk/accessors), which provides a mechanism for users to automatically generate property getters and setters using D's robust compile-time features._

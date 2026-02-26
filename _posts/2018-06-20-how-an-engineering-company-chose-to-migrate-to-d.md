@@ -17,6 +17,8 @@ categories:
 - Compilers &amp; Tools
 - Guest Posts
 - User Stories
+permalink: /how-an-engineering-company-chose-to-migrate-to-d/
+redirect_from: /2018/06/20/how-an-engineering-company-chose-to-migrate-to-d/
 ---
 
 _Bastiaan Veelo is the lead developer of a specialised program for the

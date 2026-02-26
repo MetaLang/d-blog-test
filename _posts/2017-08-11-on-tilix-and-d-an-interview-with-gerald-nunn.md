@@ -10,6 +10,8 @@ wordpress_id: 1036
 categories:
 - Compilers &amp; Tools
 - Interviews
+permalink: /on-tilix-and-d-an-interview-with-gerald-nunn/
+redirect_from: /2017/08/11/on-tilix-and-d-an-interview-with-gerald-nunn/
 ---
 
 _Joakim is the resident interviewer for the D Blog. He has also [interviewed](http://arsdnet.net/this-week-in-d/mar-15.html) [members](http://arsdnet.net/this-week-in-d/jun-28.html) [of the](http://arsdnet.net/this-week-in-d/jul-12.html) [D community](http://arsdnet.net/this-week-in-d/sep-06.html) for [This Week in D](http://arsdnet.net/this-week-in-d/) and is responsible for [the Android port of LDC](https://github.com/joakim-noah/android/releases)._

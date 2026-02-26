@@ -9,6 +9,8 @@ title: The DLang Vision and Improvement Process
 wordpress_id: 93
 categories:
 - Community
+permalink: /the-dlang-vision-and-improvement-process/
+redirect_from: /2016/07/13/the-dlang-vision-and-improvement-process/
 ---
 
 The evolution of D has been a process of steady, if not always speedy, improvement. In the early days, Walter was the only person working on the language, the reference compiler, and the standard library, though he did accept contributions. Today, numerous people contribute to or maintain a piece of every aspect of D's development. Semi-formal processes exist where none did before. Things have come a long way.

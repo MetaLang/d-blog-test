@@ -11,6 +11,8 @@ categories:
 - Code
 - D and C
 - Guest Posts
+permalink: /d-for-data-science-calling-r-from-d/
+redirect_from: /2020/01/27/d-for-data-science-calling-r-from-d/
 ---
 
 ![Digital Mars D logo](http://dlang.org/blog/wp-content/uploads/2016/08/d6.png)D is a good language for data science. The advantages include a pleasant syntax, interoperability with C (in many cases as simple as adding an `#include` directive to import a C header file [via the dpp tool](https://dlang.org/blog/2019/04/08/project-highlight-dpp/)), C-like speed, a large standard library, static typing, built-in unit tests and documentation generation, and a garbage collector that’s there when you want it but can be avoided when you don’t.

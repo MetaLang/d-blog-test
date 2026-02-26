@@ -14,6 +14,8 @@ categories:
 - Community
 - D Foundation
 - DConf
+permalink: /communal-benevolence-required/
+redirect_from: /2018/04/07/communal-benevolence-required/
 ---
 
 [DConf 2018](http://dconf.org/2018/index.html) is coming up fast. The final pieces of preparation are soon to fall into place and then the day will be upon us. Already, we’re looking at what comes next.

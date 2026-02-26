@@ -11,6 +11,8 @@ categories:
 - Community
 - D Foundation
 - SAoC
+permalink: /saoc-2019-projects-and-participants/
+redirect_from: /2019/08/25/saoc-2019-projects-and-participants/
 ---
 
 ![Symmetry Investments logo](http://dlang.org/blog/wp-content/uploads/2018/09/logo-1.png)Last Sunday, August 18, was the deadline for [Symmetry Autumn of Code 2019](https://dlang.org/blog/symmetry-autumn-of-code/) applications. We received a total of eight applications, which is the same number we saw last year. This time around we were able to accept more than three: five of the applicants will be participating.

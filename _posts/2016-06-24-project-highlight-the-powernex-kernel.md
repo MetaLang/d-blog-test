@@ -9,6 +9,8 @@ title: 'Project Highlight: The PowerNex Kernel'
 wordpress_id: 52
 categories:
 - Project Highlights
+permalink: /project-highlight-the-powernex-kernel/
+redirect_from: /2016/06/24/project-highlight-the-powernex-kernel/
 ---
 
 Hang around the D community long enough and you'll discover that people are using the language in a variety of fields for a variety of projects, both professionally and personally. Computer games, scientific software, web apps, economic modelling, even scripted utilities. There have even been a few open source kernel projects using D, the most recent of which is [PowerNex by Dan Printzell](https://github.com/Vild/PowerNex).

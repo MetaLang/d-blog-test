@@ -11,6 +11,8 @@ categories:
 - Community
 - D Foundation
 - Donations
+permalink: /dconf-t-shirts-and-the-human-resource-fund/
+redirect_from: /2019/06/23/dconf-t-shirts-and-the-human-resource-fund/
 ---
 
 [I announced the Human Resource Fund](https://dlang.org/blog/2019/04/15/manpower-in-the-d-ecosystem-or-resources-resources-resources/) back in April as part of an initiative we're working on with companies using D in production. It was seeded by WekaIO. Now we need to see it grow.

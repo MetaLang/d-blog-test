@@ -15,9 +15,11 @@ categories:
 - GDC Releases
 - LDC Releases
 - News
+permalink: /d-news-may-22-d-2-100-0-gdc-dconf-22-schedule-published-early-bird-registration-ends/
+redirect_from: /2022/05/30/d-news-may-22-d-2-100-0-gdc-dconf-22-schedule-published-early-bird-registration-ends/
 ---
 
-![](https://dlang.org/blog/wp-content/uploads/2019/08/rocket-200x200.png)
+![]({{ '/assets/images/d-news-may-22-d-2-100-0-gdc-dconf-22-schedule-published-early-bird-registration-ends/rocket-200x200.png' | relative_url }})
 
 May was a busy month in D land. Early on, a major milestone release of GDC, the GCC-based D compiler, hit the virtual shelves. It was followed in middle of the month by the release of D 2.100.0 along with a DMD release, the reference D compiler, of the same version. That was immediately follwed by a beta release of the LLVM-based D compiler, LDC, version 1.30.0. Finally, the latter half of the month saw [the publication of the DConf '22 schedule](https://dconf.org/2022/index.html#schedule), we found a sponsor for the DConf tradition of BeerConf, and May 31st marks [the final day of DConf '22 early-bird registration](https://dconf.org/2022/index.html#register).
 

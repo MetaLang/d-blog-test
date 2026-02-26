@@ -13,9 +13,11 @@ categories:
 - D Foundation
 - Jobs
 - News
+permalink: /symmetry-investments-and-the-d-language-foundation-are-hiring/
+redirect_from: /2020/08/30/symmetry-investments-and-the-d-language-foundation-are-hiring/
 ---
 
-![Digital Mars D logo](https://dlang.org/blog/wp-content/uploads/2016/08/d6.png)
+![Digital Mars D logo]({{ '/assets/images/symmetry-investments-and-the-d-language-foundation-are-hiring/d6.png' | relative_url }})
 
 The D Language Foundation is hiring! Thanks to generous funding from Symmetry Investments, we are looking to fill two (mostly) non-programming positions geared toward improving the D ecosystem. Symmetry is also offering a bounty for a specific improvement to [DUB, the D build tool and package manager](https://code.dlang.org/). And on top of all of that, [they are hiring D programmers](https://news.ycombinator.com/item?id=24048006).
 
@@ -167,7 +169,7 @@ If you have good communication skills, an optimistic disposition, and enthusiasm
 
 
 
-![Symmetry Investments logo](https://dlang.org/blog/wp-content/uploads/2018/09/logo-1.png)DUB has become a critical component in the D ecosystem. A significant number of projects depend on it and we need it to be able to meet a wide range of project needs. To that end, there are certainly improvements to be made. One such is in how DUB determines which of a project's source files are in need of recompilation. Currently, DUB follows in the tradition of the venerable `make` and uses timestamp comparisons to make that determination.
+![Symmetry Investments logo]({{ '/assets/images/symmetry-investments-and-the-d-language-foundation-are-hiring/logo-1.png' | relative_url }})DUB has become a critical component in the D ecosystem. A significant number of projects depend on it and we need it to be able to meet a wide range of project needs. To that end, there are certainly improvements to be made. One such is in how DUB determines which of a project's source files are in need of recompilation. Currently, DUB follows in the tradition of the venerable `make` and uses timestamp comparisons to make that determination.
 
 
 

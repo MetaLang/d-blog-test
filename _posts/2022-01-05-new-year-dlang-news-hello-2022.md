@@ -12,9 +12,11 @@ categories:
 - D Foundation
 - News
 - SAoC
+permalink: /new-year-dlang-news-hello-2022/
+redirect_from: /2022/01/05/new-year-dlang-news-hello-2022/
 ---
 
-![Digital Mars D logo](https://dlang.org/blog/wp-content/uploads/2016/08/d6.png)
+![Digital Mars D logo]({{ '/assets/images/new-year-dlang-news-hello-2022/d6.png' | relative_url }})
 
 For many people around the world, 2021 is a year they'd like to forget. The ongoing pandemic has touched all of our lives indirectly, but for too many, including some in the D community, it has had a more direct impact. We wish a full recovery for those of you who have been physically or emotionally affected by the virus. Please don't forget: the D community is a network of people located around the globe. We are linked by our interest in the D programming language, but we are people before we are D programmers. If you find yourself in circumstances that disrupt any commitments you have in the community, it's nothing to fret over. Get it sorted and we'll be here when you get back. And if you need help to get it sorted, there are many among us willing to help if they can. Don't be afraid to reach out.
 

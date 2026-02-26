@@ -9,6 +9,8 @@ title: The D Website and You
 wordpress_id: 15
 categories:
 - Community
+permalink: /the-d-website-and-you/
+redirect_from: /2016/06/07/the-d-website-and-you/
 ---
 
 For those who have been around the D community for a long time, it's all too easy to look at the website we have today and think how much better it is than anything we've had in the past. It's miles ahead. Unfortunately, that perspective doesn't lend itself well to recognizing actual problems that newcomers might face when visiting the site for the first time. Their point of reference is quite often the current website of another language, making their perspective on what does and doesn't work very different.

@@ -16,9 +16,11 @@ categories:
 - LDC Releases
 - News
 - SAoC
+permalink: /dlang-news-september-october-2021-d-2-098-0-openbsd-saoc-dconf-online-swag/
+redirect_from: /2021/10/29/dlang-news-september-october-2021-d-2-098-0-openbsd-saoc-dconf-online-swag/
 ---
 
-![Digital Mars D logo](https://dlang.org/blog/wp-content/uploads/2016/08/d6.png)
+![Digital Mars D logo]({{ '/assets/images/dlang-news-september-october-2021-d-2-098-0-openbsd-saoc-dconf-online-swag/d6.png' | relative_url }})
 
 Version 2.098.0 of the D programming language is now available in the form of DMD 2.098.0 (the reference D compiler) and LDC 1.28.0 (the LLVM-based D compiler), D has come to OpenBSD, cool things are happening thanks to the Symmetry Autumn of Code, and DConf Online 2021 t-shirts are available for purchase.
 

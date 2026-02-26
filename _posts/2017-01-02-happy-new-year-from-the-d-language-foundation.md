@@ -10,6 +10,8 @@ wordpress_id: 562
 categories:
 - D Foundation
 - Guest Posts
+permalink: /happy-new-year-from-the-d-language-foundation/
+redirect_from: /2017/01/02/happy-new-year-from-the-d-language-foundation/
 ---
 
 _Ali Çehreli uses D professionally at _[Weka.io, ](http://www.weka.io/)_is the author of _[Programming in D](http://ddili.org/ders/d.en/index.html),_ and is frequently found in the _[D Learn forum](http://forum.dlang.org/group/learn)_ with ready answers to questions on using the language. He also is an officer of the [D Language Foundation](http://dlang.org/foundation.html).

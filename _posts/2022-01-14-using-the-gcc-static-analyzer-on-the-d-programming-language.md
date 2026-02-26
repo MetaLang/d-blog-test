@@ -9,9 +9,11 @@ title: Using the GCC Static Analyzer on the D Programming Language
 wordpress_id: 3033
 categories:
 - Compilers &amp; Tools
+permalink: /using-the-gcc-static-analyzer-on-the-d-programming-language/
+redirect_from: /2022/01/14/using-the-gcc-static-analyzer-on-the-d-programming-language/
 ---
 
-![](https://dlang.org/blog/wp-content/uploads/2018/02/bug-200x156.jpg)
+![]({{ '/assets/images/using-the-gcc-static-analyzer-on-the-d-programming-language/bug-200x156.jpg' | relative_url }})
 
 Largely thanks to [the tireless work of Iain Buclaw](https://github.com/ibuclaw), the D programming language is part of GCC. As well as having access to an extremely potent set of compiler optimizations and a large group of target platforms, D also benefits from upstream features added to GCC as a whole or even for specific languages. For some projects, this can be very important, as some of these features require large quantities of careful work, for example, mitigations for transient execution vulnerabilities.
 

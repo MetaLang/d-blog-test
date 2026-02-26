@@ -10,6 +10,8 @@ wordpress_id: 603
 categories:
 - Compilers &amp; Tools
 - Project Highlights
+permalink: /project-highlight-dpaste/
+redirect_from: /2017/01/30/project-highlight-dpaste/
 ---
 
 [DPaste](https://dpaste.dzfl.pl/new) is an online compiler and collaboration tool for the D Programming Language. Type in some D code, click run, and see the results. Code can also be saved so that it can be shared with others. Since it was first announced in the forums [back in 2012](https://forum.dlang.org/post/xfvfjjdhmovvuebfyjjg@forum.dlang.org), it has become a frequently used tool in facilitating online discussions in the D community. But Damian Ziemba, the creator and maintainer of DPaste, didn't set out with that goal in mind.

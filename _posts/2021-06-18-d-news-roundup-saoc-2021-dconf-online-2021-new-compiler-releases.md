@@ -15,6 +15,8 @@ categories:
 - LDC Releases
 - News
 - SAoC
+permalink: /d-news-roundup-saoc-2021-dconf-online-2021-new-compiler-releases/
+redirect_from: /2021/06/18/d-news-roundup-saoc-2021-dconf-online-2021-new-compiler-releases/
 ---
 
 Version 2.097.0 of DMD, the D programming language reference compiler, was released on June 5th in the middle of new GDC and LDC release announcements, while preparations for two major D community events were underway: the Symmetry Autumn of Code 2021 and DConf Online 2021. We'll cover it all in this post, with a focus first on the events.
@@ -25,7 +27,7 @@ Version 2.097.0 of DMD, the D programming language reference compiler, was relea
 
 
 
-![Symmetry Investments logo](https://dlang.org/blog/wp-content/uploads/2018/09/logo-1.png)
+![Symmetry Investments logo]({{ '/assets/images/d-news-roundup-saoc-2021-dconf-online-2021-new-compiler-releases/logo-1.png' | relative_url }})
 
 As I write, [Symmetry Investments](https://symmetryinvestments.com/) employs in the neighborhood of 180 full-time workers and manages over US$8 billion of capital, and they're always [on the lookout for more employees](https://news.ycombinator.com/item?id=25272559), including programmers to work with D and other languages. They sponsored [DConf 2019 in London](https://dconf.org/2019/) and have sponsored the annual Symmetry Autumn of Code since 2018, in which a handful of programmers are paid to work for four months on projects of benefit to the D ecosystem.
 
@@ -39,7 +41,7 @@ Participation in SAoC has led to jobs for some lucky coders and has generally be
 
 
 
-![](https://dlang.org/blog/wp-content/uploads/2021/08/logo_256.png)
+![]({{ '/assets/images/d-news-roundup-saoc-2021-dconf-online-2021-new-compiler-releases/logo_256.png' | relative_url }})
 
 For the second consecutive year, we were unable to hold a real-world DConf. Last year we launched the first annual DConf Online. And when I say _annual_, I mean _annual_! We're doing it again this year and will continue to do it going forward even after the real-world DConfs are back on.
 
@@ -61,7 +63,7 @@ D 2.097.0 is live in the latest release of DMD and the beta release of LDC, the 
 
 
 
-![Digital Mars D logo](https://dlang.org/blog/wp-content/uploads/2016/08/d6.png)
+![Digital Mars D logo]({{ '/assets/images/d-news-roundup-saoc-2021-dconf-online-2021-new-compiler-releases/d6.png' | relative_url }})
 
 [This version of DMD](https://dlang.org/download.html) comes with [29 major changes](https://dlang.org/changelog/2.097.0.html) and [144(!) fixed Bugzilla issues](https://dlang.org/changelog/2.097.0.html#bugfix-list) courtesy of 54 contributors. Changes include a few deprecations and several improvements to the standard library. Two things stand out:
 
@@ -82,7 +84,7 @@ D 2.097.0 is live in the latest release of DMD and the beta release of LDC, the 
 
 
 
-![LDC logo](https://dlang.org/blog/wp-content/uploads/2017/07/ldc.png)
+![LDC logo]({{ '/assets/images/d-news-roundup-saoc-2021-dconf-online-2021-new-compiler-releases/ldc.png' | relative_url }})
 
 On the same day the new DMD was released, [the first beta of LDC 1.27.0](https://github.com/ldc-developers/ldc/releases/tag/v1.27.0-beta1), which also supports D 2.097.0, [was announced in the D forums](https://forum.dlang.org/post/zeorpkkhqorjbaacslcb@forum.dlang.org).
 
@@ -98,7 +100,7 @@ Thanks to Martin Kinkelin and all the LDC maintainers and contributors for their
 
 
 
-![](https://dlang.org/blog/wp-content/uploads/2021/06/compiler-gdc.jpg)
+![]({{ '/assets/images/d-news-roundup-saoc-2021-dconf-online-2021-new-compiler-releases/compiler-gdc.jpg' | relative_url }})
 
 In the GCC world, Iain Buclaw continues [to make strides on the GDC compiler](https://forum.dlang.org/thread/yyblavikfluxsbtrdxry@forum.dlang.org).
 

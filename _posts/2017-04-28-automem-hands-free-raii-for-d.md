@@ -10,6 +10,8 @@ wordpress_id: 743
 categories:
 - GC
 - Guest Posts
+permalink: /automem-hands-free-raii-for-d/
+redirect_from: /2017/04/28/automem-hands-free-raii-for-d/
 ---
 
 _Átila Neves has used both C++ and D professionally. He's responsible for several D libraries and tools, like [unit-threaded](https://github.com/atilaneves/unit-threaded), [cerealed](https://github.com/atilaneves/cerealed), and [reggae](https://github.com/atilaneves/reggae)._

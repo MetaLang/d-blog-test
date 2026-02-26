@@ -14,6 +14,8 @@ wordpress_id: 1568
 categories:
 - Code
 - Compilers &amp; Tools
+permalink: /driving-continuous-improvement-in-d/
+redirect_from: /2018/06/02/driving-continuous-improvement-in-d/
 ---
 
 _Jack Stouffer is a member of the Phobos team and a contributor to dlang.org. You can check out more of his writing [on his blog](https://jackstouffer.com/blog/index.html)._

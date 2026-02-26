@@ -14,6 +14,8 @@ categories:
 - Community
 - D Foundation
 - Donations
+permalink: /manpower-in-the-d-ecosystem-or-resources-resources-resources/
+redirect_from: /2019/04/15/manpower-in-the-d-ecosystem-or-resources-resources-resources/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2016/08/d3.png)

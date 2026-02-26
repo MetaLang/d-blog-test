@@ -12,6 +12,8 @@ wordpress_id: 1853
 categories:
 - D Foundation
 - DConf
+permalink: /dconf-2019-shepherds-pie-edition/
+redirect_from: /2018/12/22/dconf-2019-shepherds-pie-edition/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2018/09/logo-1.png)

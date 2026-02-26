@@ -10,6 +10,8 @@ wordpress_id: 2065
 categories:
 - Code
 - Guest Posts
+permalink: /flexible-default-function-parameters/
+redirect_from: /2019/04/29/flexible-default-function-parameters/
 ---
 
 The problem

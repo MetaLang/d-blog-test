@@ -12,6 +12,8 @@ categories:
 - D Foundation
 - Interviews
 - News
+permalink: /the-d-language-foundations-scholarship-program/
+redirect_from: /2016/12/05/the-d-language-foundations-scholarship-program/
 ---
 
 ![d6](http://dlang.org/blog/wp-content/uploads/2016/08/d6.png)The D Language Foundation [recently announced](http://dlang.org/dlangupb-scholarship.html) a new scholarship program aimed at EE and CS majors attending [University "Politehnica" Bucharest](http://www.upb.ro/en/) (UPB). I contacted Andrei Alexandrescu for a few details on how the initiative came together, hoping for just enough tidbits of backstory to craft a blog post around. He obliged in a big way, turning my one question and "a few details" into an informative conversation.

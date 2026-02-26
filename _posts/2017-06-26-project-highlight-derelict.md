@@ -10,6 +10,8 @@ wordpress_id: 919
 categories:
 - Game Development
 - Project Highlights
+permalink: /project-highlight-derelict/
+redirect_from: /2017/06/26/project-highlight-derelict/
 ---
 
 Previous [project highlights](https://dlang.org/blog/category/project-highlights/) on this blog were written up both in my own words and in quotes from the project maintainers. This time around is different -- it would be a little odd to quote ![](http://dlang.org/blog/wp-content/uploads/2017/06/derelict-windmill.jpg)myself while writing about my own project.

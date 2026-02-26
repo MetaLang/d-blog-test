@@ -15,6 +15,8 @@ wordpress_id: 1441
 categories:
 - Community
 - D Foundation
+permalink: /the-d-foundation-at-open-collective/
+redirect_from: /2018/03/12/the-d-foundation-at-open-collective/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2016/08/d6.png)In its work guiding the development of D and promoting its adoption, the D Language Foundation is driven primarily by donations big and small. The money comes in from different sources, the most visible being those listed on the website’s [donation page](https://dlang.org/foundation/donate.html), and is put to use in different ways.

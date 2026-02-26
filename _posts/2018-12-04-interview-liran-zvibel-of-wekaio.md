@@ -15,9 +15,11 @@ wordpress_id: 1827
 categories:
 - Companies
 - Interviews
+permalink: /interview-liran-zvibel-of-wekaio/
+redirect_from: /2018/12/04/interview-liran-zvibel-of-wekaio/
 ---
 
-![](https://dlang.org/blog/wp-content/uploads/2018/12/weka-300x109.png)[Matrix, the world's fastest file system](https://www.theregister.co.uk/2018/03/22/spec_filer_benchmark_anoints_worlds_fastest_file_system/), was written in D and recently [posted impressive numbers in the IO-500 Node Challenge](https://www.theregister.co.uk/2018/11/30/wekaio). It was created by [WekaIO](https://www.weka.io), a San Jose, CA, based startup with engineering in Tel Aviv, Israel. Liran Zvibel, the co-founder and CEO of WekaIO, has been a regular speaker at DConf, talking about their use of D at DConf [2015](https://dconf.org/2015/talks/zvibel.html), [2016](https://dconf.org/2016/talks/zvibel.html), and [2018](https://dconf.org/2018/talks/zvibel.html).
+![]({{ '/assets/images/interview-liran-zvibel-of-wekaio/weka-300x109.png' | relative_url }})[Matrix, the world's fastest file system](https://www.theregister.co.uk/2018/03/22/spec_filer_benchmark_anoints_worlds_fastest_file_system/), was written in D and recently [posted impressive numbers in the IO-500 Node Challenge](https://www.theregister.co.uk/2018/11/30/wekaio). It was created by [WekaIO](https://www.weka.io), a San Jose, CA, based startup with engineering in Tel Aviv, Israel. Liran Zvibel, the co-founder and CEO of WekaIO, has been a regular speaker at DConf, talking about their use of D at DConf [2015](https://dconf.org/2015/talks/zvibel.html), [2016](https://dconf.org/2016/talks/zvibel.html), and [2018](https://dconf.org/2018/talks/zvibel.html).
 
 WekaIO is an expression of a design goal of D, that [you can write your prototype quickly and easily in D, then continue working on the same codebase until it reaches production quality](https://dconf.org/2015/talks/smith.html), as opposed to prototyping in a different high-level programming language. Liran took some time out of his busy schedule to answer some questions about WekaIO and their use of D.
 

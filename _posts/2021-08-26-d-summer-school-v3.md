@@ -10,9 +10,11 @@ wordpress_id: 2966
 categories:
 - Community
 - Guest Posts
+permalink: /d-summer-school-v3/
+redirect_from: /2021/08/26/d-summer-school-v3/
 ---
 
-![](https://dlang.org/blog/wp-content/uploads/2021/08/logo_256-200x195.png)
+![]({{ '/assets/images/d-summer-school-v3/logo_256-200x195.png' | relative_url }})
 
 The third edition of the D Summer School, held at [University POLITEHNICA of Bucharest](https://upb.ro/en/), took place from the 5th to the 25th of July. It was three weeks of boot camping bachelor students into the basics of D across eight sessions of hands-on workshops and a hackathon. We will describe our experience in organizing the program, teaching the students, and trying to integrate them into the D community.
 

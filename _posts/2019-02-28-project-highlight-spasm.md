@@ -13,6 +13,8 @@ wordpress_id: 1961
 categories:
 - Compilers &amp; Tools
 - Project Highlights
+permalink: /project-highlight-spasm/
+redirect_from: /2019/02/28/project-highlight-spasm/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2019/02/hackathon.png)In 2014, Sebastiaan Koppe was working on a React project. The app’s target market included three-year-old mobile phones. He encountered some performance issues that, after investigating, he discovered weren’t attributable solely to the mobile platform.

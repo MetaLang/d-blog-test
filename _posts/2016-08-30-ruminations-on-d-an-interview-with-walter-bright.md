@@ -11,6 +11,8 @@ categories:
 - Community
 - Core Team
 - Interviews
+permalink: /ruminations-on-d-an-interview-with-walter-bright/
+redirect_from: /2016/08/30/ruminations-on-d-an-interview-with-walter-bright/
 ---
 
 _Joakim is the resident interviewer for the D Blog. He has also [interviewed](http://arsdnet.net/this-week-in-d/mar-15.html) [members](http://arsdnet.net/this-week-in-d/jun-28.html) [of the](http://arsdnet.net/this-week-in-d/jul-12.html) [D community](http://arsdnet.net/this-week-in-d/sep-06.html) for [This Week in D](http://arsdnet.net/this-week-in-d/) and is responsible for [the Android port of LDC](https://github.com/joakim-noah/android/releases)._

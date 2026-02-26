@@ -20,6 +20,8 @@ categories:
 - Code
 - D and C
 - Tutorials
+permalink: /interfacing-d-with-c-getting-started/
+redirect_from: /2017/12/05/interfacing-d-with-c-getting-started/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2016/08/d6.png)One of the early design goals behind the D programming language was the ability to [interface with C](https://dlang.org/spec/interfaceToC.html). To that end, it provides ABI compatibility, allows access to the C standard library, and makes use of the same object file formats and system linkers that C and C++ compilers use. Most built-in D types, even structs, are directly compatible with their C counterparts and can be passed freely to C functions, provided the functions have been declared in D with the appropriate [linkage attribute](https://dlang.org/spec/attribute.html#linkage). In many cases, one can copy a chunk of C code, paste it into a D module, and compile it with minimal adjustment. Conversely, appropriately declared D functions can be called from C.

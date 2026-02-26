@@ -13,6 +13,8 @@ wordpress_id: 1534
 categories:
 - Code
 - Tutorials
+permalink: /complicated-types-prefer-alias-this-over-alias-for-easier-to-read-error-messages/
+redirect_from: /2018/05/21/complicated-types-prefer-alias-this-over-alias-for-easier-to-read-error-messages/
 ---
 
 _Nick Sabalausky is a long-time D user and contributor. He is the maintainer of [mysql-native](https://github.com/mysql-d/mysql-native) and [Scriptlike](https://github.com/Abscissa/scriptlike). In this post, he presents a way to use a specific D language feature to improve error messages involving aliased types._

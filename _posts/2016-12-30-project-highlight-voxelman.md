@@ -10,6 +10,8 @@ wordpress_id: 533
 categories:
 - Game Development
 - Project Highlights
+permalink: /project-highlight-voxelman/
+redirect_from: /2016/12/30/project-highlight-voxelman/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2016/12/mrsmith33-200x200.png)If you spend any time over at [r/VoxelGameDev](https://www.reddit.com/r/VoxelGameDev/), you may have seen posts about [Voxelman](https://github.com/MrSmith33/voxelman), the plugin-driven game engine MrSmith33 is developing with D. His real name is Andrey Penechko, and he started work on Voxelman after he was inspired by Minecraft to think about all the cool things he could do with a voxel engine, particularly the low-level optimization tricks he could use in implementing one. Then he jumped in and started figuring things out.

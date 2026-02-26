@@ -9,6 +9,8 @@ title: 'Project Highlight: Auburn Sounds'
 wordpress_id: 76
 categories:
 - Project Highlights
+permalink: /project-highlight-auburn-sounds/
+redirect_from: /2016/07/07/project-highlight-auburn-sounds/
 ---
 
 One of the questions some people ask when evaluating a language for the first time is, _who's making money with it_? That's no exception with D. While there are [a number of companies](https://dlang.org/orgs-using-d.html) using D in production, there are also people making money with the language out of their homes. [The last Project Highlight](http://dlang.org/blog/2016/06/24/project-highlight-the-powernex-kernel/) looked at a freely available open source project. This one is about a proprietary set of audio plugins developed and sold by one programmer.

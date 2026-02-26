@@ -11,9 +11,11 @@ categories:
 - Code
 - D and C
 - Tutorials
+permalink: /interfacing-d-with-c-strings-part-one/
+redirect_from: /2021/05/24/interfacing-d-with-c-strings-part-one/
 ---
 
-![Digital Mars D logo](https://dlang.org/blog/wp-content/uploads/2016/08/d6.png)
+![Digital Mars D logo]({{ '/assets/images/interfacing-d-with-c-strings-part-one/d6.png' | relative_url }})
 
 This post is part of [an ongoing series](https://dlang.org/blog/the-d-and-c-series/) on working with both D and C in the same project. The previous two posts looked into interfacing D and C arrays. Here, we focus on a special kind of array: strings. Readers are advised to read [Arrays Part One](https://dlang.org/blog/2018/10/17/interfacing-d-with-c-arrays-part-1/) and [Arrays Part Two](https://dlang.org/blog/2020/04/28/interfacing-d-with-c-arrays-and-functions-arrays-part-two/) before continuing with this one.
 

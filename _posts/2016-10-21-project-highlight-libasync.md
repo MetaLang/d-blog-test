@@ -10,6 +10,8 @@ wordpress_id: 459
 categories:
 - Project Highlights
 - Web Development
+permalink: /project-highlight-libasync/
+redirect_from: /2016/10/21/project-highlight-libasync/
 ---
 
 [![d6](http://dlang.org/blog/wp-content/uploads/2016/08/d6.png)libasync ](https://github.com/etcimon/libasync)is a cross-platform event loop library written completely in D.  It was created, and continues to be maintained, by Etienne Cimon, who started it as a native driver for [vibe.d](http://vibed.org/), a modular asynchronous I/O framework most often used for web app development in D.

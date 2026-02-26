@@ -11,6 +11,8 @@ categories:
 - Code
 - Compilers &amp; Tools
 - Project Highlights
+permalink: /project-highlight-dpp/
+redirect_from: /2019/04/08/project-highlight-dpp/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2016/08/d3.png)D was designed from the beginning to be ABI compatible with C. Translate the declarations from a C header file into a D module and you can link directly with the corresponding C library or object files. The same is true in the other direction as long as the functions in the D code are annotated with [the appropriate linkage attribute](https://dlang.org/spec/attribute.html#linkage). These days, it’s possible to bind with C++ and even Objective-C.

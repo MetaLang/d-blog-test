@@ -11,6 +11,8 @@ categories:
 - Community
 - Guest Posts
 - User Stories
+permalink: /d-lighted-im-sure/
+redirect_from: /2019/01/18/d-lighted-im-sure/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2016/08/d3.png)For me, finding D is the most recent step along a road winding back at least a dozen years. I’d been searching for a cross-platform development language/environment (POSIX and Windows, but not so much mobile since my search began before mobile was really a thing) and at this point, D fits better than anything else I’ve tried. I won’t go out on a limb and say it’s the Holy Grail of X-Plat, but at the very least, it’s brought some fun back into coding for me. And whenever I massage a hunk of code until it finally works… well, I’m addicted to those little victories.

@@ -10,6 +10,8 @@ wordpress_id: 2018
 categories:
 - Code
 - Guest Posts
+permalink: /memoization-in-the-d-programming-language/
+redirect_from: /2019/03/30/memoization-in-the-d-programming-language/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2019/03/brain02.png)The D programming language provides advanced facilities for structuring programs logically, almost like Python or Ruby, but with high performance and the higher reliability of static typing and contract programming.

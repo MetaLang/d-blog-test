@@ -11,6 +11,8 @@ categories:
 - Community
 - D Foundation
 - Guest Posts
+permalink: /last-year-in-d/
+redirect_from: /2019/01/24/last-year-in-d/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2016/08/d3.png)2018 was one of the biggest years in D we’ve had for a while. It was the first complete year that DMD stuck to a steady release schedule. Over the course of the year, the language got new features and cruft cleanup. The compiler even got some new user-facing features. At the same time, the community-at-large continued to evolve the surrounding ecosystem.

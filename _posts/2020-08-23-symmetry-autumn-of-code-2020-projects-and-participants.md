@@ -11,9 +11,11 @@ categories:
 - Community
 - D Foundation
 - SAoC
+permalink: /symmetry-autumn-of-code-2020-projects-and-participants/
+redirect_from: /2020/08/23/symmetry-autumn-of-code-2020-projects-and-participants/
 ---
 
-![Symmetry Investments logo](https://dlang.org/blog/wp-content/uploads/2018/09/logo-1.png)The verdict is in! Five programmers will be participating in [the 2020 edition of the Symmetry Autumn of Code](https://dlang.org/blog/symmetry-autumn-of-code/). Over the next three weeks, they will be working with their mentors to take the goals they outlined in their applications and turn them into concrete tasks across four milestones. Then, on September 15th, the first milestone gets under way.
+![Symmetry Investments logo]({{ '/assets/images/symmetry-autumn-of-code-2020-projects-and-participants/logo-1.png' | relative_url }})The verdict is in! Five programmers will be participating in [the 2020 edition of the Symmetry Autumn of Code](https://dlang.org/blog/symmetry-autumn-of-code/). Over the next three weeks, they will be working with their mentors to take the goals they outlined in their applications and turn them into concrete tasks across four milestones. Then, on September 15th, the first milestone gets under way.
 
 Throughout the event, anyone can follow the progress of each project through the participants' weekly updates [in the General forum](https://forum.dlang.org/group/general). Please don't ignore those posts! You might be able to offer suggestions to help them along the way.
 

@@ -15,6 +15,8 @@ wordpress_id: 1148
 categories:
 - Code
 - Compilers &amp; Tools
+permalink: /dmd-windows-and-c/
+redirect_from: /2017/10/25/dmd-windows-and-c/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2016/08/d6.png)The ability to interface with C was baked into D from the beginning. Most of the time, it’s something that requires little thought – as long as the declarations on the D side match what exists on the C side, things will usually just work. However, there are a few corner-case gotchas that arise from the simple fact that D, though compatible, is not C.

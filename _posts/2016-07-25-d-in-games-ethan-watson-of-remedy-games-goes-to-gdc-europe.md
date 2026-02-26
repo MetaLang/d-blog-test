@@ -10,6 +10,8 @@ wordpress_id: 120
 categories:
 - Game Development
 - News
+permalink: /d-in-games-ethan-watson-of-remedy-games-goes-to-gdc-europe/
+redirect_from: /2016/07/25/d-in-games-ethan-watson-of-remedy-games-goes-to-gdc-europe/
 ---
 
 At DConf 2013 at the Facebook HQ, Manu Evans, then of Remedy Games, gave a talk titled, "[Using D Alongside a Game Engine](http://dconf.org/2013/talks/evans_1.html)" (follow the link for the slides and video). He talked about Remedy's experience getting D to work with their existing C++ game engine. The D landscape was a bit different when they got underway than it is today. For starters, DMD did not support 64-bit targets on Windows and the language had not yet gained support for directly binding to C++. Manu's talk discusses the steps they took to work around such issues and achieve a working system.

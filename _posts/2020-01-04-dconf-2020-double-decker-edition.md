@@ -12,6 +12,8 @@ categories:
 - D Foundation
 - DConf
 - News
+permalink: /dconf-2020-double-decker-edition/
+redirect_from: /2020/01/04/dconf-2020-double-decker-edition/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2020/01/logo.png)To kick off the year of double 20's (or double X's if you prefer), the D Language Foundation is excited to announce that [DConf 2020 will return to 99 City Road for a second round in London](https://dconf.org/2020/index.html)! We had such a great time last year that we were over the moon when we heard that our DConf 2019 hosts and sponsors at Symmetry Investments were willing to do it all again in 2020. The venue's Sinisa Poznanovic will be back live streaming the talks on [the D Language Foundation's YouTube channel](https://www.youtube.com/channel/UC5DNdmeE-_lS6VhCVydkVvQ), and all of the talks will once again be recorded in HD via the capable hands of [the Stage Engage crew](https://www.stageengage.com/).

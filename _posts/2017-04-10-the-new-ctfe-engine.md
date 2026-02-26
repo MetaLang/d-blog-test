@@ -11,6 +11,8 @@ categories:
 - Compilers &amp; Tools
 - Core Team
 - Guest Posts
+permalink: /the-new-ctfe-engine/
+redirect_from: /2017/04/10/the-new-ctfe-engine/
 ---
 
 _Stefan Koch is the maintainer of [sqlite-d](https://github.com/UplinkCoder/sqlite-d), a native D [sqlite](https://www.sqlite.org) reader, and has contributed to projects like [SDC](https://github.com/SDC-Developers/SDC) (the Stupid D Compiler) and [vibe.d](http://vibed.org). He was also responsible for a 10% performance improvement in D's current CTFE implementation and is currently writing a new CTFE engine, the subject of this post._

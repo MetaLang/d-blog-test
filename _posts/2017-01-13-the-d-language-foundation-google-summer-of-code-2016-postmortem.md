@@ -11,6 +11,8 @@ categories:
 - D Foundation
 - GSoC
 - Guest Posts
+permalink: /the-d-language-foundation-google-summer-of-code-2016-postmortem/
+redirect_from: /2017/01/13/the-d-language-foundation-google-summer-of-code-2016-postmortem/
 ---
 
 _Craig Dillabaugh was first drawn to D by its attractive syntax and Walter Bright's statement that D is "a programming language, not a religion". He maintains bindings to the geospatial libraries [shapelib](https://github.com/craig-dillabaugh/shplib_d) and [gdal](https://github.com/craig-dillabaugh/gdal), volunteered to manage the GSoC 2015 & 2016 efforts for D, and has taken it on again for 2017. He lives near Ottawa, Canada, and works for a network monitoring/security company called [Solana Networks](http://www.solananetworks.com/)._

@@ -10,6 +10,8 @@ wordpress_id: 628
 categories:
 - Guest Posts
 - The Language
+permalink: /a-new-import-idiom/
+redirect_from: /2017/02/13/a-new-import-idiom/
 ---
 
 _Daniel Nielsen is an Embedded Software Engineer. He is currently using D in his spare time for an unpublished Roguelike and warns that he "may produce bursts of D Evangelism"._

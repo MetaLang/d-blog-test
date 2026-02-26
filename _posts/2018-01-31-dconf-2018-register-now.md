@@ -15,6 +15,8 @@ categories:
 - D Foundation
 - DConf
 - News
+permalink: /dconf-2018-register-now/
+redirect_from: /2018/01/31/dconf-2018-register-now/
 ---
 
 It was the middle of November when DConf 2018 was announced [here on this blog](https://dlang.org/blog/2017/11/14/dconf-2018-assemblage-in-bavaria/) in a Q & A session with Andrei Alexandrescu. Since then, the DConf train has slowly been building up steam as things have been happening behind the scenes. Now it’s full steam ahead!

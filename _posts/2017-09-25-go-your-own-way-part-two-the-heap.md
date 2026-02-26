@@ -15,6 +15,8 @@ categories:
 - Code
 - GC
 - The Language
+permalink: /go-your-own-way-part-two-the-heap/
+redirect_from: /2017/09/25/go-your-own-way-part-two-the-heap/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2016/08/d6.png)This post is part of [an ongoing series](https://dlang.org/blog/the-gc-series/) on garbage collection in the D Programming Language, and the second of two regarding the allocation of memory outside of the GC. [Part One](https://dlang.org/blog/2017/07/07/go-your-own-way-part-one-the-stack/) discusses stack allocation. Here, we’ll look at allocating memory from the non-GC heap.

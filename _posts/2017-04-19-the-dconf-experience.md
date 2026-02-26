@@ -10,6 +10,8 @@ wordpress_id: 732
 categories:
 - Community
 - DConf
+permalink: /the-dconf-experience/
+redirect_from: /2017/04/19/the-dconf-experience/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2017/04/dconf.jpg)April 23rd, the deadline for [DConf 2017](http://dconf.org/2017/index.html) registrations, is just a few days away. Personally, I wasn't sure if I'd be able to attend this year or not, but fortunately things worked out. While I'm looking forward to more great presentations this year, that's not what keeps drawing me back (or makes me regret being unable to attend in 2014 and 2015).

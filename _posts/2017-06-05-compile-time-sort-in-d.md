@@ -9,6 +9,8 @@ title: Compile-Time Sort in D
 wordpress_id: 841
 categories:
 - Code
+permalink: /compile-time-sort-in-d/
+redirect_from: /2017/06/05/compile-time-sort-in-d/
 ---
 
 Björn Fahller recently wrote a blog post showing how to implement [a compile-time quicksort in C++17](http://playfulprogramming.blogspot.kr/2017/06/constexpr-quicksort-in-c17.html). It's a skillful demonstration that employs the evolving C++ feature set to write code that, while not quite concise, is more streamlined than previous iterations. He concludes with, "...the usefulness of this is very limited, but it is kind of cool, isn't it?"

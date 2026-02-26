@@ -19,6 +19,8 @@ categories:
 - Code
 - Companies
 - Guest Posts
+permalink: /unit-testing-in-action/
+redirect_from: /2017/10/20/unit-testing-in-action/
 ---
 
 _[![](http://www.funkwerk.com/wp-content/themes/funkwerk/library/images/logo.png)](http://www.funkwerk.com)Mario Kröplin is a developer at [Funkwerk AG](http://www.funkwerk.com/), a German company whose passenger information system is developed in D and was [recently highlighted on this blog](https://dlang.org/blog/2017/07/28/project-highlight-funkwerk/). That post describes Funkwerk’s use of third-party unit testing frameworks and says, “the team recently discovered a way to combine xUnit testing with D’s built-in `unittest`, which may lead to another transition in their unit testing.” That’s Mario’s subject in this post._

@@ -12,6 +12,8 @@ categories:
 - D and C
 - Guest Posts
 - Tutorials
+permalink: /writing-a-d-wrapper-for-a-c-library/
+redirect_from: /2019/02/10/writing-a-d-wrapper-for-a-c-library/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2019/02/hackathon.png)In porting to D a program I created for a research project, I wrote a D wrapper of a C library in an object-oriented manner. I want to share my experience with other programmers. This article provides some D tips and tricks for writers of D wrappers around C libraries.

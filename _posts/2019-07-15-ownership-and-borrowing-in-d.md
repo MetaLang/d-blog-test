@@ -11,6 +11,8 @@ categories:
 - Code
 - Core Team
 - The Language
+permalink: /ownership-and-borrowing-in-d/
+redirect_from: /2019/07/15/ownership-and-borrowing-in-d/
 ---
 
 ![Digital Mars logo](http://dlang.org/blog/wp-content/uploads/2016/08/d6.png)Nearly all non-trivial programs allocate and manage memory. Getting it right is becoming increasingly important, as programs get ever more complex and mistakes get ever more costly. The usual problems are:

@@ -16,6 +16,8 @@ wordpress_id: 1772
 categories:
 - Code
 - The Language
+permalink: /lost-in-translation-encapsulation/
+redirect_from: /2018/11/06/lost-in-translation-encapsulation/
 ---
 
 I first learned programming in BASIC. Outgrew it, and switched to Fortran. Amusingly, my early Fortran code looked just like BASIC. My early C code looked like Fortran. My early C++ code looked like C. – [Walter Bright, the creator of D](http://walterbright.com/)

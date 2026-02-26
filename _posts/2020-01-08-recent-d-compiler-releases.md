@@ -11,6 +11,8 @@ categories:
 - DMD Releases
 - LDC Releases
 - News
+permalink: /recent-d-compiler-releases/
+redirect_from: /2020/01/08/recent-d-compiler-releases/
 ---
 
 ![Digital Mars D logo](http://dlang.org/blog/wp-content/uploads/2016/08/d6.png)The LDC team closed out the old year with [release 1.19.0 of the LLVM-based D compiler](https://github.com/ldc-developers/ldc/releases/tag/v1.19.0), and the core D team opened the new year with [version 2.090.0 of the reference D compiler](https://dlang.org/changelog/2.090.0.html), DMD. And if you haven't yet heard, there was some big news about [the GCC-based D compiler](https://github.com/D-Programming-GDC/gcc), GDC, a while back. Time to catch up!

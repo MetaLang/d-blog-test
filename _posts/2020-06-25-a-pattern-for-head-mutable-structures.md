@@ -12,6 +12,8 @@ categories:
 - Guest Posts
 - Phobos
 - The Language
+permalink: /a-pattern-for-head-mutable-structures/
+redirect_from: /2020/06/25/a-pattern-for-head-mutable-structures/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2019/03/brain02.png)

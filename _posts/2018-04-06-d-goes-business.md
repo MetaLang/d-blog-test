@@ -13,6 +13,8 @@ wordpress_id: 1518
 categories:
 - Code
 - Guest Posts
+permalink: /d-goes-business/
+redirect_from: /2018/04/06/d-goes-business/
 ---
 
 _A long-time contributor to the D community, Kai Nacke is the author of '[D Web Development](https://www.packtpub.com/web-development/d-web-development)' and the maintainer of [LDC](https://wiki.dlang.org/LDC), the LLVM D Compiler. Be sure to catch Kai at [DConf 2018 in Munich](http://dconf.org/2018/index.html), May 2 - 5, where he'll be speaking about "[D for the Blockchain](http://dconf.org/2018/talks/nacke.html)"._

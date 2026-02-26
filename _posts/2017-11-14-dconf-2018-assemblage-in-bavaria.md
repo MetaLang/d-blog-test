@@ -16,6 +16,8 @@ categories:
 - DConf
 - Interviews
 - News
+permalink: /dconf-2018-assemblage-in-bavaria/
+redirect_from: /2017/11/14/dconf-2018-assemblage-in-bavaria/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2017/04/dconf-200x200.jpg)It’s official! [The D Language Foundation](https://dlang.org/foundation.html) has put out [a call for submissions](https://dconf.org/2018/index.html) for the next iteration of the annual gathering of D programming language enthusiasts. DConf 2018, hosted by [QA Systems](http://qa-systems.com), is taking place in Munich from May 2nd to the 5th, 2018.

@@ -9,6 +9,8 @@ title: The Why and Wherefore of the New D Improvement Proposal Process
 wordpress_id: 108
 categories:
 - Community
+permalink: /the-why-and-wherefore-of-the-new-d-improvement-proposal-process/
+redirect_from: /2016/07/20/the-why-and-wherefore-of-the-new-d-improvement-proposal-process/
 ---
 
 When a programmer sees fellow programmers contributing code to open source projects, it is unlikely that the question of _why_ will ever come to mind in terms of motive. Regarding technical merit or usefulness, sure. But motive? Coders who are inclined to contribute bug fixes, new features, build systems, or other resources to open source projects do so for a variety of reasons, most of which other programmers will intuitively understand. But when a programmer volunteers to take over what is solely an administrative process for an open source project, that's a different story altogether.

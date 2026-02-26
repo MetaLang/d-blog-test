@@ -11,12 +11,14 @@ categories:
 - Guest Posts
 - Project Highlights
 - User Stories
+permalink: /a-gas-dynamics-toolkit-in-d/
+redirect_from: /2022/02/02/a-gas-dynamics-toolkit-in-d/
 ---
 
 The Eilmer flow simulation code is the main simulation program in our [collection of gas dynamics simulation tools](https://gdtk.uqcloud.net/). An example of its application is shown here with the simulation of the hypersonic flow over the BoLT-II research vehicle that is to be flown in 2022.
 
 
-![BoLT-II simulation with steady-state variant of the Eilmer code. Flow is from bottom-left to top-right of the picture. Only one quarter of the vehicle surface, coloured grey, is shown. Several slices through the flow domain are coloured with the local Mach number, with blue for low values and red for high values. Several streamlines, drawn in black, start at the blunt leading edge of the vehicle and follow the gas flow along the vehicle surface. Image produced by Kyle Damm.](https://dlang.org/blog/wp-content/uploads/2022/02/bolt_II_example_visual_16092021.png)
+![BoLT-II simulation with steady-state variant of the Eilmer code. Flow is from bottom-left to top-right of the picture. Only one quarter of the vehicle surface, coloured grey, is shown. Several slices through the flow domain are coloured with the local Mach number, with blue for low values and red for high values. Several streamlines, drawn in black, start at the blunt leading edge of the vehicle and follow the gas flow along the vehicle surface. Image produced by Kyle Damm.]({{ '/assets/images/a-gas-dynamics-toolkit-in-d/bolt_II_example_visual_16092021.png' | relative_url }})
 
 _BoLT-II simulation with steady-state variant of the Eilmer code. Flow is from bottom-left to top-right of the picture. Only one quarter of the vehicle surface, coloured grey, is shown. Several slices through the flow domain are coloured with the local Mach number, with blue for low values and red for high values. Several streamlines, drawn in black, start at the blunt leading edge of the vehicle and follow the gas flow along the vehicle surface. Image produced by Kyle Damm._
 

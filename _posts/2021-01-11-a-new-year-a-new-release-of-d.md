@@ -14,6 +14,8 @@ categories:
 - Compilers &amp; Tools
 - DMD Releases
 - LDC Releases
+permalink: /a-new-year-a-new-release-of-d/
+redirect_from: /2021/01/11/a-new-year-a-new-release-of-d/
 ---
 
 Here in DLang Land we're beginning the new year with [a new release of the D reference compiler (DMD)](https://dlang.org/download.html) and [a beta release of the popular LLVM-based D compiler (LDC)](https://forum.dlang.org/post/rqfahrdmyikzsbjpggwl@forum.dlang.org). D 2.095.0 is [crammed full of 27 major changes and 78 fixes from 61 contributors](https://dlang.org/changelog/2.095.0.html). Following are some highlights that I expect some D programmers might find interesting, but please [see the changelog](https://dlang.org/changelog/2.095.0.html) for the full rundown. Those more interested in Bugzilla issue numbers can [jump straight to the bugfix list](https://dlang.org/changelog/2.095.0.html#bugfix-list)
@@ -26,7 +28,7 @@ Here in DLang Land we're beginning the new year with [a new release of the D ref
 
 
 
-![Digital Mars D logo](https://dlang.org/blog/wp-content/uploads/2016/08/d6.png)
+![Digital Mars D logo]({{ '/assets/images/a-new-year-a-new-release-of-d/d6.png' | relative_url }})
 
 D's support for other programming languages is important for interacting with existing codebases. C ABI compatibility has been strong from the beginning. Support for Objective-C and C++ came later. Though C++-compatibility is a bear to get right, it keeps improving with every compiler release. This release continues that trend and also enhances Objective-C support. We also see a number of QOL (quality-of-life) improvements throughout the compiler, libraries, and tools. DUB, the D build tool and package manager that ships with the compiler (and [is also available separately](https://github.com/dlang/dub/releases)), especially gets a good bit of love in this release.
 
@@ -220,7 +222,7 @@ Unfortunately, it appears the implementation does not work for recipes in [SDLan
 
 
 
-![LDC logo](https://dlang.org/blog/wp-content/uploads/2017/07/ldc.png)
+![LDC logo]({{ '/assets/images/a-new-year-a-new-release-of-d/ldc.png' | relative_url }})
 
 [This release of LDC](https://forum.dlang.org/post/rqfahrdmyikzsbjpggwl@forum.dlang.org) brings the compiler up to date with the D 2.095.0 frontend, with the prebuilt packages based on LLVM v11.0.1. The biggest news in this release looks to be the new `-linkonce-templates` flag. This experimental feature causes the compiler to emit template symbols into each compilation unit that references them, "with optimizer-discardable linkonce-odr linkage". The implementation has big wins both in terms of compile times when compiling with optimizations turned on and in cutting down on a class of template-related bugs. [See the beta1 release notes](https://github.com/ldc-developers/ldc/releases/tag/v1.25.0-beta1) for the details.
 

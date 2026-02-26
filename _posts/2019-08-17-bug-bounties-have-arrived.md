@@ -10,6 +10,8 @@ wordpress_id: 2172
 categories:
 - Community
 - D Foundation
+permalink: /bug-bounties-have-arrived/
+redirect_from: /2019/08/17/bug-bounties-have-arrived/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2018/02/bug.jpg)In 2013, [Facebook launched a page for D bounties at BountySource](https://forum.dlang.org/post/l671kq$1uoh$1@digitalmars.com). It saw a burst of excitement, a few bugs fixed, and then went quiet. By 2017, it [had been "deemed unsuccessful"](https://forum.dlang.org/post/oimn65$134r$1@digitalmars.com). In internal discussions on fundraising options and how to increase community participation in fixing bugs, the topic of bug bounties has often come up, but the failure of the BountySource page has led us to different alternatives and we've never tried to revive it. Last year, before we opened our OpenCollective page, we requested that BountySource refund all unpaid bounties and received confirmation that they had done so. Still, we're always open to new approaches.

@@ -11,6 +11,8 @@ categories:
 - Code
 - Companies
 - Guest Posts
+permalink: /saving-money-by-switching-from-php-to-d/
+redirect_from: /2019/09/30/saving-money-by-switching-from-php-to-d/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2019/09/7J2w9NM36cQg7v0Nk7Z0N9QVa-200x200.png)2night was born in 2000 as [an online magazine focused on nightlife and restaurants in Italy](https://2night.it/). Over the years, we have evolved into a full-blown experiential marketing agency, keeping up our vocation of spreading what’s cool to do when you go out, but specialized in producing brand events and below-the-line unconventional marketing campaigns.

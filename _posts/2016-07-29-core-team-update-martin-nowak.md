@@ -10,6 +10,8 @@ wordpress_id: 131
 categories:
 - Compilers &amp; Tools
 - Core Team
+permalink: /core-team-update-martin-nowak/
+redirect_from: /2016/07/29/core-team-update-martin-nowak/
 ---
 
 In the early days of [DMD](https://dlang.org/download.html), new releases were put out when Walter decided they were ready. There was no formal process, no commonly accepted set of criteria that defined the point at which a new compiler version was due or the steps involved in building the release packages. In the early days, that was just fine. As time passed, not so much.

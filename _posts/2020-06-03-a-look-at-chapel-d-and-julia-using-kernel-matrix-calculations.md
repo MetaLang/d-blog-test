@@ -10,6 +10,8 @@ wordpress_id: 2579
 categories:
 - Code
 - Guest Posts
+permalink: /a-look-at-chapel-d-and-julia-using-kernel-matrix-calculations/
+redirect_from: /2020/06/03/a-look-at-chapel-d-and-julia-using-kernel-matrix-calculations/
 ---
 
 ## Introduction

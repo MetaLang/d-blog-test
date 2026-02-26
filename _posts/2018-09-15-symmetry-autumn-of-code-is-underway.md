@@ -14,6 +14,8 @@ categories:
 - Companies
 - D Foundation
 - SAoC
+permalink: /symmetry-autumn-of-code-is-underway/
+redirect_from: /2018/09/15/symmetry-autumn-of-code-is-underway/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2018/09/logo-1.png)Earlier this year, Laeeth Isharc brought an idea to the D Foundation for [Symmetry Investments](http://symmetryinvestments.com/) to sponsor a summer of code. He was eager to provide a few motivated individuals the incentive to get some great work done for D and the D community. Sporadic email discussions preceded some chatting [at DConf 2018 Munich](http://dconf.org/2018/index.html) and the idea subsequently began to pick up steam. By the time the details were sketched out, it had transformed into the Symmetry Autumn of Code.

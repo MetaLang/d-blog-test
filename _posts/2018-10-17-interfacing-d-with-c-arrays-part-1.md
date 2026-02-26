@@ -18,6 +18,8 @@ categories:
 - Code
 - D and C
 - Tutorials
+permalink: /interfacing-d-with-c-arrays-part-1/
+redirect_from: /2018/10/17/interfacing-d-with-c-arrays-part-1/
 ---
 
 This post is [part of an ongoing series](https://dlang.org/blog/the-d-and-c-series/) on working with both D and C in the same project. [The previous post](https://dlang.org/blog/2017/12/05/interfacing-d-with-c-getting-started/) showed how to compile and link C and D objects. This post is the first in a miniseries focused on arrays.

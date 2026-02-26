@@ -10,9 +10,11 @@ wordpress_id: 1005
 categories:
 - Companies
 - Project Highlights
+permalink: /project-highlight-funkwerk/
+redirect_from: /2017/07/28/project-highlight-funkwerk/
 ---
 
-[![](https://dlang.org/blog/wp-content/uploads/2017/07/funkwerk-logo.png)](http://www.funkwerk.com/en/)[Funkwerk](http://www.funkwerk.com/en/) is a German company that develops intelligent communication technology. One of their projects is a passenger information system for long-distance and local transport that is deployed by long-distance rail networks in Germany, Austria, Switzerland, Finland, Norway and Luxembourg, as well as city railways in Berlin and Munich. The system is developed at the company's Munich location and, some time ago, they came to the conclusion that it needed a rewrite. According to Funkwerk's Mario Kröplin:
+[![]({{ '/assets/images/project-highlight-funkwerk/funkwerk-logo.png' | relative_url }})](http://www.funkwerk.com/en/)[Funkwerk](http://www.funkwerk.com/en/) is a German company that develops intelligent communication technology. One of their projects is a passenger information system for long-distance and local transport that is deployed by long-distance rail networks in Germany, Austria, Switzerland, Finland, Norway and Luxembourg, as well as city railways in Berlin and Munich. The system is developed at the company's Munich location and, some time ago, they came to the conclusion that it needed a rewrite. According to Funkwerk's Mario Kröplin:
 
 
 From a bird’s-eye view, the long-term replacement of our aged passenger information system is our primary project. At some point, it became obvious that the system was getting hard to maintain and hard to change. In 2008, a new head of the development department was hired. It was time for a change.

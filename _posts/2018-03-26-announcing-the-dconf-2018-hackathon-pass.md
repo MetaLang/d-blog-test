@@ -14,6 +14,8 @@ categories:
 - Community
 - D Foundation
 - DConf
+permalink: /announcing-the-dconf-2018-hackathon-pass/
+redirect_from: /2018/03/26/announcing-the-dconf-2018-hackathon-pass/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2017/04/dconf.jpg)As I write, [General Admission for DConf 2018 in Munich](https://dlang.org/blog/2018/03/19/dconf-2018-programme-open-registration/) has been open for one week. The conference runs from May 2–5, with three days of talks capped off by a day-long Hackathon. We’ve heard there are some in the area who would like to attend, but just can’t get away from work for three days for the full conference. So we’ve decided to do something about it.

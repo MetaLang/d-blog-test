@@ -19,6 +19,8 @@ categories:
 - D Foundation
 - DConf
 - SAoC
+permalink: /dconf-online-2020-call-for-submissions/
+redirect_from: /2020/07/23/dconf-online-2020-call-for-submissions/
 ---
 
 ![DConf Online 2020 Logo](https://dconf.org/2020/online/images/logo.png)[DConf Online 2020](https://dconf.org/2020/online/index.html) is happening November 21 & 22, 2020 in your local web browser! We are currently taking submissions for pre-recorded talks, livstreamed panels, and livecoding events. See [the DConf Online 2020 web site](https://dconf.org/2020/online/index.html) for details on how you can participate. Keep reading here for more info on how it came together and what we hope to achieve, as well as for a reminder about [the 2020 edition of the Symmetry Autumn of Code](https://dlang.org/blog/symmetry-autumn-of-code/) (the SAOC 2020 registration deadline is just over three weeks away!).

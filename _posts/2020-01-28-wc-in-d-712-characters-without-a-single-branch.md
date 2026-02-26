@@ -12,6 +12,8 @@ categories:
 - Guest Posts
 - The Language
 - Tutorials
+permalink: /wc-in-d-712-characters-without-a-single-branch/
+redirect_from: /2020/01/28/wc-in-d-712-characters-without-a-single-branch/
 ---
 
 After reading [“Beating C With 80 Lines Of Haskell: Wc”](https://chrispenner.ca/posts/wc), which I found on [Hacker News](https://news.ycombinator.com/news), I thought D could do better. So I wrote a `wc` in D.

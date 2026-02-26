@@ -13,6 +13,8 @@ categories:
 - Code
 - The Language
 - Tutorials
+permalink: /the-abcs-of-templates-in-d/
+redirect_from: /2020/07/31/the-abcs-of-templates-in-d/
 ---
 
 D was not supposed to have templates.

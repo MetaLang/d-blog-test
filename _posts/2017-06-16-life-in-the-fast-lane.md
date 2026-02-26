@@ -10,6 +10,8 @@ wordpress_id: 888
 categories:
 - Code
 - GC
+permalink: /life-in-the-fast-lane/
+redirect_from: /2017/06/16/life-in-the-fast-lane/
 ---
 
 [![](http://dlang.org/blog/wp-content/uploads/2016/08/d6.png)The first post](https://dlang.org/blog/2017/03/20/dont-fear-the-reaper/) I wrote in the [GC series](http://dlang.org/blog/the-gc-series/) introduced the D garbage collector and the language features that use it. Two key points that I tried to get across in the article were:

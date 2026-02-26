@@ -11,6 +11,8 @@ categories:
 - Compilers &amp; Tools
 - Guest Posts
 - The Language
+permalink: /editable-and-runnable-doc-examples-on-dlang-org/
+redirect_from: /2017/03/08/editable-and-runnable-doc-examples-on-dlang-org/
 ---
 
 _Sebastian Wilzbach was a [GSoC student](http://blog.mir.dlang.io/random/2016/08/19/intro-to-random-sampling.html) for the D Language Foundation in 2016 and has since become a regular contributor to [Phobos](https://github.com/dlang/phobos), D's standard library, and [dlang.org](http://dlang.org/)._

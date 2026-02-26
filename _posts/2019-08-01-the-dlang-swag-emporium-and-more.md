@@ -12,6 +12,8 @@ categories:
 - Community
 - D Foundation
 - Donations
+permalink: /the-dlang-swag-emporium-and-more/
+redirect_from: /2019/08/01/the-dlang-swag-emporium-and-more/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2019/08/rocket-300x229.png)It's been quite a long time coming, but I've finally gotten around to setting up a storefront where folks can purchase D swag and support the D Language Foundation at the same time. You can now head over to the [DLang Swag Emporium and throw some money at us](https://www.zazzle.com/store/dlang_swag?rf=238129799288374326).

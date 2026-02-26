@@ -11,6 +11,8 @@ categories:
 - Code
 - Core Team
 - Guest Posts
+permalink: /serialization-in-d/
+redirect_from: /2017/05/12/serialization-in-d/
 ---
 
 _Vladimir Panteleev has spent over a decade using and contributing to D. He is the creator and maintainer of [DFeed](https://github.com/CyberShadow/DFeed), the software powering the D forums, has made numerous contributions to [Phobos](https://github.com/dlang/Phobos), [DRuntime](https://github.com/dlang/druntime), [DMD](https://github.com/dlang/dmd), and [the D website](https://github.com/dlang/dlang.org), and has created several tools useful for maintaining D software (like [Digger](https://github.com/CyberShadow/Digger) and [Dustmite](https://github.com/CyberShadow/DustMite))._

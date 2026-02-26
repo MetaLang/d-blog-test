@@ -11,6 +11,8 @@ wordpress_id: 1545
 categories:
 - D Foundation
 - DConf
+permalink: /dconf-2018-ex-post-facto/
+redirect_from: /2018/05/31/dconf-2018-ex-post-facto/
 ---
 
 When I was ten years old, I broke a small hand mirror. For some years after, my moderately superstitious grandmother would remind me of it any time I suffered a bit of misfortune, providing me with periodic updates on how many of my seven years of bad luck I had yet to face. Two days before [DConf 2018](http://dconf.org/2018/index.html), I couldn’t help but think of her when my wife and I, having encountered a black cat the evening before, found ourselves in the wrong train car at Frankfurt station.

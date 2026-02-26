@@ -13,9 +13,11 @@ categories:
 - Guest Posts
 - The Language
 - Tutorials
+permalink: /memory-safety-in-a-systems-programming-language-part-3/
+redirect_from: /2023/01/05/memory-safety-in-a-systems-programming-language-part-3/
 ---
 
-![](https://dlang.org/blog/wp-content/uploads/2019/03/brain02.png)
+![]({{ '/assets/images/memory-safety-in-a-systems-programming-language-part-3/brain02.png' | relative_url }})
 
 [The first entry in this series](https://dlang.org/blog/2022/06/21/dip1000-memory-safety-in-a-modern-system-programming-language-pt-1/) shows how to use the new DIP1000 rules to have slices and pointers refer to the stack, all while being memory safe. [The second entry in this series](https://dlang.org/blog/2022/10/08/dip1000-memory-safety-in-a-modern-systems-programming-language-part-2/) teaches about the `ref` storage class and how DIP1000 works with aggregate types (classes, structs, and unions).
 
@@ -399,7 +401,7 @@ It should be documented why a `@system` function is `@system` when it's not obvi
 
 In these situations, it should be documented (for other developers, not users) how the function was deemed to be safe in all situations. Or, if the function is not fully safe to use and the attribute is just a temporary hack, it should have a big ugly warning about that.
 
-![](https://dlang.org/blog/wp-content/uploads/2023/01/unsafe-safe.jpg)
+![]({{ '/assets/images/memory-safety-in-a-systems-programming-language-part-3/unsafe-safe.jpg' | relative_url }})
 
 Such greenwashing is of course highly discouraged, but if there's a codebase full of `@system` code that's just too difficult to make `@safe` otherwise, it's better than giving up. Even as we often talk about the dangers of UB and memory corruption, in our actual work our attitudes tend to be much more carefree, meaning such codebases are unfortunately common.
 

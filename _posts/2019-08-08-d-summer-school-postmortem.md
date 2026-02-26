@@ -10,6 +10,8 @@ wordpress_id: 2159
 categories:
 - Community
 - Education
+permalink: /d-summer-school-postmortem/
+redirect_from: /2019/08/08/d-summer-school-postmortem/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2016/08/d3.png)The first edition of the D summer school, held at [University POLITEHNICA of Bucharest](https://upb.ro/en/), took place from the 17th of June to the 4th of July. It was three weeks of bootcamping bachelor students into the basics of D during eight sessions of hands-on workshops, a homework project, and ending with a hackathon. We will describe our experience in organizing the program, teaching the students, and trying to integrate them into the D community.

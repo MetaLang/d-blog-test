@@ -10,9 +10,11 @@ wordpress_id: 2874
 categories:
 - Community
 - D Foundation
+permalink: /a-pull-request-managers-perspective/
+redirect_from: /2021/05/18/a-pull-request-managers-perspective/
 ---
 
-![](https://dlang.org/blog/wp-content/uploads/2018/02/bug.jpg)
+![]({{ '/assets/images/a-pull-request-managers-perspective/bug.jpg' | relative_url }})
 
 Since January of this year, I have been working as a part-time PR (Pull Request) manager. During this time, I have mostly been reviewing PRs and going through issues on the D Bugzilla. I have also been trying to come up with ways of creating organizational structures and procedures that will ultimately aid the D leadership in motivating and focusing community effort. This blog post presents a few insights I've had regarding the PR queues of [the dmd, druntime, and phobos repositories](https://github.com/dlang), and a couple of proposals that, in my opinion, could benefit the D contribution process.
 

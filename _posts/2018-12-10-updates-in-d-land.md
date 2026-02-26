@@ -14,6 +14,8 @@ categories:
 - Donations
 - News
 - SAoC
+permalink: /updates-in-d-land/
+redirect_from: /2018/12/10/updates-in-d-land/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2016/08/d3.png)As we encroach upon the end of 2018, [a recent Reddit thread wishing D a happy 17th birthday](https://www.reddit.com/r/programming/comments/a47s2x/happy_17th_birthday_d/) reminded me how far the language has come since I first stumbled upon it in 2003. Many of the steps along the way were powered by the energy of users who had little incentive to contribute beyond personal interest. And here we are, all these years later, still moving forward.

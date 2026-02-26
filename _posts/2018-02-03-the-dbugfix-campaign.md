@@ -18,6 +18,8 @@ categories:
 - Community
 - Core Team
 - News
+permalink: /the-dbugfix-campaign/
+redirect_from: /2018/02/03/the-dbugfix-campaign/
 ---
 
 ### Why so many bugs?

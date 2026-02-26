@@ -15,6 +15,8 @@ wordpress_id: 1324
 categories:
 - Compilers &amp; Tools
 - Project Highlights
+permalink: /project-highlight-bsdscheme/
+redirect_from: /2018/01/20/project-highlight-bsdscheme/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2018/01/Lambda_lc-200x200.png)Last year, Phil Eaton started working on [BSDScheme](https://github.com/eatonphil/bsdscheme), a [Scheme](https://en.wikipedia.org/wiki/Scheme_(programming_language)) interpreter that he ultimately intends to support [Scheme R7RS](https://bitbucket.org/cowan/r7rs-wg1-infra/src/default/R7RSHomePage.md?fileviewer=file-view-default). In college, he had completed two compiler projects in C++ for two different courses. One was a Scheme to Forth compiler, the other an implementation of the Tiger language from Andrew Appel’s [‘Modern Compiler Implementation’ books](https://www.cs.princeton.edu/~appel/modern/).

@@ -14,6 +14,8 @@ categories:
 - D Foundation
 - DConf
 - Donations
+permalink: /goings-on-in-dland/
+redirect_from: /2019/12/10/goings-on-in-dland/
 ---
 
 The blog has been quiet for the past month, largely because I've been busy. I've had a couple of articles submitted to me which were a little light on content, so I asked the authors to flesh them out some more. Both are busy at the moment, but I'll check back in with them in the New Year.

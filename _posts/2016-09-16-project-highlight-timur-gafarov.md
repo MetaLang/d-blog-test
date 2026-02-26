@@ -10,6 +10,8 @@ wordpress_id: 217
 categories:
 - Game Development
 - Project Highlights
+permalink: /project-highlight-timur-gafarov/
+redirect_from: /2016/09/16/project-highlight-timur-gafarov/
 ---
 
 ![dlib-logo](http://dlang.org/blog/wp-content/uploads/2016/09/dlib-logo.png)To begin with, let's be clear that Timur Gafarov is a person and not a project. The impetus for this post was an open source [first-person shooter](https://en.wikipedia.org/wiki/First-person_shooter), called [Atrium](https://github.com/gecko0307/atrium), that he develops and maintains. In the course of making the game, he has created a few other D projects, each of which could be the focus of its own post. So this time around, we're going to do a plural Project Highlight and introduce you to [the GitHub repository](https://github.com/gecko0307) of Timur Gafarov.

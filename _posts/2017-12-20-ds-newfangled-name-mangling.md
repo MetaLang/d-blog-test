@@ -15,6 +15,8 @@ categories:
 - Code
 - Compilers &amp; Tools
 - Guest Posts
+permalink: /ds-newfangled-name-mangling/
+redirect_from: /2017/12/20/ds-newfangled-name-mangling/
 ---
 
 _Rainer Schuetze is the creator and maintainer of [Visual D](http://rainers.github.io/visuald/visuald/StartPage.html), the D plugin for Visual Studio. Recently, he implemented a new name mangling algorithm for the D frontend, which was released in [DMD 2.077.0](https://dlang.org/changelog/2.077.0.html). In this post, he explains why it was needed and what it does._

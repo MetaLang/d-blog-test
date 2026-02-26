@@ -10,6 +10,8 @@ wordpress_id: 671
 categories:
 - Project Highlights
 - Web Development
+permalink: /project-highlight-vibe-d/
+redirect_from: /2017/03/01/project-highlight-vibe-d/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2017/03/product-icon.png)Since the day Sönke Ludwig first announced [vibe.d](http://vibed.org/) on [the D Forums](http://www.digitalmars.com/d/archives/digitalmars/D/announce/Introducing_vibe.d_23330.html#N23330), the project has been a big hit in the D community. It's the [exclusive subject](http://amzn.to/1qdrvrH) of one book, has [a chapter of its own](http://amzn.to/1IlQkZX) in another, and has been proven in production both commercially and otherwise. As so many projects do, it all started out of frustration.

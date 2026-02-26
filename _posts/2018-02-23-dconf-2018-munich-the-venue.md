@@ -13,6 +13,8 @@ wordpress_id: 1386
 categories:
 - D Foundation
 - DConf
+permalink: /dconf-2018-munich-the-venue/
+redirect_from: /2018/02/23/dconf-2018-munich-the-venue/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2017/04/dconf.jpg)

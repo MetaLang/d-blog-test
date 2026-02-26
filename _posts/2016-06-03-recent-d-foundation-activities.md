@@ -10,6 +10,8 @@ wordpress_id: 10
 categories:
 - D Foundation
 - News
+permalink: /recent-d-foundation-activities/
+redirect_from: /2016/06/03/recent-d-foundation-activities/
 ---
 
 Welcome to the official D Blog!

@@ -13,6 +13,8 @@ categories:
 - Core Team
 - D Foundation
 - Donations
+permalink: /the-new-fundraising-campaign/
+redirect_from: /2018/11/10/the-new-fundraising-campaign/
 ---
 
 On January 23, 2011, [Walter announced that development of the core D projects had moved to GitHub](https://www.digitalmars.com/d/archives/digitalmars/D/announce/D_Programming_Language_source_dmd_phobos_etc._has_moved_to_github_19886.html#N19886). It's somewhat entertaining to go through the thread and realize that it's almost entirely about people coming to terms with using git, a reminder that there was a time when git was still relatively young and had yet to dominate the source control market.

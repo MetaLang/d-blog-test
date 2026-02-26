@@ -11,6 +11,8 @@ categories:
 - Compilers &amp; Tools
 - GSoC
 - Guest Posts
+permalink: /gsoc-report-dstep/
+redirect_from: /2016/09/09/gsoc-report-dstep/
 ---
 
 _Wojciech Szęszoł is a Computer Science major at the University of Wrocław. As part of Google Summer of Code 2016, he chose to make improvements to Jacob Carlborg's [DStep](https://github.com/jacob-carlborg/dstep), a tool to generate D bindings from C and Objective-C header files._

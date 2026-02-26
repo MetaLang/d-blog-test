@@ -9,6 +9,8 @@ title: The Origins of Learning D
 wordpress_id: 249
 categories:
 - Books
+permalink: /the-origins-of-learning-d/
+redirect_from: /2016/09/23/the-origins-of-learning-d/
 ---
 
 In ea![learningd](http://dlang.org/blog/wp-content/uploads/2016/09/learningd.jpg)rly 2015, Adam Ruppe asked [in the D forums](http://forum.dlang.org/post/cjcfanvzrbvllysyzlps@forum.dlang.org) if anyone was interested in authoring a new book for [Packt Publishing](https://www.packtpub.com/), the company that published his [D Cookbook](http://dlang.org/blog/2016/08/04/the-origins-of-the-d-cookbook/). I had submitted a book proposal to Packt a few months before, one with a different concept, and had heard nothing back. So I began to mull over the idea of putting my name forward, but I was concerned about the time investment. Before I could decide, Packt contacted me with some details and an offer. With a target publication date of November 2015, I figured I had plenty of time to get it done, so I accepted. It wasn't long before I learned how my concept of "plenty of time" was quite a bit off base.

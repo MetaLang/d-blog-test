@@ -11,6 +11,8 @@ categories:
 - Code
 - D and C
 - Tutorials
+permalink: /interfacing-d-with-c-arrays-and-functions-arrays-part-two/
+redirect_from: /2020/04/28/interfacing-d-with-c-arrays-and-functions-arrays-part-two/
 ---
 
 ![Digital Mars D logo](http://dlang.org/blog/wp-content/uploads/2016/08/d6.png)

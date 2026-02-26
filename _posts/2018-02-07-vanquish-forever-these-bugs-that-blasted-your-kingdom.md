@@ -15,6 +15,8 @@ categories:
 - BetterC
 - Code
 - Core Team
+permalink: /vanquish-forever-these-bugs-that-blasted-your-kingdom/
+redirect_from: /2018/02/07/vanquish-forever-these-bugs-that-blasted-your-kingdom/
 ---
 
 _[Walter Bright](http://walterbright.com/) is the BDFL of the D Programming Language and founder of [Digital Mars](http://digitalmars.com/). He has decades of experience implementing compilers and interpreters for multiple languages, including Zortech C++, the first native C++ compiler. He also created [Empire, the Wargame of the Century](http://www.classicempire.com/). This post is [the second in a series](https://dlang.org/blog/the-d-and-c-series/#betterC) about [D’s BetterC mode](https://dlang.org/blog/2017/08/23/d-as-a-better-c/)._

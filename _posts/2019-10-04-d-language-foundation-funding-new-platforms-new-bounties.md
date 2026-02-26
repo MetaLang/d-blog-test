@@ -12,6 +12,8 @@ categories:
 - D Foundation
 - Donations
 - News
+permalink: /d-language-foundation-funding-new-platforms-new-bounties/
+redirect_from: /2019/10/04/d-language-foundation-funding-new-platforms-new-bounties/
 ---
 
 ![Digital Mars logo](http://dlang.org/blog/wp-content/uploads/2016/08/d6.png)When I first announced [the HR Fund](https://www.flipcause.com/secure/cause_pdetails/NTUxOTc=) here [on the blog back in April](https://dlang.org/blog/2019/04/15/manpower-in-the-d-ecosystem-or-resources-resources-resources/), there was talk among the D Language Foundation team of hiring one or more people to flesh out the specification and implementation of `shared`. That sort of work requires a very specific skillset that only a few people in the orbit of D possess. So far, we've been unable to find any of them with the time to spare. Meanwhile, the HR Fund is sitting there, waiting to be used.

@@ -9,9 +9,11 @@ title: The Binary Language of Moisture Vaporators
 wordpress_id: 3040
 categories:
 - Compilers &amp; Tools
+permalink: /the-binary-language-of-moisture-vaporators/
+redirect_from: /2022/01/24/the-binary-language-of-moisture-vaporators/
 ---
 
-![Digital Mars D logo](https://dlang.org/blog/wp-content/uploads/2016/08/d6.png)
+![Digital Mars D logo]({{ '/assets/images/the-binary-language-of-moisture-vaporators/d6.png' | relative_url }})
 
 I know why you're reading this. Like other Alpha programmers, you're not content with just compiling Vaporator code and testing to see if it works. You need to know the binary code that's generated. But getting at it is clumsy. I want to make it easy for myself, and why not share it?
 

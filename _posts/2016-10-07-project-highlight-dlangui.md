@@ -10,6 +10,8 @@ wordpress_id: 314
 categories:
 - GUIs
 - Project Highlights
+permalink: /project-highlight-dlangui/
+redirect_from: /2016/10/07/project-highlight-dlangui/
 ---
 
 Vadim Lopatin is an active D user who, like many in the D community, comes from a Java and C++ background.

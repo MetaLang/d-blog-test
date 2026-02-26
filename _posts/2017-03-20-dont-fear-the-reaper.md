@@ -10,6 +10,8 @@ wordpress_id: 704
 categories:
 - GC
 - The Language
+permalink: /dont-fear-the-reaper/
+redirect_from: /2017/03/20/dont-fear-the-reaper/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2016/08/d6.png)D, like many other programming languages in active use today, comes with a garbage collector out of the box. There are many types of software that can be written without worrying at all about the GC, taking full advantage of its benefits. But the GC does have drawbacks, and there are certainly scenarios in which garbage collection is undesirable. For those situations, the language provides the means to temporarily disable it, or even avoid it completely.

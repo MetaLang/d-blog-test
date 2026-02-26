@@ -11,6 +11,8 @@ categories:
 - Code
 - Guest Posts
 - Tutorials
+permalink: /fuzzing-your-d-application-with-ldc-and-afl/
+redirect_from: /2019/06/25/fuzzing-your-d-application-with-ldc-and-afl/
 ---
 
 ![](http://dlang.org/blog/wp-content/uploads/2017/07/ldc.png)Fuzzing, or fuzz testing, is a powerful method to find hidden bugs in your application. The basic idea is to present random input to your application and monitor how it behaves. If it crashes or shows some other unusual behavior then you have found a bug.

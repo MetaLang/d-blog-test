@@ -10,6 +10,8 @@ wordpress_id: 71
 categories:
 - Books
 - Guest Posts
+permalink: /programming-in-d-a-happy-accident/
+redirect_from: /2016/06/29/programming-in-d-a-happy-accident/
 ---
 
 _This is a guest post from Ali Çehreli, who not only uses D as a hobby, but also gets to use it as an employee of _[Weka.io](http://www.weka.io/)_. He is the author of _Programming in D_ and is frequently found in the _[D Learn forum](http://forum.dlang.org/group/learn)_ with ready answers to questions on using the language. He also is an officer of the [D Foundation](http://dlang.org/foundation.html)._

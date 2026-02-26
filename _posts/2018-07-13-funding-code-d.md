@@ -15,6 +15,8 @@ categories:
 - Community
 - D Foundation
 - Donations
+permalink: /funding-code-d/
+redirect_from: /2018/07/13/funding-code-d/
 ---
 
 At the [DConf 2018 Hackathon](https://youtu.be/xNWRgEHxOhc), I announced that the D Language Foundation would be raising money to further the development of [the suite of tools comprising code-d](https://github.com/Pure-D), the [Visual Studio Code plugin](https://code.visualstudio.com/). The project is developed and maintained by [Jan Jurzitza, a.k.a. Webfreak001](https://github.com/WebFreak001).
