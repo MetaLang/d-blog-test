@@ -2,6 +2,7 @@
 layout: default
 title: Search Results
 permalink: /search/
+hide_sidebar: true
 ---
 
 <div class="search-page-container" style="max-width: 800px; margin: 0 auto; padding: 20px;">

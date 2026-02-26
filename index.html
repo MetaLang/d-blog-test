@@ -1,66 +1,25 @@
 ---
 layout: default
-title: The D Blog
-paginate: true
 ---
 
-<div class="blog-container">
-  <header class="dlf-header">
-    <h1>The D Blog</h1>
-    <p style="color: #666; font-size: 1.1em; margin: 5px 0 0 0;">The official blog for the D Programming Language.</p>
-    <nav class="nav-bar">
-      <ul>
-        <li><a href="{{ '/' | relative_url }}">D HOME</a></li>
-        <li><a href="https://forum.dlang.org/">D FORUMS</a></li>
-        <li><a href="https://dlang.org/donate.html">DONATE</a></li>
-        <li><a href="https://dlang.org/shop.html">SHOP</a></li>
-      </ul>
-    </nav>
-  </header>
+{% for post in paginator.posts %}
+  <article style="margin-bottom: 80px; border-bottom: 2px solid #eee; padding-bottom: 60px;">
+    {% include post-meta.html item=post is_list=true %}
+    
+    <div class="post-content" style="line-height: 1.6; font-size: 1.1em; color: #222;">
+      {{ post.content }}
+    </div>
+  </article>
+{% endfor %}
 
-  <div class="main-grid">
-    <article class="article-col">
-      {% for post in paginator.posts %}
-        <div class="post-entry">
-          <header>
-            <h1>
-              <a href="{{ post.url | relative_url }}" style="color: black; text-decoration: none;">
-                {{ post.title }}
-              </a>
-            </h1>
-            <p>
-              {{ post.date | date: "%b %-d, %Y" }}{% if post.author %} • {{ post.author }}{% endif %}
-            </p>
-          </header>
-          
-          <div class="post-content" style="line-height: 1.6; font-size: 1.1em; color: #222;">
-            {{ post.content }}
-          </div>
-          
-          {% unless forloop.last %}
-            <hr class="article-separator">
-          {% endunless %}
-        </div>
-      {% endfor %}
-
-      <nav style="display: flex; justify-content: space-between; padding: 40px 20px; border-top: 2px solid #eee; margin-top: 20px;">
-        {% if paginator.next_page %}
-          <a href="{{ paginator.next_page_path | relative_url }}" style="color: #b03931; text-decoration: none; font-weight: bold;">
-            &larr; Older posts
-          </a>
-        {% else %}
-          <span></span> {% endif %}
-        
-        {% if paginator.previous_page %}
-          <a href="{{ paginator.previous_page_path | relative_url }}" style="color: #b03931; text-decoration: none; font-weight: bold;">
-            Newer posts &rarr;
-          </a>
-        {% endif %}
-      </nav>
-    </article>
-
-    <aside class="sidebar-col">
-      {% include sidebar.html %}
-    </aside>
-  </div>
-</div>
+{% if paginator.total_pages > 1 %}
+<nav class="pagination" style="text-align: center; margin-top: 40px; padding-bottom: 80px;">
+  {% if paginator.previous_page %}
+    <a href="{{ paginator.previous_page_path | relative_url }}" style="color: #b03931; font-weight: bold; text-decoration: none; margin-right: 20px;">&larr; Newer Articles</a>
+  {% endif %}
+  <span style="color: #888;">Page {{ paginator.page }} of {{ paginator.total_pages }}</span>
+  {% if paginator.next_page %}
+    <a href="{{ paginator.next_page_path | relative_url }}" style="color: #b03931; font-weight: bold; text-decoration: none; margin-left: 20px;">Older Articles &rarr;</a>
+  {% endif %}
+</nav>
+{% endif %}
