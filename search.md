@@ -1,22 +1,24 @@
 ---
 layout: default
-title: Search the Archive
+title: Search Results
 permalink: /search/
-description: Search through the complete archive of the D Language Blog.
 ---
 
-<div class="search-container" style="max-width: 800px; margin: 0 auto; padding: 20px;">
+<div class="search-page-container" style="max-width: 800px; margin: 0 auto; padding: 20px;">
   <h1>Search Results</h1>
-  
-  <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+
+  <div style="display: flex; gap: 10px; margin-bottom: 20px; position: relative;">
     <input type="text" id="search-input" placeholder="Search by title, tag, or year..." 
-           style="flex-grow: 1; padding: 10px; font-size: 1rem; border: 1px solid #ddd; border-radius: 4px;">
-    <button id="search-button" style="padding: 10px 20px; background: #b03931; color: white; border: none; border-radius: 4px; cursor: pointer;">
+           style="flex-grow: 1; padding: 12px; font-size: 1.1rem; border: 1px solid #ddd; border-radius: 4px; padding-right: 40px;">
+    
+    <button id="clear-search" style="position: absolute; right: 115px; top: 50%; transform: translateY(-50%); border: none; background: transparent; cursor: pointer; font-size: 1.5rem; color: #999; display: none;">&times;</button>
+    
+    <button id="search-button" style="padding: 12px 24px; background: #b03931; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
       Search
     </button>
   </div>
 
-  <div id="search-status" style="margin-bottom: 20px; font-style: italic; color: #666;">Initializing search...</div>
+  <div id="search-status" style="margin-bottom: 20px; font-style: italic; color: #666; min-height: 1.2em;"></div>
   
   <ul id="results-list" style="list-style: none; padding: 0;"></ul>
 </div>
@@ -27,6 +29,7 @@ async function initSearch() {
   const list = document.getElementById('results-list');
   const status = document.getElementById('search-status');
   const btn = document.getElementById('search-button');
+  const clearBtn = document.getElementById('clear-search');
 
   try {
     const response = await fetch("{{ '/search.json' | relative_url }}");
@@ -34,11 +37,14 @@ async function initSearch() {
 
     const performSearch = (queryOverride) => {
       const query = (queryOverride || input.value).toLowerCase().trim();
-      input.value = query; // Sync input box with URL param if needed
+      input.value = query;
       list.innerHTML = '';
+      
+      // Toggle clear button visibility
+      clearBtn.style.display = query.length > 0 ? 'block' : 'none';
 
       if (query.length < 2) {
-        status.textContent = "Please enter at least 2 characters.";
+        status.textContent = query.length === 0 ? "" : "Please enter at least 2 characters.";
         return;
       }
 
@@ -54,31 +60,34 @@ async function initSearch() {
         status.textContent = `Found ${results.length} article(s):`;
         results.forEach(post => {
           const li = document.createElement('li');
-          li.style.padding = "10px 0";
+          li.style.padding = "15px 0";
           li.style.borderBottom = "1px solid #eee";
-          li.innerHTML = `<a href="${post.url}" style="color: #b03931; font-weight: bold; text-decoration: none;">${post.title}</a><br><small>${post.date}</small>`;
+          li.innerHTML = `<a href="${post.url}" style="color: #b03931; font-weight: bold; text-decoration: none; font-size: 1.1rem;">${post.title}</a><br><small style="color: #888;">${post.date}</small>`;
           list.appendChild(li);
         });
       }
     };
 
-    // 1. Check for URL parameters (from your sidebar form)
+    // Clear Button Functionality
+    clearBtn.addEventListener('click', () => {
+      input.value = '';
+      list.innerHTML = '';
+      status.textContent = '';
+      clearBtn.style.display = 'none';
+      input.focus();
+    });
+
+    // Check URL params (?q=) from sidebar
     const urlParams = new URLSearchParams(window.location.search);
     const initialQuery = urlParams.get('q');
-    if (initialQuery) {
-      performSearch(initialQuery);
-    } else {
-      status.textContent = "";
-    }
+    if (initialQuery) performSearch(initialQuery);
 
-    // 2. Event Listeners for on-page search
     input.addEventListener('input', () => performSearch());
     btn.addEventListener('click', () => performSearch());
     input.addEventListener('keypress', (e) => { if (e.key === 'Enter') performSearch(); });
 
   } catch (e) {
     status.textContent = "Error loading search index.";
-    console.error(e);
   }
 }
 document.addEventListener('DOMContentLoaded', initSearch);
