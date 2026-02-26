@@ -5,19 +5,32 @@ permalink: /search/
 hide_sidebar: true
 ---
 
+<style>
+  /* Fix for mobile cutoff and reflow */
+  @media (max-width: 600px) {
+    .search-title-row { flex-direction: column; align-items: flex-start !important; gap: 10px; margin-bottom: 20px; }
+    .search-bar-container { flex-direction: column; }
+    #search-button { width: 100%; padding: 15px !important; }
+    .input-wrapper { width: 100%; }
+  }
+</style>
+
 <div class="search-page-container" style="max-width: 800px; margin: 0 auto; padding: 20px;">
-  <div style="display: flex; justify-content: space-between; align-items: baseline;">
-    <h1>Search Results</h1>
-    <a id="return-link" href="#" style="display: none; color: #888; text-decoration: none; font-size: 0.9rem;">&larr; Return to Article</a>
+  
+  <div class="search-title-row" style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; margin-bottom: 10px;">
+    <h1 style="margin: 0;">Search Results</h1>
+    <a id="return-link" href="#" style="display: none; color: #888; text-decoration: none; font-size: 0.9rem; white-space: nowrap;">&larr; Return to Article</a>
   </div>
 
-  <div style="display: flex; gap: 10px; margin-bottom: 20px; position: relative;">
-    <input type="text" id="search-input" placeholder="Search by title, tag, or year..." 
-           style="flex-grow: 1; padding: 12px; font-size: 1.1rem; border: 1px solid #ddd; border-radius: 4px; padding-right: 40px;">
+  <div class="search-bar-container" style="display: flex; gap: 10px; margin-bottom: 20px;">
+    <div class="input-wrapper" style="position: relative; flex-grow: 1;">
+      <input type="text" id="search-input" placeholder="Search by title, tag, or year..." 
+             style="width: 100%; box-sizing: border-box; padding: 12px; font-size: 1.1rem; border: 1px solid #ddd; border-radius: 4px; padding-right: 40px;">
+      
+      <button id="clear-search" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); border: none; background: transparent; cursor: pointer; font-size: 1.5rem; color: #999; display: none;">&times;</button>
+    </div>
     
-    <button id="clear-search" style="position: absolute; right: 115px; top: 50%; transform: translateY(-50%); border: none; background: transparent; cursor: pointer; font-size: 1.5rem; color: #999; display: none;">&times;</button>
-    
-    <button id="search-button" style="padding: 12px 24px; background: #b03931; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
+    <button id="search-button" style="padding: 12px 24px; background: #b03931; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; white-space: nowrap;">
       Search
     </button>
   </div>
@@ -36,7 +49,7 @@ async function initSearch() {
   const clearBtn = document.getElementById('clear-search');
   const returnLink = document.getElementById('return-link');
 
-  // Logic to show/hide the return link based on referrer
+  // Handle Return Link
   if (document.referrer && document.referrer.includes(window.location.hostname) && !document.referrer.includes('/search')) {
     returnLink.href = document.referrer;
     returnLink.style.display = 'inline';
