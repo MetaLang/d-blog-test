@@ -4,27 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
   
+  <title>{% if page.title %}{{ page.title }} | The D Blog{% else %}The D Blog{% endif %}</title>
+
+  <meta name="description" content="{% if page.description %}{{ page.description }}{% else %}{{ site.description }}{% endif %}">
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/d.min.js"></script>
-
-  <script>
-    hljs.configure({
-      languages: ['d', 'cpp', 'python', 'bash', 'rust', 'julia', 'chapel', 'haskell'] // Only allow these languages
-    });
-    hljs.highlightAll();
-  </script>
-
-  <title>{% if page.title %}{{ page.title }} | The D Blog{% else %}The D Blog{% endif %}</title>
 
   <meta name="theme-color" content="#b03931">
 
   {% feed_meta %}
 
   <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
-
-
 
   <link rel="icon" href="{{ '/assets/images/favicon-192.png' | relative_url }}" sizes="192x192" />
   <link rel="apple-touch-icon" href="{{ '/assets/images/apple-touch-icon.png' | relative_url }}" />
@@ -37,5 +29,11 @@
 
   {{ content }}
 
+  <script>
+    hljs.configure({
+      languages: ['d', 'cpp', 'python', 'bash', 'rust', 'julia', 'chapel', 'haskell']
+    });
+    hljs.highlightAll();
+  </script>
 </body>
 </html>
