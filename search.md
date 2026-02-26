@@ -48,9 +48,11 @@ async function initSearch() {
         return;
       }
 
+      // Updated Filter Logic: Checks Title, Tags, Categories, and Date
       const results = posts.filter(post => 
         post.title.toLowerCase().includes(query) || 
         (post.tags && post.tags.some(t => t.toLowerCase().includes(query))) ||
+        (post.categories && post.categories.some(c => c.toLowerCase().includes(query))) ||
         post.date.toLowerCase().includes(query)
       );
 
