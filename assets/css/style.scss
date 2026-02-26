@@ -9,7 +9,40 @@ html, body {
 }
 
 /* Prevent images from being larger than the text column */
-p img { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+p img { 
+  display: block; 
+  margin: 25px auto; 
+  max-width: 100%; 
+  height: auto; 
+}
+
+/* Left-float the first image in the article so text flows around it */
+.post-content p:first-of-type img {
+  float: left;
+  display: inline; 
+  margin: 5px 25px 20px 0;
+  max-width: 280px; 
+  border: 1px solid #eee;
+  padding: 5px;
+  background: #fff;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+}
+
+/* Prevents layout collapse if text is shorter than the image */
+.post-content::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Force code blocks to clear floats */
+.post-content pre, 
+.post-content .highlight,
+.post-content blockquote {
+  clear: both;
+  display: block;
+  width: 100%;
+}
 
 /* Do it in D banner shadow */
 .banner-shadow {

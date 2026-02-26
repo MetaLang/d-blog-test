@@ -1,12 +1,12 @@
 {% assign item = include.item | default: page %}
 <header>
-  {% if include.is_list %}
-    <h2 style="font-size: 2.2em; margin-bottom: 10px;">
+  <h2 style="font-size: 2.6em; font-weight: bold; margin-bottom: 15px;">
+    {% if include.is_list %}
       <a href="{{ item.url | relative_url }}" style="color: #000; text-decoration: none;">{{ item.title }}</a>
-    </h2>
-  {% else %}
-    <h1>{{ item.title }}</h1>
-  {% endif %}
+    {% else %}
+      {{ item.title }}
+    {% endif %}
+  </h2>
 
   <p>
     {{ item.date | date: "%b %-d, %Y" }}{% if item.author %} • {{ item.author }}{% endif %}
