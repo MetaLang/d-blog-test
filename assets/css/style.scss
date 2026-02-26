@@ -40,7 +40,7 @@ p img { display: block; margin: 0 auto; max-width: 100%; height: auto; }
 /* --- Content Styling --- */
 header h1 { font-size: 2.6em; font-weight: bold; color: #000; margin-bottom: 20px; }
 
-/* This rule creates the gray text and the line under the title */
+/* Rule for post metadata line */
 header p { color: #888; margin-bottom: 40px; border-bottom: 1px solid #eee; padding-bottom: 25px; font-size: 0.9em; }
 
 .tag-link {
@@ -62,7 +62,7 @@ blockquote, .post-content blockquote {
 /* --- Desktop Enhancements --- */
 @media (min-width: 900px) {
   .nav-bar { margin-left: -20px; margin-right: -20px; }
-  .main-grid { flex-direction: row; align-items: flex-start; }
+  .main-grid { display: flex; flex-direction: row; gap: 40px; margin-top: 40px; align-items: flex-start; }
   .article-col { flex: 1; min-width: 0; }
   .sidebar-col { 
     width: 300px; flex-shrink: 0; border-left: 1px solid #eee; padding-left: 40px; box-sizing: border-box; text-align: left; 
