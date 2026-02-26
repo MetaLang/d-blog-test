@@ -5,7 +5,10 @@ permalink: /search/
 ---
 
 <div class="search-page-container" style="max-width: 800px; margin: 0 auto; padding: 20px;">
-  <h1>Search Results</h1>
+  <div style="display: flex; justify-content: space-between; align-items: baseline;">
+    <h1>Search Results</h1>
+    <a id="return-link" href="#" style="display: none; color: #888; text-decoration: none; font-size: 0.9rem;">&larr; Return to Article</a>
+  </div>
 
   <div style="display: flex; gap: 10px; margin-bottom: 20px; position: relative;">
     <input type="text" id="search-input" placeholder="Search by title, tag, or year..." 
@@ -30,6 +33,13 @@ async function initSearch() {
   const status = document.getElementById('search-status');
   const btn = document.getElementById('search-button');
   const clearBtn = document.getElementById('clear-search');
+  const returnLink = document.getElementById('return-link');
+
+  // Logic to show/hide the return link based on referrer
+  if (document.referrer && document.referrer.includes(window.location.hostname) && !document.referrer.includes('/search')) {
+    returnLink.href = document.referrer;
+    returnLink.style.display = 'inline';
+  }
 
   try {
     const response = await fetch("{{ '/search.json' | relative_url }}");
@@ -39,8 +49,6 @@ async function initSearch() {
       const query = (queryOverride || input.value).toLowerCase().trim();
       input.value = query;
       list.innerHTML = '';
-      
-      // Toggle clear button visibility
       clearBtn.style.display = query.length > 0 ? 'block' : 'none';
 
       if (query.length < 2) {
@@ -48,7 +56,6 @@ async function initSearch() {
         return;
       }
 
-      // Updated Filter Logic: Checks Title, Tags, Categories, and Date
       const results = posts.filter(post => 
         post.title.toLowerCase().includes(query) || 
         (post.tags && post.tags.some(t => t.toLowerCase().includes(query))) ||
@@ -70,7 +77,6 @@ async function initSearch() {
       }
     };
 
-    // Clear Button Functionality
     clearBtn.addEventListener('click', () => {
       input.value = '';
       list.innerHTML = '';
@@ -79,7 +85,6 @@ async function initSearch() {
       input.focus();
     });
 
-    // Check URL params (?q=) from sidebar
     const urlParams = new URLSearchParams(window.location.search);
     const initialQuery = urlParams.get('q');
     if (initialQuery) performSearch(initialQuery);
