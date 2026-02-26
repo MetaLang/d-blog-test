@@ -1,10 +1,10 @@
 title: D Language Blog Archive
 description: Testing the WordPress to Jekyll Migration
 
-baseurl: "/d-blog-test"
 url: "https://metalang.github.io"
+baseurl: "/d-blog-test"
 
-permalink: /:title/
+permalink: /:slug/
 
 markdown: kramdown
 kramdown:
@@ -15,6 +15,7 @@ plugins:
   - jekyll-paginate
   - jekyll-feed
   - jekyll-sitemap
+  - jekyll-redirect-from
 
 paginate: 10
 paginate_path: "/page/:num/"
