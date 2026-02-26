@@ -96,6 +96,13 @@ blockquote p {
   text-transform: lowercase;
 }
 
+/* Restoring the WordPress-style image shadow on the Do it in D image */
+.sidebar-section img, .post-content img {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
 /* Codeblock styling */
 code.hljs {
   font-family: 'Consolas', 'Monaco', monospace !important;
